@@ -1,0 +1,46 @@
+// Volatility Shield
+//
+// Withdraws liquidity when the market turns violent and restores it only after the calm has
+// actually held. The two volatility thresholds differ on purpose: entering defence needs 50%,
+// leaving it needs 30%. That gap is the hysteresis band, and it is what stops a market hovering
+// around a single threshold from making the strategy flap between postures.
+//
+//   NORMAL --(sigma >= 50%)--> DEFENSIVE --(sigma < 30% for 10m)--> RECOVERY --(10m)--> NORMAL
+//                                  ^                                    |
+//                                  +------------(sigma >= 50%)----------+
+
+strategy ETH_USDC {
+
+    base {
+        liquidity = 100%
+        spread    = 20bps
+    }
+
+    // Shock: pull most of the liquidity and widen immediately. A crash should not wait on a timer.
+    when mode == NORMAL and volatility >= 50% {
+        mode      = DEFENSIVE
+        liquidity = 25%
+        spread    = 90bps
+    }
+
+    // Calm must be sustained before any liquidity comes back.
+    when mode == DEFENSIVE and volatility < 30% for 10 minutes {
+        mode      = RECOVERY
+        liquidity = 50%
+        spread    = 50bps
+    }
+
+    // A relapse outranks the recovery timer, so this rule is written before it.
+    when mode == RECOVERY and volatility >= 50% {
+        mode      = DEFENSIVE
+        liquidity = 25%
+        spread    = 90bps
+    }
+
+    // Recovery served its time: back to full size.
+    when mode == RECOVERY and timeSinceTransition() >= 10 minutes {
+        mode      = NORMAL
+        liquidity = 100%
+        spread    = 20bps
+    }
+}
