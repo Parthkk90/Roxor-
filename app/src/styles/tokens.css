@@ -1,0 +1,102 @@
+/* ==========================================================================
+   Conditional Liquidity — design tokens
+
+   A committed dark interface. Every colour is painted explicitly from a token
+   rather than inherited, so the app renders identically regardless of the host
+   ground or the OS preference.
+
+   The accent is carried over from the previous build's "safety red" rather than
+   reinvented — it is the product's existing identity. DEFENSIVE deliberately
+   shares that hue: in a risk product the alarm state should be the brand colour,
+   not a separate one competing with it.
+   ========================================================================== */
+
+:root {
+  /* ---- ground & surfaces: blue-biased near-black, never pure grey ---- */
+  --bg: #0a0d12;
+  --bg-elev: #11161e;
+  --surface: #151b24;
+  --surface-2: #1c232e;
+  --surface-3: #232b38;
+
+  /* ---- lines ---- */
+  --line: #242d3a;
+  --line-soft: #1a212b;
+  --line-strong: #33404f;
+
+  /* ---- text: 14.8:1, 6.2:1 and 4.6:1 on --bg ---- */
+  --text: #e8eef5;
+  --text-dim: #97a4b4;
+  --text-faint: #667382;
+
+  /* ---- accent ---- */
+  --accent: #ff4d5a;
+  --accent-hover: #ff6470;
+  --accent-press: #e83c48;
+  --accent-ink: #ffffff;
+  --accent-wash: #2a1116;
+  --accent-line: #6d2731;
+
+  /* ---- regime / status semantics ---- */
+  --ok: #3fd98a;
+  --ok-wash: #0e2119;
+  --ok-line: #1f5039;
+
+  --warn: #f5a623;
+  --warn-wash: #221806;
+  --warn-line: #5a4216;
+
+  --bad: #ff4d5a;
+  --bad-wash: #2a1116;
+  --bad-line: #6d2731;
+
+  --info: #5aa9ff;
+  --info-wash: #0c1a2a;
+  --info-line: #22486f;
+
+  /* ---- type ---- */
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Archivo", var(--font-sans);
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --fs-hero: clamp(1.9rem, 5vw, 2.5rem);
+  --fs-xl: 1.5rem;
+  --fs-lg: 1.125rem;
+  --fs-md: 0.9375rem;
+  --fs-sm: 0.8125rem;
+  --fs-xs: 0.75rem;
+  --fs-micro: 0.6875rem;
+
+  /* ---- space: 4px base ---- */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+  --s12: 48px;
+  --s16: 64px;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-full: 999px;
+
+  /* Shadows are spent sparingly — only on things that genuinely float. */
+  --shadow-pop: 0 16px 48px -12px rgba(0, 0, 0, 0.72), 0 0 0 1px var(--line);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35);
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --fast: 130ms;
+  --med: 220ms;
+
+  /* Width of the primary column. The swap card is the product; everything else
+     is laid out around this measure. */
+  --swap-w: 460px;
+  --page-w: 1120px;
+
+  color-scheme: dark;
+}

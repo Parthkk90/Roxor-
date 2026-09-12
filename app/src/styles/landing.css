@@ -1,0 +1,153 @@
+/* ==========================================================================
+   Landing page.
+
+   Shares the app's tokens throughout — the marketing page and the product must
+   not look like two different companies. What changes is density: the app is
+   scanned and operated, this is read, so the measure is narrower and the
+   vertical rhythm is far more generous.
+   ========================================================================== */
+
+.landing { display: flex; flex-direction: column; }
+
+.lp-section { padding: var(--s16) var(--s5); }
+.lp-inner { width: 100%; max-width: 960px; margin: 0 auto; }
+.lp-measure { max-width: 60ch; }
+
+.lp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: 5px 12px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.lp-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); flex: none; }
+
+/* ---------- hero ---------- */
+.lp-hero {
+  position: relative;
+  padding: var(--s16) var(--s5) var(--s12);
+  overflow: hidden;
+}
+/* A single soft accent wash behind the headline. The page's one atmospheric flourish — everything
+   else earns its contrast from type and spacing. */
+.lp-hero::before {
+  content: "";
+  position: absolute;
+  top: -220px;
+  left: 50%;
+  width: 780px;
+  height: 520px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(255, 77, 90, 0.16), transparent 68%);
+  pointer-events: none;
+}
+.lp-hero-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--s5); text-align: center; }
+
+.lp-hero h1 {
+  font-size: clamp(2.3rem, 6.2vw, 4rem);
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  max-width: 16ch;
+}
+.lp-hero h1 em { font-style: normal; color: var(--accent); }
+
+.lp-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-dim); max-width: 54ch; line-height: 1.6; }
+
+.lp-cta { display: flex; gap: var(--s3); flex-wrap: wrap; justify-content: center; margin-top: var(--s2); }
+.lp-cta .btn { min-height: 50px; padding: 0 var(--s6); font-size: var(--fs-md); border-radius: var(--r-lg); }
+
+.lp-trust { display: flex; gap: var(--s5); flex-wrap: wrap; justify-content: center; margin-top: var(--s4); }
+.lp-trust span { font-size: var(--fs-xs); color: var(--text-faint); display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- the gap figure: the one image the product is about ---------- */
+.gapfig {
+  margin-top: var(--s10);
+  width: 100%;
+  max-width: 620px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: var(--s5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+  text-align: left;
+}
+.gapfig-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; }
+.gapfig-row { display: flex; flex-direction: column; gap: var(--s2); }
+.gapfig-row .k { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3); font-size: var(--fs-sm); }
+.gapfig-row .k b { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.gapfig-track { height: 10px; border-radius: var(--r-full); background: var(--surface-3); overflow: hidden; }
+.gapfig-track i { display: block; height: 100%; border-radius: inherit; }
+.gapfig-ghost i { background: repeating-linear-gradient(135deg, var(--line-strong) 0 6px, transparent 6px 12px); }
+.gapfig-real i { background: var(--ok); }
+.gapfig-note { font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.55; }
+
+/* ---------- problem ---------- */
+.lp-band { border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); background: var(--bg-elev); }
+
+.lp-head { display: flex; flex-direction: column; gap: var(--s3); margin-bottom: var(--s10); }
+.lp-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); letter-spacing: -0.03em; max-width: 20ch; }
+.lp-head p { color: var(--text-dim); max-width: 58ch; line-height: 1.6; }
+
+/* Numbered because these genuinely are ordered — each step only makes sense after the one above. */
+.lp-steps { display: flex; flex-direction: column; counter-reset: step; }
+.lp-step {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: var(--s5);
+  padding: var(--s6) 0;
+  border-top: 1px solid var(--line-soft);
+}
+.lp-step:last-child { border-bottom: 1px solid var(--line-soft); }
+.lp-step::before {
+  content: counter(step);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+.lp-step-body { display: flex; flex-direction: column; gap: var(--s2); }
+.lp-step h3 { font-size: var(--fs-lg); letter-spacing: -0.02em; }
+.lp-step p { color: var(--text-dim); max-width: 62ch; line-height: 1.65; }
+
+/* ---------- guarantee ---------- */
+.lp-promises { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--s6); }
+.lp-promise { display: flex; flex-direction: column; gap: var(--s2); padding-left: var(--s4); border-left: 2px solid var(--accent); }
+.lp-promise h3 { font-size: var(--fs-md); }
+.lp-promise p { color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.6; }
+
+/* ---------- closing ---------- */
+.lp-close { display: flex; flex-direction: column; align-items: center; gap: var(--s5); text-align: center; }
+.lp-close h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; max-width: 18ch; }
+
+.lp-foot {
+  border-top: 1px solid var(--line-soft);
+  padding: var(--s6) var(--s5);
+  display: flex;
+  gap: var(--s3) var(--s6);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .lp-section, .lp-hero { padding-left: var(--s4); padding-right: var(--s4); }
+  .lp-section { padding-top: var(--s12); padding-bottom: var(--s12); }
+  .lp-hero { padding-top: var(--s12); }
+  .lp-cta { width: 100%; }
+  .lp-cta .btn { flex: 1; min-width: 0; }
+  .lp-step { grid-template-columns: 32px 1fr; gap: var(--s4); }
+  .lp-head { margin-bottom: var(--s6); }
+}
