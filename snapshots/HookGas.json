@@ -1,0 +1,8 @@
+{
+  "bare_engine_poke_transition": "202968",
+  "defensive_swap_no_transition": "254949",
+  "normal_swap_cold_first_ever": "292508",
+  "normal_swap_warm_steady_state": "254902",
+  "rejected_swap": "190826",
+  "state_transition_swap": "354895"
+}

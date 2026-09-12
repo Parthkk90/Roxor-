@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "name": "ETH_USDC",
+  "base": {
+    "liquidityBps": 10000,
+    "spreadBps": 20
+  },
+  "rules": [
+    {
+      "conditions": [
+        {
+          "type": 5,
+          "operator": 4,
+          "value": "0"
+        },
+        {
+          "type": 0,
+          "operator": 1,
+          "value": "5000"
+        }
+      ],
+      "durationSeconds": 0,
+      "actions": [
+        {
+          "type": 0,
+          "value": "1"
+        },
+        {
+          "type": 1,
+          "value": "2500"
+        },
+        {
+          "type": 2,
+          "value": "90"
+        }
+      ]
+    },
+    {
+      "conditions": [
+        {
+          "type": 5,
+          "operator": 4,
+          "value": "1"
+        },
+        {
+          "type": 0,
+          "operator": 2,
+          "value": "3000"
+        }
+      ],
+      "durationSeconds": 600,
+      "actions": [
+        {
+          "type": 0,
+          "value": "2"
+        },
+        {
+          "type": 1,
+          "value": "5000"
+        },
+        {
+          "type": 2,
+          "value": "50"
+        }
+      ]
+    },
+    {
+      "conditions": [
+        {
+          "type": 5,
+          "operator": 4,
+          "value": "2"
+        },
+        {
+          "type": 0,
+          "operator": 1,
+          "value": "5000"
+        }
+      ],
+      "durationSeconds": 0,
+      "actions": [
+        {
+          "type": 0,
+          "value": "1"
+        },
+        {
+          "type": 1,
+          "value": "2500"
+        },
+        {
+          "type": 2,
+          "value": "90"
+        }
+      ]
+    },
+    {
+      "conditions": [
+        {
+          "type": 5,
+          "operator": 4,
+          "value": "2"
+        },
+        {
+          "type": 4,
+          "operator": 1,
+          "value": "600"
+        }
+      ],
+      "durationSeconds": 0,
+      "actions": [
+        {
+          "type": 0,
+          "value": "0"
+        },
+        {
+          "type": 1,
+          "value": "10000"
+        },
+        {
+          "type": 2,
+          "value": "20"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+HookGasReportTest:test_Gas_BareEnginePoke() (gas: 196866)
+HookGasReportTest:test_Gas_DefensiveSwap() (gas: 443241)
+HookGasReportTest:test_Gas_NormalSwapCold() (gas: 275295)
+HookGasReportTest:test_Gas_NormalSwapWarm() (gas: 372093)
+HookGasReportTest:test_Gas_RejectedSwap() (gas: 403675)
+HookGasReportTest:test_Gas_StateTransitionSwap() (gas: 346291)
