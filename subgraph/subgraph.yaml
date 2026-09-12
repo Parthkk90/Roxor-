@@ -1,0 +1,150 @@
+specVersion: 1.0.0
+description: >-
+  Conditional Liquidity Marketplace — discovery index for conditional-liquidity strategies across
+  Aqua/SwapVM and Uniswap v4. Layer 1 of three: discovery, history and analytics only. Nothing
+  indexed here is a settlement input; the solver revalidates every number on-chain before it moves
+  a token.
+repository: https://github.com/1inch/conditional-liquidity
+schema:
+  file: ./schema.graphql
+
+dataSources:
+  # ---- Aqua/SwapVM stack ----
+  - kind: ethereum/contract
+    name: AquaRegistry
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ConditionalLiquidityRegistry
+      startBlock: 0
+    mapping: &registryMapping
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Strategy
+        - Maker
+        - Venue
+        - StateTransition
+        - LiquiditySnapshot
+      abis:
+        - name: ConditionalLiquidityRegistry
+          file: ./abis/ConditionalLiquidityRegistry.json
+      eventHandlers:
+        - event: StrategyRegistered(indexed bytes32,indexed address,indexed address,address,bytes32)
+          handler: handleStrategyRegistered
+        - event: StrategyActivated(indexed bytes32)
+          handler: handleStrategyActivated
+        - event: StrategyDeactivated(indexed bytes32)
+          handler: handleStrategyDeactivated
+        - event: StrategyStateChanged(indexed bytes32,uint8,uint8,uint16,uint16)
+          handler: handleStrategyStateChanged
+
+  - kind: ethereum/contract
+    name: AquaEngine
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ConditionalLiquidityEngine
+      startBlock: 0
+    mapping: &engineMapping
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Strategy
+        - StateTransition
+        - LiquiditySnapshot
+      abis:
+        - name: ConditionalLiquidityEngine
+          file: ./abis/ConditionalLiquidityEngine.json
+      eventHandlers:
+        - event: StateTransition(indexed bytes32,uint8,uint8,uint256,uint256)
+          handler: handleStateTransition
+        - event: LiquidityConfigurationChanged(indexed bytes32,uint16,uint16)
+          handler: handleLiquidityConfigurationChanged
+
+  # ---- Uniswap v4 stack. Registered as its own registry/engine pair, exactly as the protocol
+  # deploys them: Aqua strategies and pool strategies are never cross-registered. ----
+  - kind: ethereum/contract
+    name: UniRegistry
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ConditionalLiquidityRegistry
+      startBlock: 0
+    mapping: *registryMapping
+
+  - kind: ethereum/contract
+    name: UniEngine
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ConditionalLiquidityEngine
+      startBlock: 0
+    mapping: *engineMapping
+
+  - kind: ethereum/contract
+    name: ConditionalLiquidityHook
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: ConditionalLiquidityHook
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Strategy
+        - Swap
+        - StateTransition
+        - LiquiditySnapshot
+      abis:
+        - name: ConditionalLiquidityHook
+          file: ./abis/ConditionalLiquidityHook.json
+      eventHandlers:
+        # Every allowed swap, with the strategy decision that governed it. This is the closest
+        # thing the protocol has to a per-fill record on the v4 side.
+        - event: >-
+            ConditionalLiquidityApplied(indexed bytes32,indexed bytes32,uint8,uint8,uint256,uint256,uint16,uint256)
+          handler: handleConditionalLiquidityApplied
+        - event: HookStateTransition(indexed bytes32,indexed bytes32,uint8,uint8,uint256)
+          handler: handleHookStateTransition
+        # NOTE: `ConditionalSwapRejected` is deliberately NOT indexed. The hook reverts on a
+        # rejection, so that log is always unwound and can never be mined — see
+        # `IConditionalLiquidityHook`. Failed fills are therefore counted from the solver side
+        # (where a reverted settlement is simply an absent LegExecuted), not from a rejection log
+        # that does not exist.
+
+  # ---- Solver ----
+  - kind: ethereum/contract
+    name: Solver
+    network: sepolia
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: Solver
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - RouteExecution
+        - RouteLeg
+        - Swap
+        - Strategy
+        - Maker
+        - Venue
+      abis:
+        - name: Solver
+          file: ./abis/Solver.json
+      eventHandlers:
+        - event: PlanExecuted(indexed address,indexed bytes32,uint256,uint256)
+          handler: handlePlanExecuted
+        - event: LegExecuted(indexed address,indexed address,indexed bytes32,uint256,uint256,uint256,uint16)
+          handler: handleLegExecuted

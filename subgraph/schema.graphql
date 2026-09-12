@@ -1,0 +1,135 @@
+# Conditional Liquidity Marketplace — indexed discovery schema.
+#
+# LAYER 1 OF THREE. Everything here is discovery, history and analytics. None of it is admissible
+# as a settlement input: an indexed balance is a statement about a block that has already passed,
+# and on the Aqua side it is a statement about an *allowance*, not about solvency. The solver may
+# use these entities to decide which venues are worth asking about; it must then ask the chain.
+
+type Strategy @entity(immutable: false) {
+  "Strategy id, equal to Aqua's strategyHash / the SwapVM orderHash."
+  id: Bytes!
+  maker: Bytes!
+  tokenIn: Bytes!
+  tokenOut: Bytes!
+  "Backend this strategy settles on: `aqua` or `uniswap-v4`."
+  venue: String!
+  "Last observed regime: NORMAL | DEFENSIVE | RECOVERY."
+  mode: String!
+  active: Boolean!
+  baseLiquidityBps: BigInt!
+  baseSpreadBps: BigInt!
+  "Current multiplier and spread, as of the last indexed transition."
+  liquidityBps: BigInt!
+  spreadBps: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+
+  makerEntity: Maker!
+  venueEntity: Venue!
+
+  "Lifetime fill counters, the inputs to reliabilityBps. See `Maker.reliabilityBps`."
+  attemptedFills: BigInt!
+  successfulFills: BigInt!
+  failedFills: BigInt!
+  volumeIn: BigInt!
+
+  snapshots: [LiquiditySnapshot!]! @derivedFrom(field: "strategy")
+  transitions: [StateTransition!]! @derivedFrom(field: "strategy")
+  swaps: [Swap!]! @derivedFrom(field: "strategy")
+}
+
+type Maker @entity(immutable: false) {
+  id: Bytes!
+  strategies: [Strategy!]! @derivedFrom(field: "makerEntity")
+  attemptedFills: BigInt!
+  successfulFills: BigInt!
+  failedFills: BigInt!
+  volumeIn: BigInt!
+  """
+  successfulFills * 10000 / attemptedFills, or 10000 when nothing has been attempted.
+  A ranking hint only. A maker with 9910 here and an empty wallet has zero executable
+  liquidity, and the solver must treat them as such.
+  """
+  reliabilityBps: BigInt!
+  firstSeenAt: BigInt!
+  lastActiveAt: BigInt!
+}
+
+type Venue @entity(immutable: false) {
+  "Venue adapter address, or a well-known key for a backend."
+  id: Bytes!
+  kind: String!
+  strategies: [Strategy!]! @derivedFrom(field: "venueEntity")
+  totalSwaps: BigInt!
+  volumeIn: BigInt!
+}
+
+"""
+A point-in-time observation of a strategy's advertised and deliverable depth.
+
+`effectiveLiquidity` and `coverageBps` are copied from what the chain reported at that block; they
+age the moment they are written. Treat a snapshot as evidence of a maker's *behaviour over time*,
+never as a quote.
+"""
+type LiquiditySnapshot @entity(immutable: true) {
+  id: Bytes!
+  strategy: Strategy!
+  maker: Bytes!
+  virtualLiquidity: BigInt!
+  effectiveLiquidity: BigInt!
+  coverageBps: BigInt!
+  spreadBps: BigInt!
+  mode: String!
+  timestamp: BigInt!
+  block: BigInt!
+}
+
+type StateTransition @entity(immutable: true) {
+  id: Bytes!
+  strategy: Strategy!
+  previousMode: String!
+  newMode: String!
+  triggerVolatilityBps: BigInt!
+  timestamp: BigInt!
+  block: BigInt!
+  txHash: Bytes!
+}
+
+type Swap @entity(immutable: true) {
+  id: Bytes!
+  strategy: Strategy!
+  trader: Bytes!
+  tokenIn: Bytes!
+  tokenOut: Bytes!
+  amountIn: BigInt!
+  amountOut: BigInt!
+  venue: String!
+  timestamp: BigInt!
+  block: BigInt!
+  txHash: Bytes!
+}
+
+"""
+One solver settlement, with its legs. Recorded so the marketplace can show *how* flow was actually
+split, and so reliability can be attributed per venue rather than only per trade.
+"""
+type RouteExecution @entity(immutable: true) {
+  id: Bytes!
+  trader: Bytes!
+  planHash: Bytes!
+  totalAmountIn: BigInt!
+  totalAmountOut: BigInt!
+  legCount: BigInt!
+  timestamp: BigInt!
+  block: BigInt!
+  txHash: Bytes!
+  legs: [RouteLeg!]! @derivedFrom(field: "execution")
+}
+
+type RouteLeg @entity(immutable: true) {
+  id: Bytes!
+  execution: RouteExecution!
+  venue: Bytes!
+  amountIn: BigInt!
+  amountOut: BigInt!
+}
