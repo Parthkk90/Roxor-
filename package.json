@@ -1,0 +1,43 @@
+{
+  "name": "conditional-liquidity",
+  "version": "0.1.0",
+  "description": "Conditional Liquidity Functions - stateful, market-reactive liquidity strategies compiled onto 1inch SwapVM/Aqua and Uniswap v4",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@1inch/aqua": "github:1inch/aqua#v1.0.0",
+    "@1inch/swap-vm": "github:1inch/swap-vm#f09a41e689240adc645934f965c8061749397cd2",
+    "@1inch/solidity-utils": "6.9.10",
+    "@openzeppelin/contracts": "5.4.0",
+    "@uniswap/v4-core": "1.0.2",
+    "@uniswap/v4-periphery": "1.0.3",
+    "forge-std": "github:foundry-rs/forge-std#v1.11.0"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3",
+    "tsx": "4.19.2",
+    "vitest": "2.1.8",
+    "viem": "2.21.54",
+    "@types/node": "22.10.1"
+  },
+  "resolutions": {
+    "@1inch/solidity-utils": "6.9.10"
+  },
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "test:compiler": "vitest run",
+    "test:all": "forge test && vitest run",
+    "test:fork": "forge test --match-path \"test/fork/*\" -vv",
+    "test:fork:aqua": "forge test --match-path \"test/fork/AquaSwapVMMainnetFork.t.sol\" -vv",
+    "compile": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit",
+    "fmt": "forge fmt",
+    "fmt:check": "forge fmt --check",
+    "snapshot": "forge snapshot"
+  }
+}

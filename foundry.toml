@@ -1,0 +1,40 @@
+[profile.default]
+src            = "contracts"
+out            = "out"
+libs           = ["node_modules"]
+test           = "test"
+script         = "script"
+optimizer      = true
+# Matches Uniswap's own v4-core foundry.toml. Their PoolManager.swap() hits a genuine Yul
+# "variable too deep in the stack" failure under via_ir at lower run counts (verified: our
+# previous 700 failed to compile PoolManager.sol at all). Bumping to their value fixes PoolManager
+# and is a safe choice for our own contracts too (it only shifts the size/gas tradeoff further
+# toward runtime efficiency over deploy-time bytecode size).
+optimizer_runs = 44_444_444
+evm_version    = "cancun"
+fs_permissions = [
+    { access = "read-write", path = "./deployments" },
+    { access = "read", path = "./test/compiler/golden" },
+    { access = "read", path = "./test/differential" },
+    { access = "read", path = "./out" },
+]
+
+# via_ir is mandatory, not a preference: SwapVM's `MakerTraitsLib.build` packs enough locals
+# that the legacy codegen hits "stack too deep". 1inch compiles SwapVM the same way.
+via_ir = true
+
+[profile.ci]
+via_ir         = true
+optimizer_runs = 700
+
+[fmt]
+single_line_statement_blocks = "multi"
+multiline_func_header        = "all"
+override_spacing             = false
+bracket_spacing              = true
+int_types                    = "long"
+number_underscore            = "thousands"
+line_length                  = 140
+
+[rpc_endpoints]
+mainnet = "${RPC_URL}"
