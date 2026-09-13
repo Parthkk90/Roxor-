@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
-import type { Address } from "viem";
 
-import { TOKENS, type TokenInfo } from "../../trade/TradeContext";
+import type { TokenInfo } from "../../trade/TradeContext";
 
 /** Deterministic colour per token so the same asset keeps the same sigil everywhere. */
 export function sigilColor(symbol: string): string {
@@ -21,23 +20,25 @@ export function TokenSigil({ symbol }: { symbol: string }) {
 }
 
 /**
- * Token picker.
+ * Token picker, scoped to the current market's own two tokens.
  *
- * Built from the configured token list rather than a hardcoded pair, so adding a token to the
- * deployment adds it here with no code change. Uses a native `<dialog>`: focus trapping, Escape to
- * dismiss, and the backdrop all come from the platform, and it renders as a bottom sheet on narrow
- * screens where that is the expected shape.
+ * A market's pair is fixed — each market has its own `Solver` (see `Solver.sol`), so `tokenIn`
+ * cannot become some other market's token without also changing venues, oracles and strategy ids.
+ * Picking the counterpart therefore always means "reverse this market's direction", never "route
+ * an unrelated pair". Uses a native `<dialog>`: focus trapping, Escape to dismiss, and the backdrop
+ * all come from the platform, and it renders as a bottom sheet on narrow screens where that is the
+ * expected shape.
  */
 export function TokenSelect({
   side,
   selected,
   counterpart,
-  onSelect,
+  onSwapSides,
 }: {
   side: "in" | "out";
   selected: TokenInfo;
   counterpart: TokenInfo;
-  onSelect: (side: "in" | "out", address: Address) => void;
+  onSwapSides: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
 
@@ -63,16 +64,15 @@ export function TokenSelect({
       <button type="button" className="token-pick" onClick={open} aria-haspopup="dialog">
         <TokenSigil symbol={selected.symbol} />
         {selected.symbol}
-        {TOKENS.length > 1 && <ChevronDown size={15} strokeWidth={2.5} aria-hidden="true" />}
+        <ChevronDown size={15} strokeWidth={2.5} aria-hidden="true" />
       </button>
 
       <dialog className="sheet" ref={ref} aria-label={label}>
         <div className="sheet-inner">
           <h3>{side === "in" ? "You pay" : "You receive"}</h3>
           <div role="listbox" aria-label={label} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {TOKENS.map((token) => {
+            {[selected, counterpart].map((token) => {
               const isSelected = token.address.toLowerCase() === selected.address.toLowerCase();
-              const isCounterpart = token.address.toLowerCase() === counterpart.address.toLowerCase();
               return (
                 <button
                   key={token.address}
@@ -81,7 +81,7 @@ export function TokenSelect({
                   aria-selected={isSelected}
                   className="token-option"
                   onClick={() => {
-                    onSelect(side, token.address);
+                    if (!isSelected) onSwapSides();
                     close();
                   }}
                 >
@@ -90,8 +90,8 @@ export function TokenSelect({
                     <strong>{token.symbol}</strong>
                     <span>{token.address}</span>
                   </span>
-                  {/* Picking the other side's token swaps them rather than erroring, so say so. */}
-                  {isCounterpart && !isSelected && <span className="badge">Swaps sides</span>}
+                  {/* This market's other token — picking it swaps direction rather than erroring. */}
+                  {!isSelected && <span className="badge">Swaps sides</span>}
                   {isSelected && <span className="badge badge-info">Selected</span>}
                 </button>
               );

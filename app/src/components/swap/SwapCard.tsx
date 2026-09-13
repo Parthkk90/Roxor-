@@ -19,9 +19,9 @@ const TONE_CLASS = { success: "badge-ok", warning: "badge-warn", danger: "badge-
 
 export function SwapCard() {
   const pair = useTradePair();
-  const { reverse, selectToken } = useTradeActions();
+  const { reverse } = useTradeActions();
   const flow = useSwapFlow();
-  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address);
+  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address, pair.market.aquaVenue, pair.market.uniswapV4Venue);
   const { login } = usePrivy();
 
   const { state, quote } = flow;
@@ -89,7 +89,7 @@ export function SwapCard() {
                 fmt(guaranteed, 4)
               )}
             </span>
-            <TokenSelect side="out" selected={pair.tokenOut} counterpart={pair.tokenIn} onSelect={selectToken} />
+            <TokenSelect side="out" selected={pair.tokenOut} counterpart={pair.tokenIn} onSwapSides={reverse} />
           </div>
           <div className="tokenfield-meta">
             <span>You receive at least</span>

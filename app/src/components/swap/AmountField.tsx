@@ -26,7 +26,7 @@ export function AmountField({
   disabled?: boolean;
 }) {
   const { amount } = useTradeDraft();
-  const { setAmount, selectToken } = useTradeActions();
+  const { setAmount, reverse } = useTradeActions();
 
   const formatted = balance === undefined ? undefined : formatUnits(balance, token.decimals);
 
@@ -47,7 +47,7 @@ export function AmountField({
           disabled={disabled}
           onChange={(event) => setAmount(event.target.value)}
         />
-        <TokenSelect side="in" selected={token} counterpart={counterpart} onSelect={selectToken} />
+        <TokenSelect side="in" selected={token} counterpart={counterpart} onSwapSides={reverse} />
       </div>
 
       <div className="tokenfield-meta">

@@ -23,7 +23,7 @@ import { SwapCard } from "./SwapCard";
  */
 export function SwapPage() {
   const pair = useTradePair();
-  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address);
+  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address, pair.market.aquaVenue, pair.market.uniswapV4Venue);
   const quote = useRouteQuote();
 
   const allocations = useMemo(
