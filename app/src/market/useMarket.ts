@@ -4,7 +4,6 @@ import { useReadContracts } from "wagmi";
 import type { Address } from "viem";
 
 import { aquaVenueAbi } from "../abis/index.js";
-import { addresses } from "../config/contracts";
 import { useObservedBlock } from "../chain/ObservedBlockContext";
 import { useReliability } from "./useReliability";
 import {
@@ -16,12 +15,15 @@ import {
 
 /**
  * `snapshot` and `executableLiquidity` have identical signatures on every `ILiquidityVenue`
- * implementation, so one ABI decodes both venues.
+ * implementation, so one ABI decodes both venues. Every market has its own pair of venues — this
+ * is not a fixed constant, it's built from whichever market the caller passes in.
  */
-const VENUES = [
-  { key: "aqua", name: "Aqua maker", venueKind: "Aqua / SwapVM", address: addresses.aquaVenue as Address },
-  { key: "uniswap-v4", name: "Uniswap v4", venueKind: "v4 pool", address: addresses.uniswapV4Venue as Address },
-] as const;
+function venuesFor(aquaVenue: Address, uniswapV4Venue: Address) {
+  return [
+    { key: "aqua", name: "Aqua maker", venueKind: "Aqua / SwapVM", address: aquaVenue },
+    { key: "uniswap-v4", name: "Uniswap v4", venueKind: "v4 pool", address: uniswapV4Venue },
+  ] as const;
+}
 
 type RawResult = { status: "success"; result: unknown } | { status: "failure"; error: Error };
 
@@ -51,12 +53,13 @@ function toExecutable(raw: RawResult | undefined): ExecutableLiquidity | undefin
  * This replaced four independent 5s polls. The gain that matters is not fewer requests: it is that
  * the route and the depth it is checked against can no longer come from different blocks.
  */
-export function useMarket(tokenIn: Address, tokenOut: Address) {
+export function useMarket(tokenIn: Address, tokenOut: Address, aquaVenue: Address, uniswapV4Venue: Address) {
   const { block } = useObservedBlock();
+  const venues = useMemo(() => venuesFor(aquaVenue, uniswapV4Venue), [aquaVenue, uniswapV4Venue]);
 
   const contracts = useMemo(
     () =>
-      VENUES.flatMap((venue) => [
+      venues.flatMap((venue) => [
         { address: venue.address, abi: aquaVenueAbi, functionName: "snapshot", args: [tokenIn, tokenOut] } as const,
         {
           address: venue.address,
@@ -65,7 +68,7 @@ export function useMarket(tokenIn: Address, tokenOut: Address) {
           args: [tokenIn, tokenOut],
         } as const,
       ]),
-    [tokenIn, tokenOut]
+    [venues, tokenIn, tokenOut]
   );
 
   const { data, isLoading, isError, error, refetch, isPlaceholderData } = useReadContracts({
@@ -89,14 +92,14 @@ export function useMarket(tokenIn: Address, tokenOut: Address) {
   });
 
   const strategyIds = useMemo(
-    () => VENUES.map((_, i) => toSnapshot(data?.[i * 2] as RawResult | undefined)?.strategyId),
-    [data]
+    () => venues.map((_, i) => toSnapshot(data?.[i * 2] as RawResult | undefined)?.strategyId),
+    [venues, data]
   );
   const reliability = useReliability(strategyIds);
 
   const sources = useMemo<LiquiditySource[]>(
     () =>
-      VENUES.map((venue, i) => {
+      venues.map((venue, i) => {
         const snapshot = toSnapshot(data?.[i * 2] as RawResult | undefined);
         const executable = toExecutable(data?.[i * 2 + 1] as RawResult | undefined);
         const loaded = data !== undefined;
@@ -114,7 +117,7 @@ export function useMarket(tokenIn: Address, tokenOut: Address) {
           reliabilityBps: snapshot ? reliability[snapshot.strategyId.toLowerCase()] : undefined,
         };
       }),
-    [data, reliability]
+    [venues, data, reliability]
   );
 
   const totalExecutable = useMemo(
