@@ -3,14 +3,16 @@ import { TriangleAlert } from "lucide-react";
 
 import { useMarket } from "../../market/useMarket";
 import { allocationsFor, summarize } from "../../market/derive";
+import { useMarketList } from "../../market/useMarkets";
 import { useRouteQuote } from "../../trade/useRouteQuote";
-import { useTradePair } from "../../trade/useTrade";
+import { useTradeActions, useTradePair } from "../../trade/useTrade";
 import { fmt } from "../../format";
 import { CoverageIndicator } from "../liquidity/CoverageIndicator";
 import { MarketDepthBar } from "../liquidity/DepthChart";
 import { LiquiditySourceCard } from "../liquidity/LiquiditySourceCard";
 import { NoPhantomLiquidity } from "../liquidity/NoPhantomLiquidity";
 import { MarketSelector } from "./MarketSelector";
+import { MarketOverviewTable } from "./MarketOverviewTable";
 
 /**
  * The marketplace.
@@ -22,7 +24,9 @@ import { MarketSelector } from "./MarketSelector";
  */
 export function MarketPage() {
   const pair = useTradePair();
-  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address);
+  const { selectMarket } = useTradeActions();
+  const marketList = useMarketList();
+  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address, pair.market.aquaVenue, pair.market.uniswapV4Venue);
   const quote = useRouteQuote();
 
   const summary = useMemo(() => summarize(market.sources), [market.sources]);
@@ -39,6 +43,11 @@ export function MarketPage() {
       </div>
 
       <MarketSelector />
+
+      <section className="msec">
+        <span className="label">Compare markets</span>
+        <MarketOverviewTable markets={marketList} activeIndex={pair.marketIndex} onSelect={selectMarket} />
+      </section>
 
       {market.isError && (
         <div className="notice notice-bad" style={{ marginBottom: "var(--s5)" }}>
