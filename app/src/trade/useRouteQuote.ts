@@ -4,7 +4,6 @@ import type { Address } from "viem";
 import { useConfig } from "wagmi";
 
 import { solverAbi } from "../abis/index.js";
-import { addresses } from "../config/contracts";
 import { useObservedBlock } from "../chain/ObservedBlockContext";
 import { findRevert } from "./errors";
 import { useAmountIntent, useTradePair } from "./useTrade";
@@ -82,6 +81,7 @@ export function useRouteQuote(): QuoteState {
   const query = useQuery<RouteResult>({
     queryKey: [
       "route",
+      pair.solver,
       pair.tokenIn.address,
       pair.tokenOut.address,
       intent.amountWei?.toString() ?? "none",
@@ -106,7 +106,7 @@ export function useRouteQuote(): QuoteState {
 
       try {
         const plan = (await readContract(config, {
-          address: addresses.solver as Address,
+          address: pair.solver,
           abi: solverAbi,
           functionName: "route",
           args: [request],

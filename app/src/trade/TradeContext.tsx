@@ -1,7 +1,8 @@
 import { createContext, useCallback, useMemo, useState, type ReactNode } from "react";
 import type { Address } from "viem";
 
-import { addresses, tokenSymbols } from "../config/contracts";
+import { markets, type MarketAddresses } from "../config/markets";
+import { tokenMetaOf, useTokenMetadataMap } from "../market/useTokenMetadata";
 
 /**
  * User intent, and nothing else.
@@ -20,8 +21,6 @@ import { addresses, tokenSymbols } from "../config/contracts";
 
 export type Direction = "AtoB" | "BtoA";
 
-/** Both demo tokens are 18 decimals. One place to change when that stops being true. */
-export const TOKEN_DECIMALS = 18;
 export const DEFAULT_SLIPPAGE_BPS = 50;
 
 export interface TokenInfo {
@@ -30,31 +29,32 @@ export interface TokenInfo {
   decimals: number;
 }
 
-function tokenInfo(address: string): TokenInfo {
-  return {
-    address: address as Address,
-    symbol: tokenSymbols[address.toLowerCase() as keyof typeof tokenSymbols] ?? "TOKEN",
-    decimals: TOKEN_DECIMALS,
-  };
-}
-
-/** Every token this deployment knows about. The selector is built from this, not hardcoded. */
-export const TOKENS: TokenInfo[] = [tokenInfo(addresses.tokenA), tokenInfo(addresses.tokenB)];
-
 /** Stable for the lifetime of the app — safe to consume from anywhere without re-render cost. */
 export interface TradeActions {
   setAmount: (next: string) => void;
   setSlippageBps: (next: number) => void;
-  /** Swap the direction of the pair, preserving the amount. */
+  /** Swap the direction of the current market's pair, preserving the amount. */
   reverse: () => void;
-  selectToken: (side: "in" | "out", address: Address) => void;
+  /** Switch to a different deployed market — see `config/markets.ts`. */
+  selectMarket: (index: number) => void;
 }
 
-/** Changes only when the user flips direction, picks a token, or edits slippage. */
+/**
+ * Changes only when the user flips direction, picks a market, or edits slippage.
+ *
+ * A pair is no longer two freely combinable tokens: each market has its own `Solver` (see
+ * `Solver.sol` — it snapshots every venue it holds unconditionally, so one Solver serves exactly
+ * one pair), so `tokenIn`/`tokenOut` are always the current market's own two tokens, and `solver`/
+ * `market` travel with them so every consumer reads the same market's contracts.
+ */
 export interface TradePair {
   tokenIn: TokenInfo;
   tokenOut: TokenInfo;
   direction: Direction;
+  marketIndex: number;
+  /** The selected market's deployed addresses (solver, venues, oracles, strategy ids). */
+  market: MarketAddresses;
+  solver: Address;
   /**
    * Applies to `minTotalAmountOut` on settle, NOT to the solver's `maxSlippageBps`.
    * See the note in `useRouteQuote`. Shared by every quote consumer so the swap card and the
@@ -76,7 +76,8 @@ export function TradeProvider({ children }: { children: ReactNode }) {
   const [amount, setAmountState] = useState("");
   const [direction, setDirection] = useState<Direction>("AtoB");
   const [slippageBps, setSlippageBpsState] = useState(DEFAULT_SLIPPAGE_BPS);
-  const [override, setOverride] = useState<{ in?: Address; out?: Address }>({});
+  const [marketIndex, setMarketIndex] = useState(0);
+  const { data: tokenMeta } = useTokenMetadataMap();
 
   const setAmount = useCallback((next: string) => {
     // Accept only a well-formed decimal, while still allowing the intermediate states real typing
@@ -90,36 +91,36 @@ export function TradeProvider({ children }: { children: ReactNode }) {
 
   const reverse = useCallback(() => {
     setDirection((d) => (d === "AtoB" ? "BtoA" : "AtoB"));
-    setOverride((o) => ({ in: o.out, out: o.in }));
   }, []);
 
-  const selectToken = useCallback((side: "in" | "out", address: Address) => {
-    setOverride((current) => {
-      const other = side === "in" ? current.out : current.in;
-      // Picking the token that is already on the other side swaps them rather than creating a
-      // same-token pair the solver would reject.
-      if (other && other.toLowerCase() === address.toLowerCase()) {
-        return side === "in" ? { in: address, out: current.in } : { in: current.out, out: address };
-      }
-      return side === "in" ? { ...current, in: address } : { ...current, out: address };
-    });
+  const selectMarket = useCallback((index: number) => {
+    if (index < 0 || index >= markets.length) return;
+    setMarketIndex(index);
+    setDirection("AtoB");
   }, []);
 
   const actions = useMemo<TradeActions>(
-    () => ({ setAmount, setSlippageBps, reverse, selectToken }),
-    [setAmount, setSlippageBps, reverse, selectToken]
+    () => ({ setAmount, setSlippageBps, reverse, selectMarket }),
+    [setAmount, setSlippageBps, reverse, selectMarket]
   );
 
   const pair = useMemo<TradePair>(() => {
-    const defaultIn = direction === "AtoB" ? addresses.tokenA : addresses.tokenB;
-    const defaultOut = direction === "AtoB" ? addresses.tokenB : addresses.tokenA;
+    const market = markets[marketIndex] ?? markets[0]!;
+    const [inAddr, outAddr] = direction === "AtoB" ? [market.tokenIn, market.tokenOut] : [market.tokenOut, market.tokenIn];
+    const toTokenInfo = (address: Address): TokenInfo => {
+      const meta = tokenMetaOf(tokenMeta, address);
+      return { address, symbol: meta.symbol, decimals: meta.decimals };
+    };
     return {
-      tokenIn: tokenInfo(override.in ?? defaultIn),
-      tokenOut: tokenInfo(override.out ?? defaultOut),
+      tokenIn: toTokenInfo(inAddr),
+      tokenOut: toTokenInfo(outAddr),
       direction,
+      marketIndex,
+      market,
+      solver: market.solver,
       slippageBps,
     };
-  }, [direction, slippageBps, override.in, override.out]);
+  }, [direction, marketIndex, slippageBps, tokenMeta]);
 
   const draft = useMemo<TradeDraft>(() => ({ amount }), [amount]);
 

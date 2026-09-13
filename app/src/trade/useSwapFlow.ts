@@ -12,7 +12,7 @@ import {
 } from "wagmi";
 
 import { solverAbi } from "../abis/index.js";
-import { addresses, chainId as targetChainId } from "../config/contracts";
+import { chainId as targetChainId } from "../config/contracts";
 import { useObservedBlock } from "../chain/ObservedBlockContext";
 import { useSettlementRefresh } from "../chain/refresh";
 import { describeSettleFailure, type SettleFailure } from "./errors";
@@ -68,7 +68,7 @@ export function useSwapFlow() {
     address: pair.tokenIn.address,
     abi: erc20Abi,
     functionName: "allowance",
-    args: address ? [address, addresses.solver as Address] : undefined,
+    args: address ? [address, pair.solver] : undefined,
     scopeKey: block?.toString() ?? "pending",
     query: { enabled: Boolean(address), placeholderData: keepPreviousData, refetchInterval: false },
   });
@@ -104,7 +104,7 @@ export function useSwapFlow() {
    * or a previous amount is the one thing this must not do.
    */
   const simulate = useSimulateContract({
-    address: addresses.solver as Address,
+    address: pair.solver,
     abi: solverAbi,
     functionName: "settle",
     args:
@@ -201,9 +201,9 @@ export function useSwapFlow() {
       functionName: "approve",
       // Infinite approval is a testnet-demo convenience so a trader is not prompted per swap.
       // A production build should offer exact-amount approval as the default.
-      args: [addresses.solver as Address, maxUint256],
+      args: [pair.solver, maxUint256],
     });
-  }, [address, approveWrite, pair.tokenIn.address]);
+  }, [address, approveWrite, pair.tokenIn.address, pair.solver]);
 
   const swap = useCallback(() => {
     if (intent.amountWei === undefined || expectedOut === undefined || minOut === undefined) return;
@@ -216,7 +216,7 @@ export function useSwapFlow() {
     setSubmittedForKey(tradeKey);
 
     settleWrite.writeContract({
-      address: addresses.solver as Address,
+      address: pair.solver,
       abi: solverAbi,
       functionName: "settle",
       args: [
@@ -229,7 +229,7 @@ export function useSwapFlow() {
         snapshot.minOut,
       ],
     });
-  }, [intent.amountWei, expectedOut, minOut, tradeKey, pair.tokenIn.address, pair.tokenOut.address, settleWrite]);
+  }, [intent.amountWei, expectedOut, minOut, tradeKey, pair.tokenIn.address, pair.tokenOut.address, pair.solver, settleWrite]);
 
   /** Re-baseline on the current figure. The user has now seen the new number. */
   const acceptUpdatedQuote = useCallback(() => {
