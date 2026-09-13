@@ -320,7 +320,7 @@ contract DeploySolver is Script {
         _uniEngine.poke(market.uniStrategyId);
     }
 
-    function _log(Market memory market) private view {
+    function _log(Market memory market) private pure {
         console.log("--- Market:", market.label);
         console.log("Token in:      ", market.tokenIn);
         console.log("Token out:     ", market.tokenOut);
