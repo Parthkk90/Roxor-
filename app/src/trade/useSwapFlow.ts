@@ -36,7 +36,7 @@ export function useSwapFlow() {
 
   /** What the user last looked at. Drift is measured against this, not against the last block. */
   const [reviewed, setReviewed] = useState<QuoteSnapshot | null>(null);
-  /** What was actually signed — frozen at click so a poll cannot change it mid-flight. */
+  /** What was actually signed - frozen at click so a poll cannot change it mid-flight. */
   const [signed, setSigned] = useState<QuoteSnapshot | null>(null);
   const [submittedForKey, setSubmittedForKey] = useState<string | null>(null);
 
@@ -53,7 +53,7 @@ export function useSwapFlow() {
   // depend on something that is not one of its own arguments.
   //
   // Both keep previous data because a new block otherwise returns them to `undefined` for a
-  // round-trip — and `undefined` balance/allowance are exactly the values the state machine reads
+  // round-trip - and `undefined` balance/allowance are exactly the values the state machine reads
   // as "nothing blocking", so the button would flash through to "Swap" on every block.
   const { data: balance } = useReadContract({
     address: pair.tokenIn.address,
@@ -210,7 +210,7 @@ export function useSwapFlow() {
 
     // Freeze what the user saw. Without this the click closes over a plan a background poll may
     // have replaced between paint and click, so the signed transaction would not be the one on
-    // screen. The quote is still advisory — `settle` re-derives — but `minOut` is a real promise.
+    // screen. The quote is still advisory - `settle` re-derives - but `minOut` is a real promise.
     const snapshot: QuoteSnapshot = { amountWei: intent.amountWei, expectedOut, minOut };
     setSigned(snapshot);
     setSubmittedForKey(tradeKey);
@@ -267,8 +267,8 @@ export function useSwapFlow() {
 
   const failure: SettleFailure | null = useMemo(() => {
     if (state.stage === "swap-failed") {
-      // A reverted receipt carries no decodable error, so the simulation's error — captured from
-      // the same call path — is the better explanation when one is available.
+      // A reverted receipt carries no decodable error, so the simulation's error - captured from
+      // the same call path - is the better explanation when one is available.
       return describeSettleFailure(settleWrite.error ?? simulate.error);
     }
     if (state.stage === "settle-blocked") return describeSettleFailure(simulate.error);

@@ -12,14 +12,14 @@ import { MockERC20 } from "../../contracts/mocks/MockERC20.sol";
 import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 
 /// @notice Proves `script/DeploySolver.s.sol` actually deploys three independent, genuine
-///         markets rather than one market wearing three labels — the gap flagged during planning:
+///         markets rather than one market wearing three labels - the gap flagged during planning:
 ///         no test previously touched the deploy script at all.
 contract MultiMarketDeployTest is Test {
     DeploySolver.Market[3] internal markets;
 
     /// @dev Under `forge test`, `deployer.run()` is called directly by this contract, so
     ///      `msg.sender` as read inside `run()` (`vm.envOr(_, msg.sender)`) is this test contract
-    ///      — but every call `run()` makes AFTER `vm.startBroadcast()` executes with sender
+    ///      - but every call `run()` makes AFTER `vm.startBroadcast()` executes with sender
     ///      `tx.origin`, which under `forge test` is `DEFAULT_SENDER`, not this contract. Real
     ///      `forge script` avoids the split because its top-level call into `run()` already
     ///      originates from the broadcaster. Setting MAKER/OWNER explicitly to `DEFAULT_SENDER`
@@ -108,7 +108,7 @@ contract MultiMarketDeployTest is Test {
     /// 5. Aqua wallet/allowance solvency: draining the maker's wallet on one market zeroes that
     ///    market's Aqua-side executable liquidity. Market 3 (DUSDC/DDAI) shares neither token with
     ///    market 1 (DWA/DUSDC), so it is the control unaffected by draining market 1's `tokenIn`
-    ///    (`DWA`) — market 2 (DWA/DDAI) is deliberately not used as the control here: the same
+    ///    (`DWA`) - market 2 (DWA/DDAI) is deliberately not used as the control here: the same
     ///    single EOA is the maker for every market, so it also holds market 2's DWA reserve, and
     ///    draining "the maker's DWA" is realistically one wallet, not three independent ones.
     function test_DrainingAquaMakerWalletZeroesOnlyThatMarket() public {
@@ -128,7 +128,7 @@ contract MultiMarketDeployTest is Test {
 
     /// 6. Conditional liquidity still applies: market 2 was walked into DEFENSIVE by the deploy
     ///    script's shock+poke, and reports the fixture's reduced size/wider spread on both legs,
-    ///    while market 1 stayed NORMAL — read back live from chain, not asserted on the input.
+    ///    while market 1 stayed NORMAL - read back live from chain, not asserted on the input.
     function test_ConditionalLiquidityStatesAreReal() public view {
         ILiquidityVenue.VenueSnapshot memory normalAqua = markets[0].aquaVenue.snapshot(markets[0].tokenIn, markets[0].tokenOut);
         assertEq(uint8(normalAqua.mode), uint8(IStrategyTypes.StrategyMode.NORMAL));
@@ -143,7 +143,7 @@ contract MultiMarketDeployTest is Test {
     }
 
     /// 7. Marketplace data corresponds to real deployed contracts: routing one market's Solver
-    ///    against another market's tokens is rejected — no shared/implicit routing across markets.
+    ///    against another market's tokens is rejected - no shared/implicit routing across markets.
     function test_CrossMarketRoutingIsRejected() public {
         vm.expectRevert();
         markets[0].solver.route(_request(markets[1].tokenIn, markets[1].tokenOut, 1 ether));

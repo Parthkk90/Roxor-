@@ -1,4 +1,4 @@
-# Conditional Liquidity Marketplace — Frontend
+# Conditional Liquidity Marketplace - Frontend
 
 A web UI for the conditional-liquidity marketplace (see [`../docs/architecture.md`](../docs/architecture.md)).
 Connect a wallet via Privy, get test tokens, see live liquidity across the Aqua and Uniswap v4
@@ -7,7 +7,7 @@ strategy state machine react live.
 
 ## Panels
 
-**Liquidity marketplace** — the main screen. For each source it shows regime, executable depth,
+**Liquidity marketplace** - the main screen. For each source it shows regime, executable depth,
 coverage, spread and reliability, then the route the solver would build for your request and a
 plain-English explanation of why.
 
@@ -16,14 +16,14 @@ on-chain Solver calls. Three details are deliberate:
 
 - Advertised-but-undeliverable depth is shown **struck through** beside the real figure, so you can
   see the gap rather than just its absence.
-- A source the solver cannot use is **dimmed, not hidden** — you should see it exists and is
+- A source the solver cannot use is **dimmed, not hidden** - you should see it exists and is
   unusable, not wonder where it went.
-- Reliability is the one figure not read from chain, so it shows **"—"** when no subgraph endpoint
+- Reliability is the one figure not read from chain, so it shows **"-"** when no subgraph endpoint
   is configured. A plausible-looking placeholder next to chain-read numbers would be the only
   figure on the screen you could not verify.
 
-**Live market** — raw venue snapshots. **Swap** — execute through the Solver. **Faucet** — test
-tokens. **Simulate a market shock** — drive the oracle to move strategies between regimes.
+**Live market** - raw venue snapshots. **Swap** - execute through the Solver. **Faucet** - test
+tokens. **Simulate a market shock** - drive the oracle to move strategies between regimes.
 
 ## Setup
 
@@ -48,7 +48,7 @@ All contract addresses have Sepolia defaults and can be overridden per environme
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `VITE_PRIVY_APP_ID` | — | Required. Privy app ID for wallet connection. |
+| `VITE_PRIVY_APP_ID` | - | Required. Privy app ID for wallet connection. |
 | `VITE_CHAIN_ID` | `11155111` (Sepolia) | Set to `31337` to target a local anvil node. |
 | `VITE_RPC_URL` | public Sepolia RPC / `http://127.0.0.1:8545` | RPC override. |
 | `VITE_SOLVER` | Sepolia address | Solver contract. |
@@ -63,7 +63,7 @@ Defaults live in `src/config/contracts.ts`; `src/config/wagmi.ts` registers both
 so either can be selected without a code change.
 
 `.env.local` is gitignored. **`VITE_SUBGRAPH_URL` embeds a billable API key when using the
-decentralised gateway — never commit it.**
+decentralised gateway - never commit it.**
 
 ### Running against a local chain
 
@@ -74,7 +74,7 @@ via `../script/DeploySolver.s.sol`, and lists the env vars to copy across.
 ## Re-syncing ABIs
 
 After any `forge build` in the parent project, run `npm run sync-abis` to refresh `src/abis/` from
-the Foundry output in `../out/`. Required after any contract signature change — the marketplace
+the Foundry output in `../out/`. Required after any contract signature change - the marketplace
 reads `snapshot` and `executableLiquidity`, both of which are decoded from these ABIs.
 
 ## Known limitations
@@ -84,8 +84,8 @@ minutes of sustained calm plus at least one trade or poke during that window to 
 release. There's no way to fast-forward network time the way Foundry tests can. Shocking to
 DEFENSIVE is instant; watching a full recovery cycle live takes real time.
 
-**Reliability needs a subgraph.** Without `VITE_SUBGRAPH_URL` the reliability column shows `—`.
+**Reliability needs a subgraph.** Without `VITE_SUBGRAPH_URL` the reliability column shows `-`.
 Everything else works, because everything else is a direct chain read.
 
-**The default Sepolia addresses are behind the contracts.** See the note under *Configuration* —
+**The default Sepolia addresses are behind the contracts.** See the note under *Configuration* -
 the demo currently needs either a redeploy or a local anvil chain.

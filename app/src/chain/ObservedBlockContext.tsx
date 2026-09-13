@@ -9,7 +9,7 @@ import { useBlockNumber } from "wagmi";
  *
  * 1. **Coherence.** The sources table, the route, and the executability verdict are all derived
  *    from the same block. Previously they came from three independent 5s polls landing on three
- *    different blocks, so the "NO PHANTOM LIQUIDITY — PASS" banner could compare a route computed
+ *    different blocks, so the "NO PHANTOM LIQUIDITY - PASS" banner could compare a route computed
  *    at block N against depth summed at block N-1. For the one claim this product exists to make,
  *    that is not acceptable.
  *
@@ -26,7 +26,7 @@ import { useBlockNumber } from "wagmi";
  */
 interface ObservedBlock {
   block: bigint | undefined;
-  /** Move the clock forward immediately (never backward) — used when a receipt confirms. */
+  /** Move the clock forward immediately (never backward) - used when a receipt confirms. */
   advanceTo: (block: bigint) => void;
 }
 

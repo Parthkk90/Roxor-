@@ -11,7 +11,7 @@ import { executableDepth, type LiquiditySource, type StrategyMode } from "./type
  * disagreeing about the same trade.
  *
  * Nothing in this file invents a value. Where a figure cannot be derived from what the chain
- * returned, it is `undefined` and renders as "—".
+ * returned, it is `undefined` and renders as "-".
  */
 
 const BPS = 10_000n;
@@ -57,7 +57,7 @@ export function allocationsFor(
  * moves when a strategy goes defensive, which makes it the honest way to show "how much of what it
  * could deliver is it currently willing to quote" without reading the rule program.
  *
- * `undefined` when there is nothing deliverable — a multiplier on zero is meaningless, and 0%
+ * `undefined` when there is nothing deliverable - a multiplier on zero is meaningless, and 0%
  * would wrongly suggest the strategy is holding liquidity back.
  */
 export function currentLiquidityBps(source: LiquiditySource): number | undefined {
@@ -106,7 +106,7 @@ export interface MarketSummary {
   marketCoverageBps: number | undefined;
   marketBand: CoverageBand | undefined;
   healthySources: number;
-  /** Sources that returned data at all — the denominator for "healthy". */
+  /** Sources that returned data at all - the denominator for "healthy". */
   readableSources: number;
   /** Lowest spread among sources that can actually fill something. `undefined` if none can. */
   bestSpreadBps: number | undefined;
@@ -117,7 +117,7 @@ export interface MarketSummary {
 /**
  * Whole-market figures.
  *
- * Sums `conditionalLiquidity`, never advertised depth — a headline "total liquidity" built from
+ * Sums `conditionalLiquidity`, never advertised depth - a headline "total liquidity" built from
  * advertisements would make the interface itself a source of phantom liquidity, which is the exact
  * failure the product exists to prevent.
  */

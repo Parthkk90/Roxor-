@@ -2,7 +2,7 @@
 
 Stateful, market-reactive liquidity strategies compiled onto [1inch SwapVM/Aqua](https://github.com/1inch) and [Uniswap v4](https://github.com/Uniswap/v4-core).
 
-Liquidity providers write strategies as small state machines — "pull back when volatility spikes, restore only after calm has held" — in a domain-specific language called **CLF** (Conditional Liquidity Functions). A compiler turns that into an on-chain rule program, which an execution engine evaluates against live market state to decide how liquidity should be positioned.
+Liquidity providers write strategies as small state machines - "pull back when volatility spikes, restore only after calm has held" - in a domain-specific language called **CLF** (Conditional Liquidity Functions). A compiler turns that into an on-chain rule program, which an execution engine evaluates against live market state to decide how liquidity should be positioned.
 
 ## How it fits together
 
@@ -13,13 +13,13 @@ strategy.clf  --[compiler]-->  RuleProgram bytecode  --[engine]-->  on-chain exe
                                                   (price, volatility, time)
 ```
 
-- **CLF compiler** (`src/compiler/`) — lexer, parser, semantic analysis, and an optimizer that lower a `.clf` strategy file into `RuleProgram` bytecode. Run it with `npm run compile`.
-- **Rule engine** (`contracts/libraries/RuleEngineLib.sol`, `contracts/libraries/RuleProgram.sol`) — evaluates compiled rule programs on-chain against current market conditions.
-- **Core** (`contracts/core/`) — `ConditionalLiquidityRegistry` (registers strategies) and `StrategyValidator` (validates them before they go live).
-- **Engine** (`contracts/engine/`) — `ConditionalLiquidityEngine`, the contract that ties a registered strategy to live execution.
-- **SwapVM integration** (`contracts/swapvm/`) — adapts conditional liquidity strategies to run as 1inch SwapVM/Aqua programs.
-- **Uniswap v4 integration** (`contracts/uniswap/`) — a v4 hook (`ConditionalLiquidityHook.sol`) and adapter that let the same strategies drive a Uniswap v4 pool.
-- **Marketplace** (`contracts/solver/`, `contracts/venues/`, `subgraph/`, `src/discovery/`, `src/solver/`) — discovery via The Graph, risk-aware ranking, and a deterministic on-chain solver that routes atomically across both backends. See `docs/marketplace.md`.
+- **CLF compiler** (`src/compiler/`) - lexer, parser, semantic analysis, and an optimizer that lower a `.clf` strategy file into `RuleProgram` bytecode. Run it with `npm run compile`.
+- **Rule engine** (`contracts/libraries/RuleEngineLib.sol`, `contracts/libraries/RuleProgram.sol`) - evaluates compiled rule programs on-chain against current market conditions.
+- **Core** (`contracts/core/`) - `ConditionalLiquidityRegistry` (registers strategies) and `StrategyValidator` (validates them before they go live).
+- **Engine** (`contracts/engine/`) - `ConditionalLiquidityEngine`, the contract that ties a registered strategy to live execution.
+- **SwapVM integration** (`contracts/swapvm/`) - adapts conditional liquidity strategies to run as 1inch SwapVM/Aqua programs.
+- **Uniswap v4 integration** (`contracts/uniswap/`) - a v4 hook (`ConditionalLiquidityHook.sol`) and adapter that let the same strategies drive a Uniswap v4 pool.
+- **Marketplace** (`contracts/solver/`, `contracts/venues/`, `subgraph/`, `src/discovery/`, `src/solver/`) - discovery via The Graph, risk-aware ranking, and a deterministic on-chain solver that routes atomically across both backends. See `docs/marketplace.md`.
 
 ### No phantom liquidity
 
@@ -33,11 +33,11 @@ and re-validates it on-chain immediately before settlement. The solver cannot ro
 
 See `examples/volatility-shield.clf` for a complete example strategy. Documentation lives in `docs/`:
 
-- [`docs/architecture.md`](docs/architecture.md) — how the whole system fits together, part by part, and why.
-- [`docs/marketplace.md`](docs/marketplace.md) — the marketplace layer: executable liquidity, coverage, the three layers of truth.
-- [`docs/uniswap-v4.md`](docs/uniswap-v4.md) — the v4 hook backend.
-- [`docs/aqua-swapvm-production-fork.md`](docs/aqua-swapvm-production-fork.md) — verification against real mainnet Aqua.
-- [`subgraph/README.md`](subgraph/README.md) — the discovery index, and what it must never be used for.
+- [`docs/architecture.md`](docs/architecture.md) - how the whole system fits together, part by part, and why.
+- [`docs/marketplace.md`](docs/marketplace.md) - the marketplace layer: executable liquidity, coverage, the three layers of truth.
+- [`docs/uniswap-v4.md`](docs/uniswap-v4.md) - the v4 hook backend.
+- [`docs/aqua-swapvm-production-fork.md`](docs/aqua-swapvm-production-fork.md) - verification against real mainnet Aqua.
+- [`subgraph/README.md`](subgraph/README.md) - the discovery index, and what it must never be used for.
 
 ## Getting started
 
@@ -77,7 +77,7 @@ There's also a Python reference implementation of the rule engine under `sim/`, 
 ## Demo procedure
 
 Runs the full marketplace against a local chain, including real ERC20 settlement through both
-backends. Deploys **three** markets — `DWA/DUSDC`, `DWA/DDAI`, `DDAI/DUSDC` — each with its own
+backends. Deploys **three** markets - `DWA/DUSDC`, `DWA/DDAI`, `DDAI/DUSDC` - each with its own
 `Solver` and Aqua + Uniswap v4 venue pair, at NORMAL / DEFENSIVE / RECOVERY respectively, so a
 judge can switch markets and immediately see different liquidity conditions. Requires Foundry and
 Node >= 20.
@@ -100,7 +100,7 @@ forge script script/DeploySolver.s.sol:DeploySolver \
 ```
 
 This writes every market's addresses to `deployments/31337.json` and prints them to the console.
-Market 2 (`DDAI/DUSDC`) is left NORMAL by the deploy script itself — run the seed script to walk it
+Market 2 (`DDAI/DUSDC`) is left NORMAL by the deploy script itself - run the seed script to walk it
 through DEFENSIVE into RECOVERY via the real rule program (see `script/SeedRecovery.s.sol` for why
 this needs a second script rather than one):
 
@@ -109,7 +109,7 @@ this needs a second script rather than one):
 ```
 
 **3. Point the UI at it.** The addresses above are already baked into
-`app/src/config/markets.ts` as the anvil defaults — redeploying gives you *different* addresses, so
+`app/src/config/markets.ts` as the anvil defaults - redeploying gives you *different* addresses, so
 update that file to match (mirroring how the previous single-market build documented updating
 `config/contracts.ts`). Then just set the chain:
 
@@ -129,14 +129,14 @@ change with each. On any market:
 - **Market shock.** Use the Demo controls panel on the Swap page (`Shock market`), or set
   volatility directly on either oracle
   (`cast send $ORACLE "setVolatility(bytes32,uint256,uint256)" $STRATEGY_ID 6500 4000000000000000000000`).
-  The strategy enters DEFENSIVE, depth collapses to 25%, spread widens, and the route re-splits —
+  The strategy enters DEFENSIVE, depth collapses to 25%, spread widens, and the route re-splits -
   live, in the UI.
 - **Phantom liquidity.** Transfer the maker's tokens out of their wallet. Aqua still advertises
   the original balance, but coverage collapses, the executable column drops, and the solver
   reallocates to Uniswap v4 rather than routing against liquidity that cannot pay. The advertised
   figure stays visible, struck through, next to the real one.
 - **Recovery.** Return volatility to 20% and poke the engine after ten minutes of sustained calm
-  to walk DEFENSIVE → RECOVERY → NORMAL — exactly what `seed-markets.sh` already did for market 2.
+  to walk DEFENSIVE → RECOVERY → NORMAL - exactly what `seed-markets.sh` already did for market 2.
 
 ## Project layout
 

@@ -22,7 +22,7 @@ export function bandColor(band: CoverageBand): string {
  * Coverage: the share of advertised depth that can actually be settled.
  *
  * Always rendered as a percentage, a band *word* and a bar together. Colour alone carries no
- * meaning here — the previous build encoded the entire reliability signal in the hue of a small
+ * meaning here - the previous build encoded the entire reliability signal in the hue of a small
  * dot, which put it out of reach of anyone who could not separate those hues.
  */
 export function CoverageIndicator({
@@ -38,7 +38,7 @@ export function CoverageIndicator({
     return (
       <div className="cov">
         <div className="cov-top">
-          <span className={`cov-pct cov-pct-${size}`}>—</span>
+          <span className={`cov-pct cov-pct-${size}`}>-</span>
         </div>
         <p className="cov-note">Coverage can&apos;t be read right now.</p>
       </div>
@@ -62,7 +62,7 @@ export function CoverageIndicator({
       <div
         className="cov-track"
         role="img"
-        aria-label={`${pct.toFixed(0)} percent of advertised liquidity is executable — ${BAND_WORD[band]}`}
+        aria-label={`${pct.toFixed(0)} percent of advertised liquidity is executable - ${BAND_WORD[band]}`}
       >
         <i style={{ width: `${pct}%`, background: bandColor(band) }} />
       </div>

@@ -11,7 +11,7 @@ const REFERENCE_PRICE = parseUnits("4000", 18);
  * deployment, so any connected wallet can drive a market's strategies' volatility to watch
  * NORMAL -> DEFENSIVE -> RECOVERY happen live. Never wire this pattern into a real deployment.
  *
- * Scoped to whichever market is passed in — each market has its own independent oracles, so
+ * Scoped to whichever market is passed in - each market has its own independent oracles, so
  * shocking one market never touches another's state.
  */
 export function useShock(market: MarketAddresses) {
@@ -37,7 +37,7 @@ export function useShock(market: MarketAddresses) {
         await publicClient?.waitForTransactionReceipt({ hash });
       }
     } catch {
-      setError("Couldn't update market conditions — please try again.");
+      setError("Couldn't update market conditions - please try again.");
     } finally {
       setIsSetting(false);
     }

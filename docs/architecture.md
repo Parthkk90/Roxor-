@@ -1,4 +1,4 @@
-# Conditional Liquidity — Architecture
+# Conditional Liquidity - Architecture
 
 How the system is built, and why it is built that way. This documents what exists; for the
 narrative explainer of the marketplace layer see [`marketplace.md`](./marketplace.md), and for
@@ -12,7 +12,7 @@ backend-specific notes see [`uniswap-v4.md`](./uniswap-v4.md) and
 > executable** under current market conditions.
 
 Parts 1–5 build the conditional-liquidity infrastructure. Part 6 turns it into a marketplace with a
-deterministic solver. Part 7 makes that marketplace *honest* — it distinguishes liquidity a venue
+deterministic solver. Part 7 makes that marketplace *honest* - it distinguishes liquidity a venue
 **advertises** from liquidity it can **actually deliver**, and makes routing against the difference
 structurally impossible.
 
@@ -32,7 +32,7 @@ PART 7  Conditional Liquidity Marketplace                   DONE
 
 ---
 
-# Part 1 — Strategy Registry
+# Part 1 - Strategy Registry
 
 `contracts/core/ConditionalLiquidityRegistry.sol` ·
 `contracts/core/interfaces/IConditionalLiquidityRegistry.sol`
@@ -57,14 +57,14 @@ The compiled rule program is stored **in full**, not hashed, for data availabili
 solver can reproduce a strategy's behaviour from chain state alone.
 
 Runtime state is writable only by the **state authority** (the engine). Makers and takers can never
-write state directly — they can only cause a transition by executing a swap, which routes through
+write state directly - they can only cause a transition by executing a swap, which routes through
 the engine.
 
 Tested by `test/unit/ConditionalLiquidityRegistry.t.sol`.
 
 ---
 
-# Part 2 — Strategy Validator
+# Part 2 - Strategy Validator
 
 `contracts/core/StrategyValidator.sol` · `contracts/core/interfaces/IStrategyValidator.sol`
 
@@ -79,7 +79,7 @@ Tested by `test/unit/StrategyValidator.t.sol`.
 
 ---
 
-# Part 3 — Strategy / Runtime State Engine
+# Part 3 - Strategy / Runtime State Engine
 
 `contracts/core/interfaces/IStrategyTypes.sol` · `contracts/engine/ConditionalLiquidityEngine.sol`
 
@@ -115,7 +115,7 @@ NORMAL
 It respects hysteresis, sustained-duration conditions, recovery thresholds, and deterministic
 transitions.
 
-**Hysteresis uses two different thresholds, not one** — and that is the whole point. In the
+**Hysteresis uses two different thresholds, not one** - and that is the whole point. In the
 canonical volatility-shield strategy, entering DEFENSIVE needs volatility ≥ 50%, but leaving it
 needs volatility < 30%. Between 30% and 50% the strategy holds its current mode, so a market
 oscillating around a single threshold cannot make it flap.
@@ -136,14 +136,14 @@ Keeping the decision pure is what guarantees SwapVM's `quote()` (static context)
 and returns exactly what `poke()` would commit for the same block.
 
 `poke()` is permissionless. Advancing the state machine is a pure function of oracle data and stored
-state, so a caller cannot steer the outcome by calling at will — they can only pay gas to bring a
+state, so a caller cannot steer the outcome by calling at will - they can only pay gas to bring a
 strategy up to date.
 
 Tested by `test/unit/ConditionalLiquidityEngine.t.sol`, `test/integration/MarketShock.t.sol`.
 
 ---
 
-# Part 4 — Strategy IR + Rule Engine + Aqua / SwapVM
+# Part 4 - Strategy IR + Rule Engine + Aqua / SwapVM
 
 The programmable conditional-liquidity execution layer.
 
@@ -162,7 +162,7 @@ MarketState + RuntimeState + Strategy
                   +----> NextState
 ```
 
-The result is deterministic. Rules are evaluated in order, so ordering encodes priority — a fresh
+The result is deterministic. Rules are evaluated in order, so ordering encodes priority - a fresh
 shock during RECOVERY is placed before the recovery timer specifically so relapse beats the clock.
 
 ## 4.2 Fixed-point convention
@@ -193,7 +193,7 @@ The property that matters:
 
 Lexer, parser, semantic analysis, and an optimizer lower a `.clf` file into `RuleProgram` bytecode.
 Enum values in `src/types/index.ts` are part of the on-chain ABI and are emitted directly into
-bytecode that `RuleProgram.sol` decodes — they must never be reordered.
+bytecode that `RuleProgram.sol` decodes - they must never be reordered.
 
 ## 4.4 Deterministic bytecode
 
@@ -210,7 +210,7 @@ Verified by `test/compiler/golden.test.ts` (golden bytecode fixtures) and
 
 The execution layer runs as a SwapVM `Extruction` instruction and performs real ERC20 settlement
 through Aqua. An oversized trade reverts with `ExceedsEffectiveLiquidity` rather than being silently
-truncated — a truncated fill is a worse outcome than a rejected one, because the trader cannot tell
+truncated - a truncated fill is a worse outcome than a rejected one, because the trader cannot tell
 it happened.
 
 Tested by `test/unit/ConditionalLiquidityExtruction.t.sol`;
@@ -231,7 +231,7 @@ transition, and inventory. 100+ scenarios.
 
 ---
 
-# Part 5 — Uniswap v4 Conditional Liquidity Hook
+# Part 5 - Uniswap v4 Conditional Liquidity Hook
 
 The **same Strategy IR and state engine**, executed through Uniswap v4.
 
@@ -268,7 +268,7 @@ than aspirational.
 ## 5.2 Pool → strategy association
 
 `PoolId → bytes32 strategyId`, set by `registerPoolStrategy`, callable only by the strategy's
-registered maker — the same authority model as `registerStrategy` and `Aqua.ship`. The binding is
+registered maker - the same authority model as `registerStrategy` and `Aqua.ship`. The binding is
 immutable once set; the MVP offers no update path deliberately.
 
 Because a v4 pool has no equivalent of Aqua's per-strategy virtual balance (pool liquidity is a
@@ -278,7 +278,7 @@ implies.
 
 ## 5.3 Enforcement is real
 
-The hook changes execution behaviour — it does not merely emit an event, log volatility, or update
+The hook changes execution behaviour - it does not merely emit an event, log volatility, or update
 unused storage.
 
 | State | Effective liquidity |
@@ -319,7 +319,7 @@ Hook address mining (`HookMiner`) is required because v4 encodes permissions in 
 
 ---
 
-# Part 6 — Solver + Venue Abstraction
+# Part 6 - Solver + Venue Abstraction
 
 `contracts/solver/` · `contracts/venues/`
 
@@ -347,7 +347,7 @@ struct VenueSnapshot {
 **A venue holds no strategy logic of its own.** Every field is read straight from the existing
 engine/registry (Aqua path) or the hook (Uniswap path).
 
-**Snapshots must come from a live re-evaluation path** — `ENGINE.preview` or `HOOK.quoteSnapshot` —
+**Snapshots must come from a live re-evaluation path** - `ENGINE.preview` or `HOOK.quoteSnapshot` -
 never from last-committed registry state. `getCurrentMode`/`getEffectiveSpread` read committed state
 and can be stale until the next swap or poke, so they are deliberately unused here.
 
@@ -356,7 +356,7 @@ and can be stale until the next swap or poke, so they are deliberately unused he
 `contracts/venues/AquaVenue.sol` · `contracts/venues/UniswapV4Venue.sol`
 
 Both settle for real through the same entrypoints the existing fixtures use
-(`AquaSwapVMRouter.swap`, `PoolSwapTest.swap`), with the venue itself as taker — so the solver
+(`AquaSwapVMRouter.swap`, `PoolSwapTest.swap`), with the venue itself as taker - so the solver
 pushes tokens to the venue before calling `execute`.
 
 `AquaVenue.referencePrice` comes from Aqua's **live reserve ratio**, not the oracle's
@@ -369,7 +369,7 @@ solver's quote consistent with what `execute` will settle.
 `contracts/solver/Solver.sol`
 
 Venues are sorted by net-of-spread price, best first, then filled greedily up to each venue's live
-`effectiveLiquidity` until the request is satisfied or venues run out. Greedy is *optimal* here —
+`effectiveLiquidity` until the request is satisfied or venues run out. Greedy is *optimal* here -
 these are flat-priced supply tranches, so taking as much as possible from the cheapest source first
 is correct, and it needs no AI or search.
 
@@ -377,7 +377,7 @@ If the request exceeds total executable depth, the solver reverts `NoRoute` carr
 rather than inventing liquidity or partially filling.
 
 Total executable depth is summed in **its own pass** over all snapshots. Accumulating it inside the
-fill loop double-counts any venue the loop skips for zero depth — a real bug, caught by fuzzing in
+fill loop double-counts any venue the loop skips for zero depth - a real bug, caught by fuzzing in
 Part 7, once insolvent makers made zero-depth venues common.
 
 | Concern | Test |
@@ -391,9 +391,9 @@ Part 7, once insolvent makers made zero-depth venues common.
 
 ---
 
-# Part 7 — Conditional Liquidity Marketplace
+# Part 7 - Conditional Liquidity Marketplace
 
-Discovery through The Graph, risk-aware ranking, and atomic settlement across both backends — under
+Discovery through The Graph, risk-aware ranking, and atomic settlement across both backends - under
 one governing rule: **no phantom liquidity**.
 
 ```text
@@ -441,13 +441,13 @@ Never collapsed.
 
 | Layer | Component | Authoritative for | Never used for |
 |---|---|---|---|
-| 1 — Graph | `subgraph/`, `src/discovery/` | which venues exist, history, ranking hints | settlement |
-| 2 — Solver | `src/solver/RiskAwareRanker.ts` | candidate ranking, split allocation | settlement |
-| 3 — Chain | `contracts/solver/Solver.sol`, venue adapters | executable liquidity, slippage, settlement | — |
+| 1 - Graph | `subgraph/`, `src/discovery/` | which venues exist, history, ranking hints | settlement |
+| 2 - Solver | `src/solver/RiskAwareRanker.ts` | candidate ranking, split allocation | settlement |
+| 3 - Chain | `contracts/solver/Solver.sol`, venue adapters | executable liquidity, slippage, settlement | - |
 
 A malicious index, a stale snapshot, or an outright buggy offchain ranker can cost a trader a
 *worse* route. None can cost them a *failed* one, because layer 3 re-derives everything. The
-on-chain `Solver` cannot even see an offchain score — it has no parameter for one.
+on-chain `Solver` cannot even see an offchain score - it has no parameter for one.
 
 ## 7.2 Real executable liquidity
 
@@ -468,7 +468,7 @@ struct ExecutableLiquidity {
     uint256 walletLiquidity;       // what the settling party actually holds
     uint256 allowance;             // what they actually approved
     uint256 deliverableLiquidity;  // min of the three above
-    uint256 conditionalLiquidity;  // after the multiplier — the ONLY routable figure
+    uint256 conditionalLiquidity;  // after the multiplier - the ONLY routable figure
     uint16  coverageBps;           // deliverable / virtual, clamped
 }
 ```
@@ -486,10 +486,10 @@ Two ordering decisions carry the safety property:
 |---|---|---|
 | `virtualLiquidity` | maker's Aqua balance (an allowance) | hook's conditionally-adjusted ceiling |
 | `walletLiquidity` | maker's wallet balance | PoolManager's real reserves |
-| `allowance` | maker → **Aqua** approval (not the router) | `type(uint256).max` — never binding |
+| `allowance` | maker → **Aqua** approval (not the router) | `type(uint256).max` - never binding |
 
 A v4 pool is structurally solvent: its tokens are already in custody, with no third party to run dry
-or revoke. A healthy pool naturally shows 100% coverage while a drained maker does not — a real
+or revoke. A healthy pool naturally shows 100% coverage while a drained maker does not - a real
 property of the two backends, not a modelling artefact. Computing coverage identically for both is
 what lets the marketplace rank a pool against a maker on one honest scale.
 
@@ -502,8 +502,8 @@ is already solvency-bounded. A bound the router could ignore would be merely adv
 
 `Solver.settle` then does three independent things, in order:
 
-1. `route(request)` — re-reads every venue live. A caller-supplied plan is never trusted.
-2. `_revalidate(plan)` — re-reads `executableLiquidity` per leg **before any token moves**, and
+1. `route(request)` - re-reads every venue live. A caller-supplied plan is never trusted.
+2. `_revalidate(plan)` - re-reads `executableLiquidity` per leg **before any token moves**, and
    reverts `ExecutableLiquidityShortfall(venue, allocated, executable)` if
    `allocated > executable`. It also rejects duplicate legs (`DuplicateRouteLeg`), which would let
    two individually-valid allocations sum past one venue's real depth.
@@ -533,7 +533,7 @@ leaving the trader with a partial position in a market that just proved itself u
 | < 3000 bps | UNRELIABLE |
 
 Bands live in `src/analytics/coverage.ts` and `app/src/hooks/useExecutableLiquidity.ts`, and are
-deliberately **not** an on-chain enum — an enum there would invite treating a display bucket as a
+deliberately **not** an on-chain enum - an enum there would invite treating a display bucket as a
 safety control.
 
 Coverage tracks *solvency*, not regime. A DEFENSIVE maker who is good for everything they still
@@ -544,7 +544,7 @@ Tested by `test/unit/LiquidityCoverage.t.sol`.
 
 ## 7.5 The Graph subgraph
 
-`subgraph/` — see [`subgraph/README.md`](../subgraph/README.md).
+`subgraph/` - see [`subgraph/README.md`](../subgraph/README.md).
 
 Entities: `Strategy`, `Maker`, `Venue`, `LiquiditySnapshot`, `StateTransition`, `Swap`,
 `RouteExecution`, `RouteLeg`. Indexes registration/activation, state transitions, fills, and solver
@@ -556,7 +556,7 @@ Two honesty constraints are baked into the mappings:
   frame, so a failed fill leaves nothing to index (§5.3). Rather than report an inferred number that
   *looks* measured, the counter stays zero and the README says why.
 - **A maker with no attempts reads `10000`, not `0`.** A fresh maker has not earned distrust, and
-  burying them under a score they never earned would entrench incumbents — while costing traders
+  burying them under a score they never earned would entrench incumbents - while costing traders
   nothing, because solvency is enforced independently at layer 3.
 
 `LegExecuted` was added to `Solver` for this: `PlanExecuted` reports only a total, which cannot be
@@ -567,7 +567,7 @@ deployed contracts.
 
 ## 7.6 Liquidity discovery
 
-`src/discovery/` — `GraphLiquidityDiscovery.ts`, `queries.ts`, `types.ts`.
+`src/discovery/` - `GraphLiquidityDiscovery.ts`, `queries.ts`, `types.ts`.
 
 The type system enforces the layer boundary: `discover()` returns `LiquidityCandidate`s whose depth
 fields are all named `reported*`, and only a live chain read produces the `conditionalLiquidity` a
@@ -579,18 +579,18 @@ history defaults to fully reliable. An index outage must never block a trade the
 settle, and must never silently de-rank every maker in the market.
 
 Stale rows are dropped before ranking, because an Aqua maker can go insolvent without emitting
-anything — old data is not merely imprecise, it can be wrong in the direction that hurts.
+anything - old data is not merely imprecise, it can be wrong in the direction that hurts.
 
 The pair is queried **unordered**. Strategies are stored sorted (`tokenA < tokenB`) and are
 direction-agnostic; filtering on a directed pair would silently hide every maker willing to trade
 the other way.
 
-Tested by `test/offchain/discovery.test.ts` against mocked Graph responses — the contract tests
+Tested by `test/offchain/discovery.test.ts` against mocked Graph responses - the contract tests
 never depend on a running Graph node, and neither do these.
 
 ## 7.7 Risk-aware ranking
 
-`src/solver/RiskAwareRanker.ts` — the offchain solver (layer 2).
+`src/solver/RiskAwareRanker.ts` - the offchain solver (layer 2).
 
 ```text
 riskAdjustedScore = effectivePrice * (10000 - riskPenaltyBps) / 10000
@@ -600,7 +600,7 @@ riskPenaltyBps = coverageShortfall    * 3000 / 10000
                + modePenalty(NORMAL 0 | RECOVERY 20 | DEFENSIVE 50)
 ```
 
-- **Integer arithmetic only** — not because this runs on-chain (it does not), but so the same inputs
+- **Integer arithmetic only** - not because this runs on-chain (it does not), but so the same inputs
   always produce the same route. A ranker that drifts with floating-point rounding produces routes
   that cannot be reproduced when someone asks why a trade went the way it did, which makes the
   explanations in §7.11 unfalsifiable.
@@ -653,7 +653,7 @@ small samples toward a prior, so a single lucky fill cannot out-rank a long hone
 
 ## 7.10 Liquidity Health API
 
-`src/analytics/health.ts` — `toHealthRecord` / `toMarketHealth`.
+`src/analytics/health.ts` - `toHealthRecord` / `toMarketHealth`.
 
 Every amount serialises as a **decimal string**, never a JSON number: JSON numbers cannot hold
 18-decimal token amounts without silently losing precision, and a health endpoint that rounds
@@ -662,11 +662,11 @@ balances is a health endpoint that lies.
 The aggregate regime is the **worst** among active sources, not an average. One maker going
 defensive is exactly the signal a trader needs; averaging would hide it.
 
-On-chain counterpart: `contracts/solver/LiquidityHealth.sol` (`LiquidityHealthLens`) — a stateless
+On-chain counterpart: `contracts/solver/LiquidityHealth.sol` (`LiquidityHealthLens`) - a stateless
 lens with no storage, no owner, no privileged caller. Nothing routes through it, so it cannot become
 a second source of truth; deleting it would change no settlement behaviour. It exists so a frontend
 reads `2 × venues + 1` values from the **same block**, which separate RPC round trips cannot
-guarantee. A venue that reverts is returned zeroed rather than failing the whole batch — a
+guarantee. A venue that reverts is returned zeroed rather than failing the whole batch - a
 marketplace that goes blank because one maker misbehaved is worse than one showing that maker
 offline.
 
@@ -674,15 +674,15 @@ offline.
 
 `app/src/components/Marketplace.tsx`
 
-Every figure is read live from the venue adapters — the same functions the Solver itself calls. That
+Every figure is read live from the venue adapters - the same functions the Solver itself calls. That
 is what makes the "NO PHANTOM LIQUIDITY" badge a claim rather than a slogan: the page cannot show a
 depth the solver would refuse to route against.
 
 - Advertised-but-undeliverable depth renders **struck through** beside the real figure, so the gap
   is visible rather than merely absent.
-- A source the solver cannot use is **dimmed, not hidden** — a trader should see that it exists and
+- A source the solver cannot use is **dimmed, not hidden** - a trader should see that it exists and
   is unusable rather than wonder where it went.
-- Reliability is the one number not read from chain, so it renders **"—"** when the index is
+- Reliability is the one number not read from chain, so it renders **"-"** when the index is
   unconfigured or unreachable. A fabricated percentage beside chain-read numbers would be the only
   figure on the screen a trader could not verify.
 
@@ -692,7 +692,7 @@ numbers above do not support.
 ## 7.12 Inventory-aware pricing
 
 **Deferred, not implemented.** It was explicitly gated on "only if the core system is already
-stable", and was judged less valuable than verified depth on the rest of Part 7 — it would touch
+stable", and was judged less valuable than verified depth on the rest of Part 7 - it would touch
 pricing, and a second pricing engine was disallowed. When added, it belongs as an additive strategy
 rule, not a new engine.
 
@@ -700,14 +700,14 @@ rule, not a new engine.
 
 # Where to pick up next
 
-1. **Inventory-aware pricing** (§7.12) — as an additive strategy rule or strategy configuration.
+1. **Inventory-aware pricing** (§7.12) - as an additive strategy rule or strategy configuration.
    Do not build a second pricing engine.
 2. **Subgraph deployment addresses.** `subgraph/subgraph.yaml` ships zero addresses and
    `startBlock: 0` deliberately, so an unconfigured deploy indexes nothing rather than the wrong
    chain. Fill these in before deploying.
 3. **Sepolia redeploy.** The addresses baked into `app/src/config/contracts.ts` predate the Part 7
    contracts. The demo currently runs against local anvil; redeploy before using the live addresses.
-4. **Live-sourced v4 base liquidity** — see `uniswap-v4.md` §12; only `HookStrategyAdapter`'s
+4. **Live-sourced v4 base liquidity** - see `uniswap-v4.md` §12; only `HookStrategyAdapter`'s
    cap-source would change.
 
 ---
@@ -715,8 +715,8 @@ rule, not a new engine.
 # Testing
 
 ```bash
-npm test                # forge test — Solidity unit/integration/fuzz/differential
-npm run test:compiler   # vitest — compiler, discovery, ranking
+npm test                # forge test - Solidity unit/integration/fuzz/differential
+npm run test:compiler   # vitest - compiler, discovery, ranking
 npm run typecheck       # tsc --noEmit
 npm run test:fork       # mainnet fork tests (needs RPC_URL)
 ```

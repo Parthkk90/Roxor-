@@ -14,7 +14,7 @@ import { RouteVisualizer } from "../route/RouteVisualizer";
 /**
  * The discovery column: where the trade gets assembled.
  *
- * Deliberately sequential — sources, then the solver's split, then why. The order is the product's
+ * Deliberately sequential - sources, then the solver's split, then why. The order is the product's
  * argument: we found these, we verified what each can really pay, and here is how your order was
  * composed from them. A quote that appeared as one number would assert the same conclusion while
  * hiding every step that makes it trustworthy.

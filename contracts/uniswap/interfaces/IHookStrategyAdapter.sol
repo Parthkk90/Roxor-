@@ -64,6 +64,6 @@ interface IHookStrategyAdapter is IStrategyTypes {
     /// @notice Fully-live snapshot: mode, spread and both-side effective liquidity, all freshly
     ///         re-evaluated in a single call. Unlike {getCurrentMode}/{getEffectiveSpread} (which
     ///         read the last-committed `RuntimeState` and can be stale until the next swap/poke),
-    ///         this never returns stale data — it is the read-only path a venue/solver should use.
+    ///         this never returns stale data - it is the read-only path a venue/solver should use.
     function quoteSnapshot(PoolId poolId) external view returns (StrategyMode mode, uint16 spreadBps, uint256 amount0, uint256 amount1);
 }

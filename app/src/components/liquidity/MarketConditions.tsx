@@ -19,7 +19,7 @@ const MODE_COLOR: Record<StrategyMode, string> = {
 /**
  * Market posture, and an announcement when the route moves because of it.
  *
- * The regime shown is the *worst* among readable sources, never an average — one maker going
+ * The regime shown is the *worst* among readable sources, never an average - one maker going
  * defensive is precisely the signal a trader needs, and averaging it against a healthy pool would
  * hide it.
  *
@@ -57,13 +57,13 @@ export function MarketConditions({
         <div className="metric">
           <span className="k">Healthy sources</span>
           <span className="v mcond-big">
-            {summary.readableSources === 0 ? "—" : `${summary.healthySources}/${summary.readableSources}`}
+            {summary.readableSources === 0 ? "-" : `${summary.healthySources}/${summary.readableSources}`}
           </span>
         </div>
         <div className="metric">
           <span className="k">Best fee</span>
           <span className="v mcond-big">
-            {summary.bestSpreadBps === undefined ? "—" : `${(summary.bestSpreadBps / 100).toFixed(2)}%`}
+            {summary.bestSpreadBps === undefined ? "-" : `${(summary.bestSpreadBps / 100).toFixed(2)}%`}
           </span>
           {summary.bestPricedSource && <span className="k">{summary.bestPricedSource.name}</span>}
         </div>

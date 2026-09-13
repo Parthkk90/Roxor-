@@ -9,7 +9,7 @@ import {
  * Error vocabulary.
  *
  * Nothing here ever reaches the user as a Solidity identifier or an RPC string. `NoRoute` is not an
- * error at all — it is modelled as a quote *result* in `useRouteQuote` — and everything that really
+ * error at all - it is modelled as a quote *result* in `useRouteQuote` - and everything that really
  * is a failure gets copy that says what happened and what to do, in the trader's terms.
  *
  * Quote failures and settle failures are described separately. The previous build used one
@@ -36,7 +36,7 @@ export function isUserRejection(error: unknown): boolean {
 }
 
 /**
- * A receipt that never arrived is NOT a failure — the transaction may still land. Reporting it as
+ * A receipt that never arrived is NOT a failure - the transaction may still land. Reporting it as
  * one would tell a user their swap failed while it was in fact pending.
  */
 export function isReceiptTimeout(error: unknown): boolean {
@@ -53,7 +53,7 @@ export interface SettleFailure {
   detail: string;
   /** The phantom-liquidity guard fired. The UI gives this its own treatment. */
   isPhantomLiquidity: boolean;
-  /** Retrying unchanged is plausible — drives whether we offer a retry affordance. */
+  /** Retrying unchanged is plausible - drives whether we offer a retry affordance. */
   retryable: boolean;
 }
 
@@ -62,7 +62,7 @@ export interface SettleFailure {
  *
  * `ExecutableLiquidityShortfall` is the most important outcome in the application: on-chain
  * revalidation refusing to route against liquidity that cannot settle. It is named and explained
- * rather than collapsed into a generic failure — it is the product working, not breaking.
+ * rather than collapsed into a generic failure - it is the product working, not breaking.
  */
 export function describeSettleFailure(error: unknown): SettleFailure {
   if (isUserRejection(error)) {
@@ -78,7 +78,7 @@ export function describeSettleFailure(error: unknown): SettleFailure {
     return {
       title: "Confirmation taking longer than expected",
       detail:
-        "Your transaction was submitted but hasn't confirmed yet. It may still succeed — the hash above tracks it.",
+        "Your transaction was submitted but hasn't confirmed yet. It may still succeed - the hash above tracks it.",
       isPhantomLiquidity: false,
       retryable: false,
     };
@@ -137,7 +137,7 @@ export function describeSettleFailure(error: unknown): SettleFailure {
   }
 }
 
-/** Quote-phase transport failures. Reverts never reach here — they are modelled as results. */
+/** Quote-phase transport failures. Reverts never reach here - they are modelled as results. */
 export function describeQuoteFailure(error: unknown): { title: string; detail: string } {
   if (isUserRejection(error)) {
     return { title: "Request cancelled", detail: "The request was dismissed." };

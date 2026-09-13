@@ -22,7 +22,7 @@ export function TokenSigil({ symbol }: { symbol: string }) {
 /**
  * Token picker, scoped to the current market's own two tokens.
  *
- * A market's pair is fixed — each market has its own `Solver` (see `Solver.sol`), so `tokenIn`
+ * A market's pair is fixed - each market has its own `Solver` (see `Solver.sol`), so `tokenIn`
  * cannot become some other market's token without also changing venues, oracles and strategy ids.
  * Picking the counterpart therefore always means "reverse this market's direction", never "route
  * an unrelated pair". Uses a native `<dialog>`: focus trapping, Escape to dismiss, and the backdrop
@@ -90,7 +90,7 @@ export function TokenSelect({
                     <strong>{token.symbol}</strong>
                     <span>{token.address}</span>
                   </span>
-                  {/* This market's other token — picking it swaps direction rather than erroring. */}
+                  {/* This market's other token - picking it swaps direction rather than erroring. */}
                   {!isSelected && <span className="badge">Swaps sides</span>}
                   {isSelected && <span className="badge badge-info">Selected</span>}
                 </button>

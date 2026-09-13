@@ -2,7 +2,7 @@
  * Did the quote move enough since the user looked at it to be worth re-reading?
  *
  * `Solver.settle` re-derives the route on-chain, so the displayed figure is advisory by
- * construction — it is never locked and the UI must not pretend otherwise. What the UI *can* do is
+ * construction - it is never locked and the UI must not pretend otherwise. What the UI *can* do is
  * refuse to let a number go stale silently underneath a click.
  *
  * Every quote drifts a little between blocks. Prompting on any change at all would make the button
@@ -29,7 +29,7 @@ export interface QuoteSnapshot {
 
 export type DriftVerdict =
   | { kind: "none" }
-  /** Output improved. Never worth interrupting someone for good news — just show the new figure. */
+  /** Output improved. Never worth interrupting someone for good news - just show the new figure. */
   | { kind: "improved"; from: bigint; to: bigint }
   /** Output fell materially. The UI must surface this before the wallet opens. */
   | { kind: "worse"; from: bigint; to: bigint; dropBps: number };

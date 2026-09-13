@@ -8,7 +8,7 @@ import { TokenSigil } from "../swap/TokenSelect";
 /**
  * Market selection.
  *
- * One button per deployed market — never a combination of tokens the frontend invented. Each
+ * One button per deployed market - never a combination of tokens the frontend invented. Each
  * market corresponds to its own real `Solver` + venue pair (see `script/DeploySolver.s.sol`); a
  * market that has not actually been deployed simply is not in `config/markets.ts`, so it cannot
  * appear here. Symbols come from `useMarketList` (chain metadata), never a hardcoded map.

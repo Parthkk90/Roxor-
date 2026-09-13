@@ -17,7 +17,7 @@ import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 ///      `npm run compile examples/volatility-shield.clf --emit test/compiler/golden`) and asserts
 ///      the Solidity fixture encodes to the exact same bytes.
 ///
-///      If this test ever fails, do not "fix" it by editing the constant below — that would just
+///      If this test ever fails, do not "fix" it by editing the constant below - that would just
 ///      make both encoders agree on something wrong. Regenerate the TypeScript golden file, review
 ///      the diff by hand, and only update this constant if the new bytecode is correct.
 contract CompilerDifferentialTest is Test {

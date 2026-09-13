@@ -12,7 +12,7 @@ import { fmt } from "../../format";
  * what a route may actually allocate against. Showing them stacked on a common scale is what makes
  * the gap impossible to misread as "nearly the same number".
  *
- * Every value is read from `executableLiquidity` — nothing here is modelled or estimated.
+ * Every value is read from `executableLiquidity` - nothing here is modelled or estimated.
  */
 export const DepthChart = memo(function DepthChart({
   source,
@@ -50,7 +50,7 @@ export const DepthChart = memo(function DepthChart({
       k: "Executable",
       v: layers.conditional,
       cls: "depth-executable",
-      note: "After the strategy's current limit — the only depth a route may use",
+      note: "After the strategy's current limit - the only depth a route may use",
     },
   ];
 

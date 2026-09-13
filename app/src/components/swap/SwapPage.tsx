@@ -13,7 +13,7 @@ import { SwapCard } from "./SwapCard";
  * The trade screen: the order on the left, the liquidity it is being assembled from on the right.
  *
  * Two columns on desktop because the two halves answer different questions and a trader reads them
- * together — "what am I trading" and "where can it actually execute". On mobile they stack in that
+ * together - "what am I trading" and "where can it actually execute". On mobile they stack in that
  * same order, so the narrative survives the loss of the second column.
  *
  * `useRouteQuote` and `useMarket` are both called here and again inside `SwapCard`. That is not

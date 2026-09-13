@@ -1,11 +1,11 @@
 /**
- * Historical reliability — Feature 8.
+ * Historical reliability - Feature 8.
  *
  * `reliabilityBps = successfulFills * 10000 / attemptedFills`.
  *
  * The single most important property of this module is what it is NOT allowed to do. Reliability
  * is a statement about the past, and the past cannot pay for a trade. A maker with a 99.1% record
- * and an empty wallet has zero executable liquidity, full stop — so every function here returns a
+ * and an empty wallet has zero executable liquidity, full stop - so every function here returns a
  * *ranking* input, and `allocatableDepth` exists to make that precedence explicit and testable
  * rather than merely documented.
  */
@@ -31,7 +31,7 @@ export interface FillCounters {
  *
  * A maker with no attempts reads as fully reliable rather than as 0%. A fresh maker has not earned
  * distrust, and burying them under a score they never earned would hand incumbents a permanent
- * advantage — while costing traders nothing, because solvency is enforced independently.
+ * advantage - while costing traders nothing, because solvency is enforced independently.
  */
 export function reliabilityBps(counters: FillCounters): number {
   const attempted = counters.attemptedFills;

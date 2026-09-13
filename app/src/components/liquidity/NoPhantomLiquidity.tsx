@@ -10,7 +10,7 @@ import { Drawer } from "../ui/Drawer";
  * The product's core promise, as a thing you can click and audit.
  *
  * The explainer walks the same four figures the chain walks, in the same order, using the live
- * values for a real source — so it is a demonstration rather than a description. Each step can only
+ * values for a real source - so it is a demonstration rather than a description. Each step can only
  * make the number smaller, and seeing that happen to actual figures is what turns
  * "no phantom liquidity" from a slogan into something the visitor has checked for themselves.
  */
@@ -23,7 +23,7 @@ export function NoPhantomLiquidity({
 }) {
   const [open, setOpen] = useState(false);
 
-  // Prefer a source that actually shows a shortfall — the mechanism is invisible on a source whose
+  // Prefer a source that actually shows a shortfall - the mechanism is invisible on a source whose
   // numbers happen to be identical at every layer.
   const readable = sources.filter((s) => s.executable && !s.unavailable);
   const example =
@@ -45,7 +45,7 @@ export function NoPhantomLiquidity({
       >
         <p className="dim" style={{ fontSize: "var(--fs-sm)", lineHeight: 1.65 }}>
           A source can advertise more than it can pay. We check what it can really settle, and route only
-          that. Each step below can only reduce the number — never raise it.
+          that. Each step below can only reduce the number - never raise it.
         </p>
 
         {example?.executable ? (

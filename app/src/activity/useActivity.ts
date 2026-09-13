@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 /**
  * Recent settlements, from the discovery index.
  *
- * LAYER 1 — history only. Nothing here is admissible as a settlement input, and nothing routes on
+ * LAYER 1 - history only. Nothing here is admissible as a settlement input, and nothing routes on
  * it. It exists so a trader can see how their flow was actually split after the fact, which is the
  * one place the route split can be reported as fact rather than as a forecast.
  *
@@ -110,7 +110,7 @@ export function useActivity(first = 25) {
     queryFn: () => fetchActivity(first),
     enabled: Boolean(SUBGRAPH_URL),
     // History moves far more slowly than live depth, and this is a billable gateway. Background
-    // freshness only — the user's own trade arrives through explicit invalidation on settlement.
+    // freshness only - the user's own trade arrives through explicit invalidation on settlement.
     refetchInterval: 60_000,
     staleTime: 30_000,
     retry: 1,

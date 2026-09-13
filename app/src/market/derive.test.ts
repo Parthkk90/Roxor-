@@ -33,7 +33,7 @@ function source(overrides: Partial<LiquiditySource> = {}): LiquiditySource {
   };
 }
 
-describe("coverage bands — must agree with ExecutableLiquidityLib's thresholds", () => {
+describe("coverage bands - must agree with ExecutableLiquidityLib's thresholds", () => {
   it("classifies boundary values", () => {
     expect(coverageBand(10_000)).toBe("HEALTHY");
     expect(coverageBand(9000)).toBe("HEALTHY");
@@ -52,7 +52,7 @@ describe("coverage bands — must agree with ExecutableLiquidityLib's thresholds
   });
 });
 
-describe("summarize — never sums advertised depth into the headline figure", () => {
+describe("summarize - never sums advertised depth into the headline figure", () => {
   it("sums conditionalLiquidity, not virtualLiquidity", () => {
     const s = summarize([
       source({ executable: { virtualLiquidity: 1000n, walletLiquidity: 100n, allowance: 100n, deliverableLiquidity: 100n, conditionalLiquidity: 60n, coverageBps: 6000 } }),
@@ -86,7 +86,7 @@ describe("summarize — never sums advertised depth into the headline figure", (
   });
 });
 
-describe("allocationsFor — shares always sum to ~100% of what the plan actually routed", () => {
+describe("allocationsFor - shares always sum to ~100% of what the plan actually routed", () => {
   it("splits share proportionally across legs", () => {
     const sources = [source(), source({ key: "uniswap-v4", address: "0x0000000000000000000000000000000000000002" })];
     const plan = {
@@ -112,7 +112,7 @@ describe("allocationsFor — shares always sum to ~100% of what the plan actuall
   });
 });
 
-describe("depthLayers / currentLiquidityBps — the no-phantom-liquidity walk", () => {
+describe("depthLayers / currentLiquidityBps - the no-phantom-liquidity walk", () => {
   it("each layer is <= the one before it", () => {
     const layers = depthLayers(
       source({ executable: { virtualLiquidity: 100n, walletLiquidity: 80n, allowance: 90n, deliverableLiquidity: 80n, conditionalLiquidity: 20n, coverageBps: 2500 } })
@@ -127,7 +127,7 @@ describe("depthLayers / currentLiquidityBps — the no-phantom-liquidity walk", 
   });
 });
 
-describe("tokenMetaOf — never silently assigns a hardcoded symbol", () => {
+describe("tokenMetaOf - never silently assigns a hardcoded symbol", () => {
   it("falls back to Unknown token when metadata was not read", () => {
     expect(tokenMetaOf({}, "0x0000000000000000000000000000000000000009")).toEqual(UNKNOWN_TOKEN);
   });

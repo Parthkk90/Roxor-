@@ -6,7 +6,7 @@ import { fmt } from "../../format";
 const MODE_CLASS = { NORMAL: "badge-ok", DEFENSIVE: "badge-bad", RECOVERY: "badge-warn" } as const;
 
 /**
- * "Executable  Coverage  Risk" per market — the whole reason this is a marketplace and not a swap
+ * "Executable  Coverage  Risk" per market - the whole reason this is a marketplace and not a swap
  * page with a dropdown. One row per configured market, one `useMarket` read each, all from the
  * same `summarize()` every other panel uses.
  */
@@ -34,11 +34,11 @@ function MarketRow({
         </button>
       </td>
       <td className="num">
-        {liquidity.isLoading ? "—" : `${fmt(summary.totalExecutable)} ${symbolIn}`}
+        {liquidity.isLoading ? "-" : `${fmt(summary.totalExecutable)} ${symbolIn}`}
       </td>
       <td className="num">
         {liquidity.isLoading || summary.marketCoverageBps === undefined
-          ? "—"
+          ? "-"
           : `${(summary.marketCoverageBps / 100).toFixed(0)}%`}
       </td>
       <td>

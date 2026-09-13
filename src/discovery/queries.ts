@@ -8,8 +8,8 @@
 /**
  * Active strategies for one unordered token pair.
  *
- * The pair is stored sorted on-chain (`tokenA < tokenB`) and is direction-agnostic — the taker
- * picks the direction at execution time — so this matches on the sorted pair and lets the caller
+ * The pair is stored sorted on-chain (`tokenA < tokenB`) and is direction-agnostic - the taker
+ * picks the direction at execution time - so this matches on the sorted pair and lets the caller
  * decide which side they are selling. Filtering on a *directed* pair here would silently hide
  * every maker willing to trade the other way.
  */
@@ -73,7 +73,7 @@ export const STRATEGY_TRANSITIONS = /* GraphQL */ `
   }
 `;
 
-/** Coverage history for one strategy — the raw material for reliability trend charts. */
+/** Coverage history for one strategy - the raw material for reliability trend charts. */
 export const STRATEGY_SNAPSHOTS = /* GraphQL */ `
   query StrategySnapshots($strategyId: Bytes!, $since: BigInt!, $first: Int!) {
     liquiditySnapshots(

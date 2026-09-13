@@ -13,7 +13,7 @@ const SEG = ["var(--accent)", "var(--info)", "var(--ok)"];
  * the split changes, the bars animate to their new widths, so a shift from Aqua to Uniswap is
  * something you watch happen rather than something you notice by re-reading two numbers.
  *
- * Memoised, since it redraws only when the plan actually changes — never while the amount field is
+ * Memoised, since it redraws only when the plan actually changes - never while the amount field is
  * being typed into.
  */
 export const RouteVisualizer = memo(function RouteVisualizer({
@@ -90,7 +90,7 @@ export const RouteVisualizer = memo(function RouteVisualizer({
 /**
  * Compact allocation bar for the swap card's summary line.
  *
- * Same data, same colours, a tenth of the height — so the summary and the full diagram can never
+ * Same data, same colours, a tenth of the height - so the summary and the full diagram can never
  * disagree about who got what.
  */
 export const RouteAllocationBar = memo(function RouteAllocationBar({

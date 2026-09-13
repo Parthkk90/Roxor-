@@ -5,7 +5,7 @@ import { chain } from "../config/contracts";
  *
  * The previous build hardcoded `sepolia.etherscan.io` while the app was configured for anvil, so
  * every "view transaction" link pointed at a Sepolia transaction that does not exist. Returning
- * `null` lets the UI omit the link entirely rather than offer a broken one — on a local chain there
+ * `null` lets the UI omit the link entirely rather than offer a broken one - on a local chain there
  * is genuinely nowhere to send the user.
  */
 export function txUrl(hash: `0x${string}` | undefined): string | null {

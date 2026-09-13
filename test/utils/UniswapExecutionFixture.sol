@@ -42,7 +42,7 @@ import { StrategyFixtures } from "./StrategyFixtures.sol";
 ///      mined with the real HookMiner from v4-periphery.
 ///
 /// @dev The strategy is registered via a SwapVM `Order`, exactly like `ExecutionFixture` does for
-///      the Aqua path — this is deliberate, not a leftover: `ConditionalLiquidityRegistry` derives
+///      the Aqua path - this is deliberate, not a leftover: `ConditionalLiquidityRegistry` derives
 ///      a strategy's identity, token pair and rule program from a SwapVM order today, and reusing
 ///      that same mechanism (rather than inventing a second identity scheme) is what lets the exact
 ///      same `strategyId` be bound to a Uniswap pool via `registerPoolStrategy`. The SwapVM order
@@ -183,7 +183,7 @@ abstract contract UniswapExecutionFixture is Test {
     }
 
     /// @notice PoolManager wraps every hook revert in `CustomRevert.WrappedError` (ERC-7751 style)
-    ///         before it reaches the caller — this constructs the exact wrapped shape so tests can
+    ///         before it reaches the caller - this constructs the exact wrapped shape so tests can
     ///         assert on OUR revert reason precisely, rather than loosely accepting any revert.
     function _expectExceedsEffectiveLiquidity(uint256 requestedAmount, uint256 effectiveLiquidity) internal {
         vm.expectRevert(

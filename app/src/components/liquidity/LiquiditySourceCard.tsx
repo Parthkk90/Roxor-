@@ -27,7 +27,7 @@ const MODE_COLOR: Record<StrategyMode, string> = {
  * renderings of venue state was how the old build ended up with a swap panel and a marketplace
  * panel quoting different depths for the same block.
  *
- * The two venues are visually distinguished — sigil, wording, and what the detail link is called —
+ * The two venues are visually distinguished - sigil, wording, and what the detail link is called -
  * because they really are different things. Aqua is a maker's wallet lending you its balance; a v4
  * pool already holds its own reserves. Flattening them into identical rows hides a difference the
  * trader's risk actually depends on.
@@ -108,7 +108,7 @@ export const LiquiditySourceCard = memo(function LiquiditySourceCard({
           </span>
         </header>
 
-        {/* Executable is the headline. Advertised is shown beneath it, struck, with an arrow — the
+        {/* Executable is the headline. Advertised is shown beneath it, struck, with an arrow - the
             gap has to read as a reduction, not as two unrelated numbers. */}
         <div className="lsc-depth">
           <span className="label">Executable liquidity</span>
@@ -133,15 +133,15 @@ export const LiquiditySourceCard = memo(function LiquiditySourceCard({
           </span>
           <span className="metric">
             <span className="k">Reliability</span>
-            {/* "—" when the index isn't configured, never 0% — they mean opposite things. */}
+            {/* "-" when the index isn't configured, never 0% - they mean opposite things. */}
             <span className="v">
-              {source.reliabilityBps === undefined ? "—" : `${(source.reliabilityBps / 100).toFixed(1)}%`}
+              {source.reliabilityBps === undefined ? "-" : `${(source.reliabilityBps / 100).toFixed(1)}%`}
             </span>
           </span>
           <span className="metric">
             <span className="k">This trade</span>
             <span className="v" style={allocation.included ? { color: bandColor(band) } : undefined}>
-              {allocation.included ? `${allocation.sharePct.toFixed(0)}%` : "—"}
+              {allocation.included ? `${allocation.sharePct.toFixed(0)}%` : "-"}
             </span>
           </span>
         </div>

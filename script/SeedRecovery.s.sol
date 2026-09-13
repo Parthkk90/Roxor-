@@ -16,11 +16,11 @@ import { ConditionalLiquidityHook } from "../contracts/uniswap/ConditionalLiquid
 ///         DEFENSIVE -> sustained calm -> RECOVERY.
 ///
 /// @dev Split into two scripts run around a real time advance, orchestrated by
-///      `script/seed-markets.sh` — NOT within a single `run()`. `vm.rpc` genuinely mutates the
+///      `script/seed-markets.sh` - NOT within a single `run()`. `vm.rpc` genuinely mutates the
 ///      target node's clock, but it does so at *simulation* time; every broadcast-tagged call in a
 ///      script is deferred and sent as one batch only after the whole simulation finishes. A
 ///      `vm.rpc` time-jump placed between two broadcast regions of the same `run()` therefore lands
-///      on-chain *before all of them*, not between them — the DEFENSIVE-entry poke and the
+///      on-chain *before all of them*, not between them - the DEFENSIVE-entry poke and the
 ///      final poke would then still be only one block apart. Two separate `forge script`
 ///      invocations, each with its own simulation pass, avoid that: the wrapper shell script
 ///      genuinely advances chain time between them.
@@ -28,7 +28,7 @@ import { ConditionalLiquidityHook } from "../contracts/uniswap/ConditionalLiquid
 ///      Against a real testnet, `seed-markets.sh`'s `evm_increaseTime`/`evm_mine` step is a no-op
 ///      (anvil-only RPC methods): the market sits in DEFENSIVE until 10 real minutes elapse, at
 ///      which point anyone calling `ConditionalLiquidityEngine.poke` (permissionless) moves it to
-///      RECOVERY — `SeedRecoveryFinalize` still works there, it just cannot fast-forward the wait.
+///      RECOVERY - `SeedRecoveryFinalize` still works there, it just cannot fast-forward the wait.
 abstract contract SeedRecoveryBase is Script {
     uint256 internal constant DEFENSIVE_SHOCK_BPS = 6500;
     uint256 internal constant CALM_VOLATILITY_BPS = 2000;

@@ -31,8 +31,8 @@ const MODE_MEANING: Record<StrategyMode, string> = {
 /**
  * Everything one source will tell us, behind one deliberate click.
  *
- * The state machine below is the *shape* of the strategy — three states and the transitions between
- * them — with the live one highlighted from `snapshot.mode`. What it deliberately does NOT show is
+ * The state machine below is the *shape* of the strategy - three states and the transitions between
+ * them - with the live one highlighted from `snapshot.mode`. What it deliberately does NOT show is
  * a percentage against each state: those multipliers live in the compiled rule program, which the
  * venue ABI does not expose. Printing "NORMAL 100% / DEFENSIVE 25%" here would be a plausible
  * guess sitting beside chain-read figures, which is the one thing this product must never do.
@@ -140,7 +140,7 @@ export function StrategyDrawer({
               <DetailRow k="Fee" v={`${(snapshot.spreadBps / 100).toFixed(2)}%`} mono />
               <DetailRow
                 k="Reliability"
-                v={source.reliabilityBps === undefined ? "—" : `${(source.reliabilityBps / 100).toFixed(1)}%`}
+                v={source.reliabilityBps === undefined ? "-" : `${(source.reliabilityBps / 100).toFixed(1)}%`}
                 mono
                 hint="Historical fill rate from the index. Shown only when that index is available."
               />
@@ -155,7 +155,7 @@ export function StrategyDrawer({
               <DetailRow k="Spread" v={`${snapshot.spreadBps} bps`} mono />
               <DetailRow
                 k="Liquidity limit"
-                v={liquidityBps === undefined ? "—" : `${liquidityBps} bps`}
+                v={liquidityBps === undefined ? "-" : `${liquidityBps} bps`}
                 mono
                 hint="Derived: conditionalLiquidity ÷ deliverableLiquidity"
               />

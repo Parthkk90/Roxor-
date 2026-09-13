@@ -5,7 +5,7 @@ import { anvil, sepolia } from "viem/chains";
  *
  * Defaults to the published Sepolia deployment so the hosted demo needs no configuration. Set
  * `VITE_CHAIN_ID=31337` to point the same UI at a local `anvil` + `script/DeploySolver.s.sol` +
- * `script/seed-markets.sh` deployment — which is the only way to exercise a build of the contracts
+ * `script/seed-markets.sh` deployment - which is the only way to exercise a build of the contracts
  * newer than what is currently live on Sepolia.
  *
  * Per-market contract addresses live in `./markets`, not here: each market has its own Solver and

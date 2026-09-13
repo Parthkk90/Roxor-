@@ -1,9 +1,9 @@
 /**
- * Risk-aware candidate ranking and route construction — LAYER 2 of the three layers of truth.
+ * Risk-aware candidate ranking and route construction - LAYER 2 of the three layers of truth.
  *
  * This is the *offchain* solver. It is allowed a richer view than the on-chain one: it can weigh
  * coverage, regime and historical reliability alongside price and depth. What it is not allowed to
- * do is matter. Its output is a proposal — the on-chain `Solver` re-derives the route from live
+ * do is matter. Its output is a proposal - the on-chain `Solver` re-derives the route from live
  * state and re-validates solvency before moving a token, so a bug, a stale index or an outright
  * malicious ranking here can cost a trader a worse route, but never a phantom fill.
  *
@@ -19,7 +19,7 @@ import type { StrategyModeName, VerifiedCandidate } from "../discovery/types.js"
 const BPS = 10_000n;
 const WAD = 1_000_000_000_000_000_000n;
 
-/** Weights for the risk penalty. Tuned to be legible, not clever — every term is explainable. */
+/** Weights for the risk penalty. Tuned to be legible, not clever - every term is explainable. */
 export interface RankingWeights {
   /** Penalty applied per 1 bps of coverage shortfall below 100%. */
   coveragePenaltyBps: number;
@@ -137,7 +137,7 @@ export function rankCandidates(
   });
 }
 
-/** Why a candidate has no depth — the most common reason first, since they compound. */
+/** Why a candidate has no depth - the most common reason first, since they compound. */
 function explainZeroDepth(candidate: VerifiedCandidate): string {
   const { executable } = candidate;
   const maker = shortAddress(candidate.candidate.maker);
@@ -170,8 +170,8 @@ function formatAmount(amount: bigint, decimals = 18, precision = 2): string {
  *
  * Greedy is correct here for the same reason it is on-chain: these are flat-priced supply tranches,
  * so taking as much as possible from the best-priced source before moving on is optimal. The
- * difference from the on-chain solver is only in the *ordering* — this one ranks on risk-adjusted
- * price rather than raw price — and that difference is exactly why the result is a proposal.
+ * difference from the on-chain solver is only in the *ordering* - this one ranks on risk-adjusted
+ * price rather than raw price - and that difference is exactly why the result is a proposal.
  */
 export function buildRoute(
   tokenIn: string,
@@ -230,7 +230,7 @@ export function buildRoute(
     explanations.push(
       `NO ROUTE: ${formatAmount(requestedAmount)} ${tokenInSymbol} requested but only ` +
         `${formatAmount(totalExecutable)} ${tokenInSymbol} is actually executable across all sources. ` +
-        `The shortfall is real depth, not advertised depth — routing the difference would be phantom liquidity.`
+        `The shortfall is real depth, not advertised depth - routing the difference would be phantom liquidity.`
     );
   }
 
@@ -266,7 +266,7 @@ function explainSelection(entry: RankedCandidate, amountIn: bigint, tokenInSymbo
 
   const capped = amountIn >= entry.executableDepth;
   const suffix = capped
-    ? ` — filled to its full executable depth of ${formatAmount(entry.executableDepth)} ${tokenInSymbol}.`
+    ? ` - filled to its full executable depth of ${formatAmount(entry.executableDepth)} ${tokenInSymbol}.`
     : ".";
 
   return `${maker} (${candidate.candidate.venue}) supplied ${amount}: ${reasons.join(", ")}${suffix}`;

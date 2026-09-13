@@ -5,12 +5,12 @@ import { defineConfig } from 'vite'
  * Tunnelling the dev server is opt-in via `TUNNEL=1`, never the default.
  *
  * A tunnel gives the dev server a hostname Vite has never heard of, and Vite rejects unknown `Host`
- * headers — that check is DNS-rebinding protection, so relaxing it is a real (if small) loosening
+ * headers - that check is DNS-rebinding protection, so relaxing it is a real (if small) loosening
  * and should not be something an ordinary `npm run dev` silently turns on.
  *
  * Note what a tunnel actually publishes: the dev server inlines every `VITE_*` variable into the
- * bundle it serves. Anything secret in `.env.local` — `VITE_SUBGRAPH_URL` embeds a billable Graph
- * API key — becomes readable by anyone who opens the link. Unset those vars for the tunnelled run
+ * bundle it serves. Anything secret in `.env.local` - `VITE_SUBGRAPH_URL` embeds a billable Graph
+ * API key - becomes readable by anyone who opens the link. Unset those vars for the tunnelled run
  * rather than relying on nobody looking.
  */
 const tunnelling = process.env.TUNNEL === '1'

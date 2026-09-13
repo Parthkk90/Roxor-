@@ -10,11 +10,11 @@ export interface TokenMetadata {
   decimals: number;
 }
 
-/** Never assigned silently — a token this build cannot read metadata for says so, not "DTA". */
+/** Never assigned silently - a token this build cannot read metadata for says so, not "DTA". */
 export const UNKNOWN_TOKEN: TokenMetadata = { symbol: "Unknown token", decimals: 18 };
 
 /**
- * `symbol()`/`decimals()`, read from chain for every token this deployment's markets reference —
+ * `symbol()`/`decimals()`, read from chain for every token this deployment's markets reference -
  * never a hardcoded `address -> symbol` map. Token metadata is immutable once deployed, so this is
  * one multicall, cached forever; there is nothing to invalidate on a new block.
  */

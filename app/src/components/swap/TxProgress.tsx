@@ -7,7 +7,7 @@ import type { SettleStage } from "../../trade/settleState";
  * Approval and settlement, as two clearly separate transactions with four clearly separate waits.
  *
  * "Waiting for your signature" and "waiting for the chain" are different events with different
- * remedies — one needs you to look at your wallet, the other needs patience — and the previous
+ * remedies - one needs you to look at your wallet, the other needs patience - and the previous
  * build collapsed both into a single "Approving…" label by awaiting the receipt inside the same
  * stage. Here each is its own step with its own icon, and both hashes are surfaced the moment they
  * exist rather than only the settlement one.
@@ -49,7 +49,7 @@ function Step({
             <ExternalLink size={11} strokeWidth={2.5} aria-hidden="true" />
           </a>
         ) : (
-          // No explorer on this chain. The hash still matters — show it rather than a dead link.
+          // No explorer on this chain. The hash still matters - show it rather than a dead link.
           <span className="txlink">{shortHash(hash)}</span>
         ))}
     </div>

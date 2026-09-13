@@ -15,7 +15,7 @@ import {
 
 /**
  * `snapshot` and `executableLiquidity` have identical signatures on every `ILiquidityVenue`
- * implementation, so one ABI decodes both venues. Every market has its own pair of venues — this
+ * implementation, so one ABI decodes both venues. Every market has its own pair of venues - this
  * is not a fixed constant, it's built from whichever market the caller passes in.
  */
 function venuesFor(aquaVenue: Address, uniswapV4Venue: Address) {
@@ -47,8 +47,8 @@ function toExecutable(raw: RawResult | undefined): ExecutableLiquidity | undefin
 }
 
 /**
- * Every venue's live state for one direction, read in a single multicall so the whole table — and
- * the executability verdict derived from it — comes from one block.
+ * Every venue's live state for one direction, read in a single multicall so the whole table - and
+ * the executability verdict derived from it - comes from one block.
  *
  * This replaced four independent 5s polls. The gain that matters is not fewer requests: it is that
  * the route and the depth it is checked against can no longer come from different blocks.
@@ -76,7 +76,7 @@ export function useMarket(tokenIn: Address, tokenOut: Address, aquaVenue: Addres
     // One misbehaving venue must not blank the entire marketplace. Per-call status lets each row
     // report its own availability instead of taking the table down with it.
     allowFailure: true,
-    // `scopeKey` — NOT `query.queryKey`, which wagmi excludes by type
+    // `scopeKey` - NOT `query.queryKey`, which wagmi excludes by type
     // (`QueryParameter` = `UnionLooseOmit<QueryOptions, "queryKey" | "queryFn">`). wagmi folds this
     // string into the key it generates, which is the supported way to make a read depend on
     // something that is not one of its own arguments.
@@ -109,7 +109,7 @@ export function useMarket(tokenIn: Address, tokenOut: Address, aquaVenue: Addres
           name: venue.name,
           venueKind: venue.venueKind,
           address: venue.address,
-          // Unavailable means "we asked and could not get an answer" — never "we have not asked
+          // Unavailable means "we asked and could not get an answer" - never "we have not asked
           // yet". Distinguishing the two is what stops a dead RPC reading as a permanent spinner.
           unavailable: loaded && (snapshot === undefined || executable === undefined),
           snapshot,

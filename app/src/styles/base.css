@@ -133,7 +133,7 @@ button, input, select { font: inherit; color: inherit; }
 
 /* ---------- skeleton ----------
    Loading must never read as an error or as a settled value. A shimmer that is
-   plainly "not a number" does that; "0" or "—" would not. */
+   plainly "not a number" does that; "0" or "-" would not. */
 .skeleton {
   display: block;
   border-radius: var(--r-sm);

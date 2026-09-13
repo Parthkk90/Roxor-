@@ -4,7 +4,7 @@
 # `DeploySolver`, against the same anvil instance.
 #
 # Split across two `forge script` invocations with a real `evm_increaseTime`/`evm_mine` in
-# between — see the docstring on `SeedRecoveryBase` in SeedRecovery.s.sol for why a single
+# between - see the docstring on `SeedRecoveryBase` in SeedRecovery.s.sol for why a single
 # script can't do this itself: `vm.rpc` mutates the node's clock at simulation time, but every
 # broadcast-tagged call in a script is deferred and sent as one batch only afterward, so a
 # `vm.rpc` time-jump inside one `run()` lands on-chain before all of that run's transactions,
@@ -25,6 +25,6 @@ echo "== Advancing chain time by ${CALM_PERIOD_SECONDS}s (anvil-only) =="
 cast rpc evm_increaseTime "$CALM_PERIOD_SECONDS" --rpc-url "$RPC_URL"
 cast rpc evm_mine --rpc-url "$RPC_URL"
 
-echo "== Phase 2: poke again — sustained calm should now fire DEFENSIVE -> RECOVERY =="
+echo "== Phase 2: poke again - sustained calm should now fire DEFENSIVE -> RECOVERY =="
 forge script script/SeedRecovery.s.sol:SeedRecoveryFinalize \
   --rpc-url "$RPC_URL" --broadcast --disable-code-size-limit --slow --private-key "$PRIVATE_KEY"

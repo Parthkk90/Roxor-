@@ -11,7 +11,7 @@ import { useTradePair } from "../../trade/useTrade";
  *
  * These drive an oracle with no access control. They exist so the conditional-liquidity behaviour
  * can be *seen*: shock the market and the sources on the Liquidity page change mode, their
- * executable depth collapses, their fee widens, and the route on the swap screen re-splits — all
+ * executable depth collapses, their fee widens, and the route on the swap screen re-splits - all
  * within one block, without reloading. Acts on whichever market is currently selected.
  *
  * Collapsed by default because a trader should not meet a "cause a market crash" button before

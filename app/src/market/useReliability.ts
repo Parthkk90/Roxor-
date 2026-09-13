@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 /**
- * Historical reliability from The Graph — LAYER 1.
+ * Historical reliability from The Graph - LAYER 1.
  *
  * Strictly a display and ranking signal. Nothing here influences what the solver routes: the
  * marketplace's depth column comes from live venue reads, and the solver revalidates again at
@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
  * is the behaviour the whole design exists to produce.
  *
  * When no endpoint is configured, or the index is unreachable, this resolves to `undefined` and
- * the UI renders "—". That is deliberate: a fabricated percentage sitting beside chain-read
+ * the UI renders "-". That is deliberate: a fabricated percentage sitting beside chain-read
  * numbers would be the one figure on the screen a trader could not verify.
  */
 const SUBGRAPH_URL: string | undefined = import.meta.env.VITE_SUBGRAPH_URL || undefined;
@@ -58,7 +58,7 @@ async function fetchReliability(ids: string[]): Promise<Record<string, number>> 
     }
 
     const attempted = Number(strategy.attemptedFills);
-    // No attempts is not evidence of unreliability — a new maker has not earned a bad score.
+    // No attempts is not evidence of unreliability - a new maker has not earned a bad score.
     out[strategy.id.toLowerCase()] =
       attempted > 0 ? Math.floor((Number(strategy.successfulFills) * 10_000) / attempted) : 10_000;
   }

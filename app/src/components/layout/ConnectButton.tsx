@@ -8,11 +8,11 @@ import { chain, chainId as targetChainId } from "../../config/contracts";
  * Wallet control.
  *
  * Privy owns authentication; wagmi owns account and chain state. The two are kept in their own
- * lanes — reading the address from Privy's user object instead of `useAccount` would drift from the
+ * lanes - reading the address from Privy's user object instead of `useAccount` would drift from the
  * account every contract read actually uses.
  *
  * Wrong-network is a friendly, actionable state rather than an error. It names the network the app
- * needs and nothing else — no chain ids, no RPC URLs, no mention of what the wallet is on.
+ * needs and nothing else - no chain ids, no RPC URLs, no mention of what the wallet is on.
  */
 export function ConnectButton() {
   const { ready, authenticated, login, logout } = usePrivy();

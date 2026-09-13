@@ -10,7 +10,7 @@ import { chain } from "./config/contracts";
  * Note what is NOT here: no providers.
  *
  * `TradeProvider` wraps `<App />` in `main.tsx` rather than App rendering it around these screens.
- * That is load-bearing for the re-render strategy — when trade state changes the provider
+ * That is load-bearing for the re-render strategy - when trade state changes the provider
  * re-renders and returns new context elements, but the `children` element it was handed is
  * unchanged, so React skips these subtrees and re-renders only the components that actually consume
  * a context whose value changed. Moving the provider in here would rebuild `children` on every

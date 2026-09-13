@@ -11,7 +11,7 @@ import { FixedPointMath } from "./FixedPointMath.sol";
 /// @dev This library exists because a quoted balance is not a solvent balance. On the Aqua side
 ///      this is not a theoretical concern: {IAqua} describes its balances as "allowances", `ship`
 ///      moves no tokens at all, and `pull` settles with
-///      `IERC20(token).safeTransferFrom(maker, to, amount)` — straight out of the maker's own
+///      `IERC20(token).safeTransferFrom(maker, to, amount)` - straight out of the maker's own
 ///      wallet. A maker can therefore advertise a 100e18 virtual balance while holding 1e18 and
 ///      having revoked their approval. Routing against that advertised number is what this
 ///      protocol calls *phantom liquidity*, and every number below exists to make it unroutable.
@@ -29,7 +29,7 @@ library ExecutableLiquidityLib {
     /// @param allowance Amount the settling party has actually approved to the pulling contract.
     /// @param liquidityBps The strategy's live conditional-liquidity multiplier, from the existing
     ///        rule engine. Applied *last*, so a conditional haircut can only ever shrink an
-    ///        already-solvent amount — it can never be used to inflate one.
+    ///        already-solvent amount - it can never be used to inflate one.
     function derive(
         uint256 virtualLiquidity,
         uint256 walletLiquidity,

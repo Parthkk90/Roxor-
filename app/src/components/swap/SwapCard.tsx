@@ -28,7 +28,7 @@ export function SwapCard() {
   const stage = state.stage;
 
   // `minOut` is the only figure the contract enforces, so it is the one shown large. `expectedOut`
-  // is advisory by construction — `settle` re-derives the route — and is shown as secondary.
+  // is advisory by construction - `settle` re-derives the route - and is shown as secondary.
   const guaranteed = flow.signed?.minOut ?? flow.minOut;
 
   if (stage === "success") return <SuccessPanel flow={flow} />;
@@ -79,7 +79,7 @@ export function SwapCard() {
           </button>
         </div>
 
-        {/* "You receive" is an output, never an input — the solver decides it. */}
+        {/* "You receive" is an output, never an input - the solver decides it. */}
         <div className="tokenfield">
           <div className="tokenfield-row">
             <span className={`out-amount${guaranteed === undefined ? " muted" : ""}`}>
@@ -110,7 +110,7 @@ export function SwapCard() {
                   ? (
                       Number(flow.expectedOut) / Number(quote.amountWei)
                     ).toFixed(5)
-                  : "—"}{" "}
+                  : "-"}{" "}
                 {pair.tokenOut.symbol}
               </span>
             </div>

@@ -1,6 +1,6 @@
 specVersion: 1.0.0
 description: >-
-  Conditional Liquidity Marketplace — discovery index for conditional-liquidity strategies across
+  Conditional Liquidity Marketplace - discovery index for conditional-liquidity strategies across
   Aqua/SwapVM and Uniswap v4. Layer 1 of three: discovery, history and analytics only. Nothing
   indexed here is a settlement input; the solver revalidates every number on-chain before it moves
   a token.
@@ -115,7 +115,7 @@ dataSources:
         - event: HookStateTransition(indexed bytes32,indexed bytes32,uint8,uint8,uint256)
           handler: handleHookStateTransition
         # NOTE: `ConditionalSwapRejected` is deliberately NOT indexed. The hook reverts on a
-        # rejection, so that log is always unwound and can never be mined — see
+        # rejection, so that log is always unwound and can never be mined - see
         # `IConditionalLiquidityHook`. Failed fills are therefore counted from the solver side
         # (where a reverted settlement is simply an absent LegExecuted), not from a rejection log
         # that does not exist.

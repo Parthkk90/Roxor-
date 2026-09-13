@@ -6,7 +6,7 @@ import { ConnectButton } from "./ConnectButton";
 /**
  * Two modes, one header.
  *
- * On the landing page there is no nav and no wallet control — a visitor who has not decided to
+ * On the landing page there is no nav and no wallet control - a visitor who has not decided to
  * trade yet should be offered one action, not four, and prompting for a wallet before they know
  * what the product does is how landing pages lose people. Inside the app the nav and wallet
  * controls appear, and the logo becomes the way back out.

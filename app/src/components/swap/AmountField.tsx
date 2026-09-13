@@ -11,7 +11,7 @@ import { TokenSelect } from "./TokenSelect";
  * subscribing to it re-renders per character. Keeping the subscription confined here is what lets
  * the liquidity table share the same amount without paying for it.
  *
- * The input is never debounced — only the value that feeds a network read is, in `useAmountIntent`.
+ * The input is never debounced - only the value that feeds a network read is, in `useAmountIntent`.
  * Typing stays immediate no matter how slow the chain is.
  */
 export function AmountField({
@@ -35,7 +35,7 @@ export function AmountField({
       <div className="tokenfield-row">
         <input
           id="swap-amount"
-          // Not `type="number"` — it hands back an empty string for input the user can plainly see,
+          // Not `type="number"` - it hands back an empty string for input the user can plainly see,
           // and its spinners are meaningless at token precision. `setAmount` validates instead.
           type="text"
           inputMode="decimal"

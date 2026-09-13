@@ -7,15 +7,15 @@ import { tokenMetaOf, useTokenMetadataMap } from "../market/useTokenMetadata";
 /**
  * User intent, and nothing else.
  *
- * No `amountWei`, no `tradeKey`, no query keys. Everything derived from this — parsing, debouncing,
- * quoting — belongs to the query layer, where it can be cached and invalidated. Context that also
+ * No `amountWei`, no `tradeKey`, no query keys. Everything derived from this - parsing, debouncing,
+ * quoting - belongs to the query layer, where it can be cached and invalidated. Context that also
  * holds derived server-shaped values ends up with two copies of the truth and no way to refresh one
  * of them.
  *
  * Split into three contexts rather than one, because the split IS the re-render strategy: the
  * amount changes on every keystroke and the liquidity table is the most expensive thing on screen.
  * Because the table subscribes only to `TradePairContext`, a keystroke cannot schedule it. That is
- * structural — no `React.memo` is holding it up, and nobody can accidentally undo it by adding a
+ * structural - no `React.memo` is holding it up, and nobody can accidentally undo it by adding a
  * field to the wrong object.
  */
 
@@ -29,13 +29,13 @@ export interface TokenInfo {
   decimals: number;
 }
 
-/** Stable for the lifetime of the app — safe to consume from anywhere without re-render cost. */
+/** Stable for the lifetime of the app - safe to consume from anywhere without re-render cost. */
 export interface TradeActions {
   setAmount: (next: string) => void;
   setSlippageBps: (next: number) => void;
   /** Swap the direction of the current market's pair, preserving the amount. */
   reverse: () => void;
-  /** Switch to a different deployed market — see `config/markets.ts`. */
+  /** Switch to a different deployed market - see `config/markets.ts`. */
   selectMarket: (index: number) => void;
 }
 
@@ -43,7 +43,7 @@ export interface TradeActions {
  * Changes only when the user flips direction, picks a market, or edits slippage.
  *
  * A pair is no longer two freely combinable tokens: each market has its own `Solver` (see
- * `Solver.sol` — it snapshots every venue it holds unconditionally, so one Solver serves exactly
+ * `Solver.sol` - it snapshots every venue it holds unconditionally, so one Solver serves exactly
  * one pair), so `tokenIn`/`tokenOut` are always the current market's own two tokens, and `solver`/
  * `market` travel with them so every consumer reads the same market's contracts.
  */

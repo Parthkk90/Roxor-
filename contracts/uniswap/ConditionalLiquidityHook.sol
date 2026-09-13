@@ -32,12 +32,12 @@ import { FixedPointMath } from "../libraries/FixedPointMath.sol";
 /// @dev ENFORCEMENT MECHANISM (see docs/uniswap-v4-implementation-notes.md for the full survey of
 ///      the installed v4 API that led here)
 ///      `_beforeSwap` is the only hook callback implemented. It:
-///        1. Resolves the pool's strategy and calls `ENGINE.poke` — the same permissionless state
+///        1. Resolves the pool's strategy and calls `ENGINE.poke` - the same permissionless state
 ///           advance the SwapVM path drives via `ConditionalLiquidityExtruction`.
 ///        2. Computes the requested amount's cap from the strategy's current liquidity multiplier
 ///           and the maker-declared base liquidity for the relevant token side, and reverts
 ///           `ExceedsEffectiveLiquidity` if the request exceeds it. This is a hard cap via revert,
-///           not a custom-accounting truncation (`BeforeSwapDelta` is returned as zero) — matching
+///           not a custom-accounting truncation (`BeforeSwapDelta` is returned as zero) - matching
 ///           the Aqua backend's behavior exactly: an oversized trade is refused outright on both
 ///           backends, never silently shrunk on one and rejected on the other.
 ///        3. Returns a dynamic-fee override derived from the strategy's current spread, applied

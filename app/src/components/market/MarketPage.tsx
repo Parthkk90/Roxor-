@@ -19,7 +19,7 @@ import { MarketOverviewTable } from "./MarketOverviewTable";
  *
  * Renders the same normalized `LiquiditySource[]` and the same `allocationsFor` output the swap
  * screen uses, from the same cached query. There is deliberately no second representation of venue
- * state anywhere in the app — that duplication is what let the old build show a route computed at
+ * state anywhere in the app - that duplication is what let the old build show a route computed at
  * one block beside depth summed at another.
  */
 export function MarketPage() {
@@ -83,7 +83,7 @@ export function MarketPage() {
           <span className="label">Healthy sources</span>
           <span className="msum-big">
             {market.isLoading || summary.readableSources === 0
-              ? "—"
+              ? "-"
               : `${summary.healthySources}/${summary.readableSources}`}
           </span>
           <span className="msum-sub">covering ≥90% of what they advertise</span>
@@ -92,7 +92,7 @@ export function MarketPage() {
         <div className="msum-stat">
           <span className="label">Best fee</span>
           <span className="msum-big">
-            {summary.bestSpreadBps === undefined ? "—" : `${(summary.bestSpreadBps / 100).toFixed(2)}%`}
+            {summary.bestSpreadBps === undefined ? "-" : `${(summary.bestSpreadBps / 100).toFixed(2)}%`}
           </span>
           <span className="msum-sub">{summary.bestPricedSource?.name ?? "no source can fill right now"}</span>
         </div>

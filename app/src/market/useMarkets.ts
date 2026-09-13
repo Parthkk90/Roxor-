@@ -5,7 +5,7 @@ import { markets, type MarketAddresses } from "../config/markets";
 import { useMarket } from "./useMarket";
 import { tokenMetaOf, useTokenMetadataMap } from "./useTokenMetadata";
 
-/** The normalized shape both the Marketplace and the SwapCard read — never a second copy. */
+/** The normalized shape both the Marketplace and the SwapCard read - never a second copy. */
 export interface Market {
   label: string;
   tokenIn: Address;

@@ -33,10 +33,10 @@ import { UniswapV4Venue } from "../contracts/venues/UniswapV4Venue.sol";
 ///      limit: on a real network the router deploys with EMPTY code, and everything built on it
 ///      (the strategy shipment, `AquaVenue`) is silently broken. Compile and run THIS script under
 ///      the lower-optimizer `ci` profile (`FOUNDRY_PROFILE=ci`), which brings the router down to
-///      20,442 bytes — safely under the limit. `PoolManager.sol`'s unrelated 0.8.26 compile unit
+///      20,442 bytes - safely under the limit. `PoolManager.sol`'s unrelated 0.8.26 compile unit
 ///      must be skipped in that profile (it hits a known stack-too-deep failure below
 ///      `optimizer_runs = 44_444_444`, see `foundry.toml`'s comment) via
-///      `--skip test/utils/deployers/PoolManagerImport.sol` — harmless here since this script never
+///      `--skip test/utils/deployers/PoolManagerImport.sol` - harmless here since this script never
 ///      touches PoolManager.
 contract DeployAquaFix is Script {
     uint256 internal constant BASE_LIQUIDITY = 100 ether;

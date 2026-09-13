@@ -6,7 +6,7 @@ import { chain, rpcUrl } from "./contracts";
 /**
  * Both supported targets are registered, with the configured one first so wagmi treats it as the
  * default. Declaring only the active chain would make the transports map's key a union type that
- * `createConfig` cannot satisfy, and registering the inactive chain costs nothing — no connection
+ * `createConfig` cannot satisfy, and registering the inactive chain costs nothing - no connection
  * is opened until something actually reads from it.
  */
 export const wagmiConfig = createConfig({

@@ -23,7 +23,7 @@ import { FixedPointMath } from "../libraries/FixedPointMath.sol";
 /// @dev Three layers of truth, never collapsed. An offchain indexer may *discover* and *rank*
 ///      candidates, but nothing offchain reaches this contract: `route` re-reads every venue live,
 ///      and `settle` then re-reads solvency a second time, immediately before moving tokens, via
-///      {_revalidate}. That second read is not redundant with the first — it is the only thing
+///      {_revalidate}. That second read is not redundant with the first - it is the only thing
 ///      standing between a plan built one block ago and a maker who has since drained their wallet
 ///      or revoked their approval. Offchain scores, historical reliability and indexed coverage
 ///      are all inadmissible here by construction: this contract cannot even see them.
@@ -68,7 +68,7 @@ contract Solver is ISolver {
         // Total executable depth is summed in its own pass over every snapshot. Accumulating it
         // inside the fill loop instead would double-count any venue that the loop skips for zero
         // depth (a skip advances `i` but not `legCount`, so a trailing catch-up loop would add it
-        // a second time) — and zero-depth venues are the normal case now that an insolvent maker
+        // a second time) - and zero-depth venues are the normal case now that an insolvent maker
         // correctly reports nothing. This figure is the shortfall a caller sees in {NoRoute}, so
         // it has to be the honest total rather than an artefact of iteration order.
         uint256 totalExecutable = 0;

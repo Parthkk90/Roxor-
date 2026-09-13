@@ -5,10 +5,10 @@ import { chainId } from "./contracts";
 
 /**
  * One deployed market: a token pair, each with its own {Solver} (a Solver snapshots every venue
- * it holds unconditionally, so one Solver serves exactly one pair — see `Solver.sol`) and its own
+ * it holds unconditionally, so one Solver serves exactly one pair - see `Solver.sol`) and its own
  * Aqua + Uniswap-v4 venue pair, each independently driven by its own oracle/strategy.
  *
- * No token symbols or decimals here — those come from chain (`ERC20.symbol()`/`decimals()`), never
+ * No token symbols or decimals here - those come from chain (`ERC20.symbol()`/`decimals()`), never
  * from a hardcoded map. See `market/useTokenMetadata.ts`.
  */
 export interface MarketAddresses {
@@ -26,12 +26,12 @@ export interface MarketAddresses {
 
 /**
  * `script/DeploySolver.s.sol` writes these same addresses to `deployments/<chainId>.json` on every
- * run — this is the checked-in mirror the frontend actually reads at build time. Redeploying to
+ * run - this is the checked-in mirror the frontend actually reads at build time. Redeploying to
  * anvil means updating this list (matching the existing single-market convention this replaces:
  * the old `config/contracts.ts` also baked in addresses and documented "redeploy and update here").
  *
  * Market 2 (DUSDC/DDAI) is only at RECOVERY once `script/seed-markets.sh` has run after the
- * deploy — before that it reads NORMAL, which is still a real, honest on-chain state.
+ * deploy - before that it reads NORMAL, which is still a real, honest on-chain state.
  */
 const ANVIL_MARKETS: MarketAddresses[] = [
   {
@@ -91,7 +91,7 @@ const SEPOLIA_MARKETS: MarketAddresses[] = [
 /** Every market this build knows how to talk to, for the currently configured chain. */
 export const markets: MarketAddresses[] = chainId === anvil.id ? ANVIL_MARKETS : SEPOLIA_MARKETS;
 
-/** Every distinct token address across all configured markets — the universe `useTokenMetadata` reads. */
+/** Every distinct token address across all configured markets - the universe `useTokenMetadata` reads. */
 export const marketTokenAddresses: Address[] = Array.from(
   new Set(markets.flatMap((m) => [m.tokenIn.toLowerCase(), m.tokenOut.toLowerCase()]))
 ) as Address[];

@@ -56,7 +56,7 @@ export function useRouteChange(
     previous.current = current;
     previousAmount.current = amountWei;
 
-    // No baseline yet, or the user changed their own order — nothing to announce either way.
+    // No baseline yet, or the user changed their own order - nothing to announce either way.
     if (before === null || amountChanged) return;
 
     const shifts: AllocationShift[] = [];
@@ -72,7 +72,7 @@ export function useRouteChange(
       nextId.current += 1;
       setChange({ id: nextId.current, shifts });
     }
-    // `signature` is the real dependency — it changes exactly when an allocation does.
+    // `signature` is the real dependency - it changes exactly when an allocation does.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature, hasRoute, amountWei]);
 

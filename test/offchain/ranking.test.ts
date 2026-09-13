@@ -1,5 +1,5 @@
 /**
- * Features 3, 6, 9 and 11 — coverage bands, risk-aware ranking, route construction, explanations.
+ * Features 3, 6, 9 and 11 - coverage bands, risk-aware ranking, route construction, explanations.
  *
  * The scenario numbers mirror the spec's worked marketplace example exactly (Maker A at 84%
  * coverage in DEFENSIVE, Maker B at 97% in NORMAL, Uniswap v4 at 100%), so a change in ranking
@@ -240,7 +240,7 @@ describe("route construction", () => {
     expect(total).toBe(7n * WAD);
 
     // Maker A is in DEFENSIVE with the worst coverage and the widest spread, so it must not be
-    // the first source drawn on — that is the whole point of risk-aware ranking.
+    // the first source drawn on - that is the whole point of risk-aware ranking.
     expect(route.legs[0]!.maker).not.toBe("0xaaaa000000000000000000000000000000000001");
   });
 

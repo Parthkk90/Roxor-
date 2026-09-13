@@ -5,7 +5,7 @@ import { useCallback, useSyncExternalStore } from "react";
  *
  * Four destinations and no nested or parameterised routes, so a routing library would carry far
  * more than this needs. `useSyncExternalStore` over `hashchange` gives real URLs, a working back
- * button and shareable links — which a `useState` tab switcher would not — in about twenty lines.
+ * button and shareable links - which a `useState` tab switcher would not - in about twenty lines.
  */
 
 export const ROUTES = ["home", "swap", "liquidity", "activity"] as const;

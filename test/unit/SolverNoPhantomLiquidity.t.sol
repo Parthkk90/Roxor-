@@ -6,7 +6,7 @@ import { ISolver } from "../../contracts/solver/interfaces/ISolver.sol";
 import { ILiquidityVenue } from "../../contracts/solver/interfaces/ILiquidityVenue.sol";
 import { IExecutableLiquidity } from "../../contracts/venues/interfaces/IExecutableLiquidity.sol";
 
-/// @notice Feature 2 — NO PHANTOM LIQUIDITY.
+/// @notice Feature 2 - NO PHANTOM LIQUIDITY.
 ///
 /// @dev The product thesis, stated as executable assertions: the solver must never allocate more
 ///      than `min(virtual, wallet, allowance, conditional)`, and must never be able to settle
@@ -97,7 +97,7 @@ contract SolverNoPhantomLiquidityTest is SolverFixture {
     }
 
     /// @dev Same shape, but now the drain makes the request genuinely unfillable. Settlement must
-    ///      revert atomically — no partial fill, no tokens taken from the trader.
+    ///      revert atomically - no partial fill, no tokens taken from the trader.
     function test_RevertWhen_DrainMakesRequestUnfillableAtSettlement() public {
         ISolver.TraderRequest memory request = _request(150 ether);
         solver.route(request); // valid right now: 100 Aqua + 100 Uniswap

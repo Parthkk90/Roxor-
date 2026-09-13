@@ -37,7 +37,7 @@ export function ActivityPage() {
           <h3>History isn&apos;t connected</h3>
           <p>
             Trade history comes from an index that isn&apos;t configured for this deployment. Swapping
-            works normally — every figure on the swap screen is read straight from the chain.
+            works normally - every figure on the swap screen is read straight from the chain.
           </p>
         </div>
       ) : activity.isError ? (

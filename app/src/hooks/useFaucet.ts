@@ -8,8 +8,8 @@ const FAUCET_AMOUNT = parseUnits("100", 18);
 
 /**
  * `MockERC20.mint` has no access control on this deployment: any wallet can self-serve test
- * tokens. Mints every token across every configured market — not just the one currently
- * selected — so switching markets never leaves a trader without balance to try it.
+ * tokens. Mints every token across every configured market - not just the one currently
+ * selected - so switching markets never leaves a trader without balance to try it.
  */
 export function useFaucet() {
   const { writeContractAsync } = useWriteContract();
@@ -31,7 +31,7 @@ export function useFaucet() {
         await publicClient?.waitForTransactionReceipt({ hash });
       }
     } catch {
-      setError("Couldn't mint test tokens — please try again.");
+      setError("Couldn't mint test tokens - please try again.");
     } finally {
       setIsMinting(false);
     }

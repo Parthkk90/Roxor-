@@ -12,8 +12,8 @@ const PRESETS = [10, 50, 100, 300];
  * the same quote hook, so the two panels could disagree about whether a trade was routable at all.
  * There is now exactly one value and one place to set it.
  *
- * It controls `minTotalAmountOut` on settle, not the solver's `maxSlippageBps` — see the note in
- * `useRouteQuote` — so the label says "minimum received" rather than naming a contract parameter.
+ * It controls `minTotalAmountOut` on settle, not the solver's `maxSlippageBps` - see the note in
+ * `useRouteQuote` - so the label says "minimum received" rather than naming a contract parameter.
  */
 export function SlippageControl() {
   const { slippageBps } = useTradePair();

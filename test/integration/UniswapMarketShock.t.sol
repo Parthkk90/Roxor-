@@ -9,7 +9,7 @@ import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 
 /// @title UniswapMarketShockTest
 /// @notice The Uniswap v4 counterpart of `test/integration/MarketShock.t.sol`. Same narrative, same
-///         numbers (100 token base, 25/50/100 percent liquidity), same strategy semantics — driven
+///         numbers (100 token base, 25/50/100 percent liquidity), same strategy semantics - driven
 ///         through a real PoolManager instead of Aqua/SwapVM.
 ///
 ///   Trader swaps 10 tokenX -> real settlement

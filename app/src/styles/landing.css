@@ -1,7 +1,7 @@
 /* ==========================================================================
    Landing page.
 
-   Shares the app's tokens throughout — the marketing page and the product must
+   Shares the app's tokens throughout - the marketing page and the product must
    not look like two different companies. What changes is density: the app is
    scanned and operated, this is read, so the measure is narrower and the
    vertical rhythm is far more generous.
@@ -35,7 +35,7 @@
   padding: var(--s16) var(--s5) var(--s12);
   overflow: hidden;
 }
-/* A single soft accent wash behind the headline. The page's one atmospheric flourish — everything
+/* A single soft accent wash behind the headline. The page's one atmospheric flourish - everything
    else earns its contrast from type and spacing. */
 .lp-hero::before {
   content: "";
@@ -98,7 +98,7 @@
 .lp-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); letter-spacing: -0.03em; max-width: 20ch; }
 .lp-head p { color: var(--text-dim); max-width: 58ch; line-height: 1.6; }
 
-/* Numbered because these genuinely are ordered — each step only makes sense after the one above. */
+/* Numbered because these genuinely are ordered - each step only makes sense after the one above. */
 .lp-steps { display: flex; flex-direction: column; counter-reset: step; }
 .lp-step {
   counter-increment: step;

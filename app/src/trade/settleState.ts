@@ -10,12 +10,12 @@ import type { RouteResult } from "./useRouteQuote";
  *   `submittedForKey === tradeKey`. No reset effect, no ordering race.
  * - A reverted transaction cannot read as success, because success requires
  *   `receiptStatus === "success"`. The previous implementation awaited the receipt and set success
- *   unconditionally — and viem resolves normally on a revert, so a settle rejected by the
+ *   unconditionally - and viem resolves normally on a revert, so a settle rejected by the
  *   phantom-liquidity guard displayed as a completed swap.
  *
  * Signing and confirming are separate stages throughout. "Waiting for you to sign" and "waiting for
- * the chain" are different events with different remedies, and collapsing them into one spinner —
- * which is what awaiting a receipt inside an `approving` stage does — leaves the user unable to tell
+ * the chain" are different events with different remedies, and collapsing them into one spinner -
+ * which is what awaiting a receipt inside an `approving` stage does - leaves the user unable to tell
  * a wallet that never opened from a transaction that is simply slow.
  *
  * Being React-free, it is directly unit-testable; see settleState.test.ts.
@@ -90,7 +90,7 @@ export interface SettleState {
   /** Label for the primary button. */
   label: string;
   canSubmit: boolean;
-  /** True while something is in flight — drives the spinner and `aria-busy`. */
+  /** True while something is in flight - drives the spinner and `aria-busy`. */
   busy: boolean;
 }
 
@@ -146,7 +146,7 @@ export function deriveSettleState(input: SettleInputs, symbolIn: string): Settle
     return { stage: "debouncing", label: "Updating quote", canSubmit: false, busy: true };
   }
   if (input.routeIsStale) {
-    // A route IS on screen and stays on screen — dimmed, not blanked. It simply describes a
+    // A route IS on screen and stays on screen - dimmed, not blanked. It simply describes a
     // different amount, so it must not be signable.
     return { stage: "quote-stale", label: "Updating quote", canSubmit: false, busy: true };
   }
