@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 
 import { useFaucet } from "../../hooks/useFaucet";
 import { useShock } from "../../hooks/useShock";
+import { useTradePair } from "../../trade/useTrade";
 
 /**
  * Demo controls, behind disclosure and visually marked as not part of the product.
@@ -11,15 +12,16 @@ import { useShock } from "../../hooks/useShock";
  * These drive an oracle with no access control. They exist so the conditional-liquidity behaviour
  * can be *seen*: shock the market and the sources on the Liquidity page change mode, their
  * executable depth collapses, their fee widens, and the route on the swap screen re-splits — all
- * within one block, without reloading.
+ * within one block, without reloading. Acts on whichever market is currently selected.
  *
  * Collapsed by default because a trader should not meet a "cause a market crash" button before
  * they meet the swap form.
  */
 export function DemoPanel() {
   const { address } = useAccount();
+  const pair = useTradePair();
   const faucet = useFaucet();
-  const shock = useShock();
+  const shock = useShock(pair.market);
   const [open, setOpen] = useState(false);
 
   return (
@@ -43,13 +45,14 @@ export function DemoPanel() {
       </summary>
 
       <p className="faint" style={{ fontSize: "var(--fs-xs)", lineHeight: 1.5, marginTop: "var(--s3)" }}>
-        Testnet only. Shocking the market moves every strategy into defensive mode: watch depth fall,
-        fees widen and the route re-split on the Liquidity page. Returning to calm takes about ten
-        real minutes plus a trade, because the recovery timer is enforced on-chain.
+        Testnet only. Shocking moves <strong>{pair.market.label}</strong>&apos;s strategies into
+        defensive mode: watch depth fall, fees widen and the route re-split on the Liquidity page.
+        Returning to calm takes about ten real minutes plus a trade, because the recovery timer is
+        enforced on-chain.
       </p>
 
       <div className="demo-row" style={{ marginTop: "var(--s3)" }}>
-        <button className="btn" onClick={() => address && faucet.mintBoth(address)} disabled={!address || faucet.isMinting}>
+        <button className="btn" onClick={() => address && faucet.mintAll(address)} disabled={!address || faucet.isMinting}>
           <Droplets size={14} strokeWidth={2} aria-hidden="true" />
           {faucet.isMinting ? "Minting…" : "Get test tokens"}
         </button>

@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { type Address, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import { usePublicClient, useWriteContract } from "wagmi";
 import { mockMarketStateProviderAbi } from "../abis/index.js";
-import { addresses } from "../config/contracts";
+import type { MarketAddresses } from "../config/markets";
 
 const REFERENCE_PRICE = parseUnits("4000", 18);
 
 /**
  * Demo-only control: `MockMarketStateProvider.setVolatility` has no access control on this
- * deployment, so any connected wallet can drive both strategies' volatility to watch
+ * deployment, so any connected wallet can drive a market's strategies' volatility to watch
  * NORMAL -> DEFENSIVE -> RECOVERY happen live. Never wire this pattern into a real deployment.
+ *
+ * Scoped to whichever market is passed in — each market has its own independent oracles, so
+ * shocking one market never touches another's state.
  */
-export function useShock() {
+export function useShock(market: MarketAddresses) {
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
   const [isSetting, setIsSetting] = useState(false);
@@ -22,14 +25,14 @@ export function useShock() {
     setError(null);
     try {
       for (const [oracle, strategyId] of [
-        [addresses.aquaOracle, addresses.aquaStrategyId],
-        [addresses.uniOracle, addresses.uniStrategyId],
+        [market.aquaOracle, market.aquaStrategyId],
+        [market.uniOracle, market.uniStrategyId],
       ] as const) {
         const hash = await writeContractAsync({
-          address: oracle as Address,
+          address: oracle,
           abi: mockMarketStateProviderAbi,
           functionName: "setVolatility",
-          args: [strategyId as `0x${string}`, BigInt(volatilityBps), REFERENCE_PRICE],
+          args: [strategyId, BigInt(volatilityBps), REFERENCE_PRICE],
         });
         await publicClient?.waitForTransactionReceipt({ hash });
       }

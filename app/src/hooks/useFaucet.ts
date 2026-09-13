@@ -2,24 +2,28 @@ import { useState } from "react";
 import { type Address, parseUnits } from "viem";
 import { usePublicClient, useWriteContract } from "wagmi";
 import { mockERC20Abi } from "../abis/index.js";
-import { addresses } from "../config/contracts";
+import { marketTokenAddresses } from "../config/markets";
 
 const FAUCET_AMOUNT = parseUnits("100", 18);
 
-/** `MockERC20.mint` has no access control on this deployment: any wallet can self-serve test tokens. */
+/**
+ * `MockERC20.mint` has no access control on this deployment: any wallet can self-serve test
+ * tokens. Mints every token across every configured market — not just the one currently
+ * selected — so switching markets never leaves a trader without balance to try it.
+ */
 export function useFaucet() {
   const { writeContractAsync } = useWriteContract();
   const publicClient = usePublicClient();
   const [isMinting, setIsMinting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function mintBoth(to: Address) {
+  async function mintAll(to: Address) {
     setIsMinting(true);
     setError(null);
     try {
-      for (const token of [addresses.tokenA, addresses.tokenB] as const) {
+      for (const token of marketTokenAddresses) {
         const hash = await writeContractAsync({
-          address: token as Address,
+          address: token,
           abi: mockERC20Abi,
           functionName: "mint",
           args: [to, FAUCET_AMOUNT],
@@ -33,5 +37,5 @@ export function useFaucet() {
     }
   }
 
-  return { mintBoth, isMinting, error };
+  return { mintAll, isMinting, error };
 }
