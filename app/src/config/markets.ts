@@ -22,6 +22,15 @@ export interface MarketAddresses {
   aquaStrategyId: `0x${string}`;
   uniOracle: Address;
   uniStrategyId: `0x${string}`;
+  /**
+   * The {ConditionalLiquidityExtruction} this market's Aqua strategy calls into.
+   *
+   * Needed only by the strategy builder, which has to rebuild the SwapVM program a new strategy
+   * runs (`ConditionalLiquidityProgramLib.build`) in order to register one. Optional because a
+   * deployment that predates the builder does not record it; the builder then says so instead of
+   * guessing an address.
+   */
+  extruction?: Address;
 }
 
 /**
@@ -72,19 +81,31 @@ const ANVIL_MARKETS: MarketAddresses[] = [
   },
 ];
 
-/** The live Sepolia deployment: one market, unchanged from before this multi-market work. */
+/**
+ * The live Ethereum Sepolia deployment: one real market, `DTB/DTA`.
+ *
+ * Mirrors `deployments/11155111.json`, which `script/DeploySepolia.s.sol` writes on every run.
+ * Every address here was read back from chain after deployment (`node scripts/audit/verify-live.mjs`)
+ * rather than copied from a broadcast log - see `docs/sepolia-deployment.md` for the audit that
+ * produced them and for why only three of these contracts are new.
+ *
+ * One market, not three. The three anvil markets exist because a local chain's tokens and gas are
+ * free; on a public testnet a second and third market would add no property the first does not
+ * already demonstrate, at the cost of real testnet ETH.
+ */
 const SEPOLIA_MARKETS: MarketAddresses[] = [
   {
-    label: "DTA/DTB",
+    label: "DTB/DTA",
     tokenIn: "0x246b76e37825a473Ae784Ce14A2Bb42733A8f922",
     tokenOut: "0xFE14a75D92e1A028ebb497dAc4D25bF2e08B3Af3",
-    solver: "0xD8F26302929952DD220582C6eDCB4058E875b57A",
-    aquaVenue: "0x47da4A55562AaDe84B7AEC13287e56125f6dfCe1",
-    uniswapV4Venue: "0x29364BB65a835b2A1e9776558E1f1966aDfaB120",
-    aquaOracle: "0x40b30ecEf85eA5e850373544Ba3a6d02BD7b49A2",
+    solver: "0x5c8f7f0556a4935d6f0DbA4FB6e44F19e89Af354",
+    aquaVenue: "0x6334836551C4088f66127762a9968747266D0d3e",
+    uniswapV4Venue: "0x065CfB8B2241bEd17FC6d6a16c0432b8D0641Ca7",
+    aquaOracle: "0x40b30ECEF85Ea5E850373544ba3A6D02bd7b49a2",
     aquaStrategyId: "0xd4e296704cf420357c0d20976f594a2e301e01b4da3734f2b37d5184d852a2df",
     uniOracle: "0xD0b139BF9c0576A96b48C3b9c3C5b0ed336cabF4",
     uniStrategyId: "0xacdbaa77ce0882057769fb71336eb3deff305c7a15a2bb821b62ffc55d77d911",
+    extruction: "0xb21Bf6e48FbcFDf83a7685924A244510Db08bC75",
   },
 ];
 

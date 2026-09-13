@@ -1,7 +1,7 @@
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
 import { href } from "../../nav/useNav";
-import { chain } from "../../config/contracts";
+import { NETWORK_LABEL, NETWORK_TRUST_LABEL } from "../../config/contracts";
 
 /**
  * The landing page.
@@ -23,7 +23,7 @@ export function LandingPage() {
         <div className="lp-inner lp-hero-inner">
           <span className="lp-eyebrow">
             <span className="dot" />
-            Live on {chain.name}
+            Live on {NETWORK_LABEL}
           </span>
 
           <h1>
@@ -172,7 +172,7 @@ export function LandingPage() {
       </section>
 
       <footer className="lp-foot">
-        <span className="label">{chain.name} · demo only, not for real funds</span>
+        <span className="badge badge-net">{NETWORK_TRUST_LABEL}</span>
       </footer>
     </div>
   );

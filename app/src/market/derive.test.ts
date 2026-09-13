@@ -137,3 +137,32 @@ describe("tokenMetaOf - never silently assigns a hardcoded symbol", () => {
     expect(tokenMetaOf(map, "0xABC0000000000000000000000000000000000D").symbol).toBe("DWA");
   });
 });
+
+describe("liquidityCapacityBps", () => {
+  const withDepth = (key: string, deliverable: bigint, conditional: bigint) =>
+    source({
+      key,
+      name: key,
+      snapshot: { ...source().snapshot!, effectiveLiquidity: conditional },
+      executable: {
+        virtualLiquidity: deliverable,
+        walletLiquidity: deliverable,
+        allowance: 2n ** 255n,
+        deliverableLiquidity: deliverable,
+        conditionalLiquidity: conditional,
+        coverageBps: 10_000,
+      },
+    });
+
+  it("reports the tightest limit in force, not an average", () => {
+    const summary = summarize([
+      withDepth("defensive", 8n * 10n ** 18n, 2n * 10n ** 18n), // 25%
+      withDepth("normal", 10n * 10n ** 18n, 10n * 10n ** 18n), // 100%
+    ]);
+    expect(summary.liquidityCapacityBps).toBe(2_500);
+  });
+
+  it("is undefined when nothing is deliverable, rather than 0%", () => {
+    expect(summarize([withDepth("dry", 0n, 0n)]).liquidityCapacityBps).toBeUndefined();
+  });
+});

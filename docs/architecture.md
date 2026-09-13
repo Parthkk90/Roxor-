@@ -532,7 +532,7 @@ leaving the trader with a partial position in a market that just proved itself u
 | ≥ 3000 bps | FRAGILE |
 | < 3000 bps | UNRELIABLE |
 
-Bands live in `src/analytics/coverage.ts` and `app/src/hooks/useExecutableLiquidity.ts`, and are
+Bands live in `src/analytics/coverage.ts` and `app/src/market/coverage.ts`, and are
 deliberately **not** an on-chain enum - an enum there would invite treating a display bucket as a
 safety control.
 
@@ -672,7 +672,7 @@ offline.
 
 ## 7.11 Marketplace UI and route explanation
 
-`app/src/components/Marketplace.tsx`
+`app/src/components/market/MarketPage.tsx`, `app/src/components/swap/LiquidityDiscovery.tsx`
 
 Every figure is read live from the venue adapters - the same functions the Solver itself calls. That
 is what makes the "NO PHANTOM LIQUIDITY" badge a claim rather than a slogan: the page cannot show a
@@ -698,15 +698,98 @@ rule, not a new engine.
 
 ---
 
+# Part 8 - Frontend
+
+`app/` is a React + wagmi client with one job: make the mechanism above legible without asking
+anyone to read this document. It is not a separate model of the protocol - it holds no rule logic,
+no regime arithmetic, and no second opinion about depth.
+
+## 8.1 One block, one truth
+
+Every on-chain read in the app keys on a single observed block (`app/src/chain/ObservedBlockContext.tsx`),
+and there is exactly one normalized `LiquiditySource[]` (`app/src/market/useMarket.ts`) that the swap
+screen, the marketplace and the strategy screen all render.
+
+That is structural, not stylistic. The claim this product makes is "the route was checked against
+depth that can actually settle it" - and a route computed at block N displayed beside depth summed
+at block N-1 does not support that claim. Keying every read on the same token makes the mismatch
+unrepresentable rather than merely unlikely. After a swap confirms, `advanceTo(receipt.blockNumber)`
+moves the token forward, so the refresh cannot be served by a node that has not yet seen the trade.
+
+## 8.2 Four levels of disclosure
+
+The screens are layered so a trader and a protocol engineer can both stop at the right depth:
+
+| Level | Where | What it answers |
+|---|---|---|
+| 1 | Swap card | What am I trading, and what will I get? |
+| 2 | Market conditions, Aqua strategy card, Your route | What state is the market in, and how was my order split? |
+| 3 | "Why this route?", source drawers | Why that split? What can each source actually pay? |
+| 4 | Strategy screen, "Technical details" | What rules is the maker running, and at what addresses? |
+
+`Your route` sits **above** the source cards: the split is the answer, the per-source depth is the
+working behind it.
+
+## 8.3 What the frontend is not allowed to do
+
+Three rules, each of which has a counter-example in the code that enforces it:
+
+- **Never invent a figure.** A value that cannot be read renders `-`, never `0` and never a
+  plausible default. Historical reliability shows `-` when no indexer is configured, because a
+  placeholder beside chain-read numbers would be the one figure on screen nobody could verify.
+- **Never decide a regime.** `snapshot.mode` comes from `ENGINE.preview`, a live re-evaluation of
+  the deployed rule program. React renders it; it does not compute it.
+- **Never round a token amount by guesswork.** `app/src/format.ts` takes each token's own `decimals()`, read
+  from chain, as a *required* argument - so a non-18-decimal token cannot silently render a million
+  times too large.
+
+## 8.4 Strategy configuration
+
+The strategy screen (`app/src/components/strategy/`) both reads and writes the protocol.
+
+**Reading** is the authoritative half. Regime and multiplier come from `ENGINE.preview`; the
+strategy's own thresholds are decoded from the rule-program bytes the registry stores
+(`REGISTRY.getRuleProgram`), so what is displayed is the program that will actually execute rather
+than anything the app remembers. The recovery timer is driven by `RuntimeState.armedSince` - the
+timestamp the *engine* recorded when the duration-gated rule first evaluated true - compared against
+the chain's block timestamp, not the browser clock.
+
+**Writing** compiles the maker's parameters with the project's own CLF backend
+(`src/compiler/backends/ruleProgram.ts`, imported directly from `app/` through a small Vite resolver
+rather than reimplemented), builds the SwapVM order, and calls
+`ConditionalLiquidityRegistry.registerStrategy`. Before anything is signed the deployed
+`StrategyValidator` is asked to validate the bytes and the registration is simulated, so the
+admission rules applied are the chain's at their deployed version.
+
+The order builder is the part that could fail silently, so it is pinned by equality rather than by
+assertion: `app/src/strategy/order.test.ts` requires it to reproduce the strategy id already
+registered on Sepolia from public inputs alone. A single wrong trait bit or program byte hashes to
+something else, so the test cannot pass by accident. That path has also been exercised on-chain - see
+`docs/sepolia-deployment.md` §6.
+
+## 8.5 Deployment targets
+
+The app defaults to Ethereum Sepolia and registers **only** the configured chain with wagmi. An
+earlier build registered both Sepolia and anvil "for free"; wagmi opened a transport for each, and a
+Sepolia build polled `http://127.0.0.1:8545` several hundred times a minute. A public build must not
+reach for localhost at all, even unsuccessfully.
+
+Contract addresses live in `app/src/config/markets.ts`, mirroring `deployments/<chainId>.json`.
+They are not environment variables: each market has its own Solver and its own venue pair, so a flat
+`VITE_SOLVER` stopped being expressible once there was more than one market.
+
+---
+
 # Where to pick up next
 
 1. **Inventory-aware pricing** (§7.12) - as an additive strategy rule or strategy configuration.
    Do not build a second pricing engine.
-2. **Subgraph deployment addresses.** `subgraph/subgraph.yaml` ships zero addresses and
-   `startBlock: 0` deliberately, so an unconfigured deploy indexes nothing rather than the wrong
-   chain. Fill these in before deploying.
-3. **Sepolia redeploy.** The addresses baked into `app/src/config/contracts.ts` predate the Part 7
-   contracts. The demo currently runs against local anvil; redeploy before using the live addresses.
+2. **Subgraph deployment.** `subgraph/subgraph.yaml` now carries the live Sepolia addresses and
+   real start blocks, but the subgraph itself has not been deployed - that needs a Graph Studio
+   account. Until it is, the frontend's reliability column honestly reads `-`.
+3. **Etherscan source verification** for the Sepolia deployment. The deployed contracts are
+   currently evidenced by bytecode comparison against locally-built artifacts
+   (`scripts/audit/bytecode.mjs`), which is reproducible but is not the same as published source.
 4. **Live-sourced v4 base liquidity** - see `uniswap-v4.md` §12; only `HookStrategyAdapter`'s
    cap-source would change.
 
@@ -721,6 +804,37 @@ npm run typecheck       # tsc --noEmit
 npm run test:fork       # mainnet fork tests (needs RPC_URL)
 ```
 
-Current state: **156 Solidity tests, 75 offchain tests, 0 failures.**
+```bash
+forge test --match-path "test/fork/SepoliaMarketplaceFork.t.sol" -vv
+```
+
+The last of those runs the whole Sepolia deployment plan against a fork of the live network and
+trades through it. It is the gate on a real broadcast: it is the only place that can prove the
+*reused* Sepolia state is what an audit concluded it is, and that Uniswap's own Sepolia v4
+contracts are ABI-compatible with the v4-core version this repository compiles against.
+
+Current state: **163 Solidity tests (7 of them the Sepolia fork suite), 75 offchain compiler tests,
+52 frontend tests, 0 failures.**
 
 On Windows, Foundry was run under WSL for this project; see the root `README.md`.
+
+---
+
+# The public deployment
+
+`docs/sepolia-deployment.md` is the record of what actually runs on Ethereum Sepolia: the on-chain
+audit of what was already there, the decision log for every component (reused / redeployed / not
+used / invalid), the token-provenance argument, the live liquidity breakdown, every transaction hash
+and the limitations. The short version of the architecture-relevant parts:
+
+- The marketplace layer (`Solver`, `AquaVenue`, `UniswapV4Venue`) was redeployed because the
+  previous Sepolia deployment predated `IExecutableLiquidity` - it had no `executableLiquidity()`
+  and a six-field `VenueSnapshot`, so the no-phantom-liquidity property was absent from the public
+  chain entirely.
+- The Uniswap v4 leg was re-pointed from a privately-deployed `PoolManager` onto **Uniswap's own**
+  Sepolia deployment. A v4 hook binds to its manager at construction, so that migration brought a
+  freshly CREATE2-mined `ConditionalLiquidityHook` with it; the strategy behind the pool is the one
+  already registered.
+- Everything else - tokens, Aqua, `AquaSwapVMRouter`, both registry/validator/engine/extruction
+  sets, both market-state providers, both registered strategies - was reused after on-chain
+  verification.

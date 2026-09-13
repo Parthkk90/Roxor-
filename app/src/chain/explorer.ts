@@ -20,6 +20,17 @@ export function addressUrl(address: `0x${string}` | undefined): string | null {
   return base ? `${base}/address/${address}` : null;
 }
 
+/**
+ * The explorer's own name, for link text.
+ *
+ * "View on Etherscan" tells a user where they are about to go; "0x1dd5...3f74" tells them only that
+ * a hash exists. `null` on a chain with no explorer, so callers omit the phrase rather than
+ * inventing a destination.
+ */
+export function explorerName(): string | null {
+  return chain.blockExplorers?.default?.name ?? null;
+}
+
 export function shortHash(hash: string): string {
   return hash.length > 14 ? `${hash.slice(0, 8)}…${hash.slice(-6)}` : hash;
 }

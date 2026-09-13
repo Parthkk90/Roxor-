@@ -2,6 +2,7 @@ import { ArrowRight, Waves } from "lucide-react";
 
 import { APP_ROUTES, href, ROUTE_LABELS, useRoute } from "../../nav/useNav";
 import { ConnectButton } from "./ConnectButton";
+import { NETWORK_LABEL } from "../../config/contracts";
 
 /**
  * Two modes, one header.
@@ -10,6 +11,9 @@ import { ConnectButton } from "./ConnectButton";
  * trade yet should be offered one action, not four, and prompting for a wallet before they know
  * what the product does is how landing pages lose people. Inside the app the nav and wallet
  * controls appear, and the logo becomes the way back out.
+ *
+ * The network chip is present in both modes and is never hidden behind a menu. Every figure on
+ * every screen is a testnet figure, and a reader who misses that misreads all of them.
  */
 export function Header() {
   const route = useRoute();
@@ -23,6 +27,10 @@ export function Header() {
         </span>
         <span>Conditional Liquidity</span>
       </a>
+
+      <span className="badge badge-net" title="All balances, prices and transactions here are testnet only.">
+        {NETWORK_LABEL}
+      </span>
 
       {!isLanding && (
         <nav className="nav" aria-label="Primary">

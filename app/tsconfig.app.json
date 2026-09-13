@@ -20,8 +20,15 @@
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+    /*
+     * Off because the strategy screen compiles parameters with the project's real CLF compiler in
+     * `../src`, whose shared types are authored as `enum`s whose numeric values are part of the
+     * on-chain ABI (`src/types/index.ts`). Erasable-only syntax would force a second, divergent
+     * copy of those constants in the browser - exactly the drift the compiler's Solidity
+     * differential test exists to prevent.
+     */
+    "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "../src/types", "../src/compiler"]
 }

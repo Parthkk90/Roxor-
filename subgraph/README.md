@@ -69,9 +69,10 @@ npm run codegen && npm run build
 
 ## Deploy
 
-Fill in the real contract addresses and `startBlock` for each data source in `subgraph.yaml`
-first - they ship as zero addresses so an unconfigured deploy indexes nothing rather than
-silently indexing the wrong chain.
+`subgraph.yaml` is pointed at the live Ethereum Sepolia deployment recorded in
+`../deployments/11155111.json` (see `../docs/sepolia-deployment.md`), with each `startBlock` set to
+the block its contract was created in. Re-point every data source before deploying against any
+other chain - a manifest left pointing here would silently index the wrong deployment.
 
 ```bash
 npm run auth      # uses GRAPH_DEPLOY_KEY

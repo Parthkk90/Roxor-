@@ -86,6 +86,9 @@ contract DeploySolver is Script {
         bytes32 aquaStrategyId;
         address uniOracle;
         bytes32 uniStrategyId;
+        /// @dev Recorded so the frontend's strategy builder can rebuild the SwapVM program a new
+        ///      strategy on this market would run - it is otherwise unrecoverable from chain.
+        address extruction;
     }
 
     /// @dev Shared Uniswap-v4 infrastructure. One `PoolManager` and one mined hook host all three
@@ -180,11 +183,20 @@ contract DeploySolver is Script {
         address maker,
         MockERC20 tokenX,
         MockERC20 tokenY
-    ) private returns (Market memory market) {
+    )
+        private
+        returns (Market memory market)
+    {
         (address tokenA, address tokenB) = StrategyLib.sortTokens(address(tokenX), address(tokenY));
 
-        (bytes32 aStrategyId, ConditionalLiquidityEngine aquaEngine, ConditionalLiquidityRegistry aquaRegistry, address aquaOracle, ISwapVM.Order memory aquaOrder) =
-            _deployAquaStrategy(owner, maker, tokenA, tokenB);
+        (
+            bytes32 aStrategyId,
+            ConditionalLiquidityEngine aquaEngine,
+            ConditionalLiquidityRegistry aquaRegistry,
+            address aquaOracle,
+            ISwapVM.Order memory aquaOrder,
+            address aquaExtruction
+        ) = _deployAquaStrategy(owner, maker, tokenA, tokenB);
 
         (bytes32 uStrategyId, PoolKey memory poolKey) = _deployUniswapStrategy(maker, tokenA, tokenB);
 
@@ -206,7 +218,8 @@ contract DeploySolver is Script {
             aquaOracle: aquaOracle,
             aquaStrategyId: aStrategyId,
             uniOracle: address(_uniOracle),
-            uniStrategyId: uStrategyId
+            uniStrategyId: uStrategyId,
+            extruction: aquaExtruction
         });
     }
 
@@ -222,7 +235,8 @@ contract DeploySolver is Script {
             ConditionalLiquidityEngine engine,
             ConditionalLiquidityRegistry registry,
             address oracleAddr,
-            ISwapVM.Order memory order
+            ISwapVM.Order memory order,
+            address extructionAddr
         )
     {
         registry = new ConditionalLiquidityRegistry(new StrategyValidator(), owner);
@@ -231,6 +245,7 @@ contract DeploySolver is Script {
         ConditionalLiquidityExtruction extruction = new ConditionalLiquidityExtruction(engine, registry);
         registry.setStateAuthority(address(engine));
         oracleAddr = address(oracle);
+        extructionAddr = address(extruction);
 
         MakerTraitsLib.Args memory args;
         args.maker = maker;
@@ -264,7 +279,10 @@ contract DeploySolver is Script {
         address maker,
         address tokenA,
         address tokenB
-    ) private returns (bytes32 strategyId, PoolKey memory poolKey) {
+    )
+        private
+        returns (bytes32 strategyId, PoolKey memory poolKey)
+    {
         poolKey = PoolKey({
             currency0: Currency.wrap(tokenA),
             currency1: Currency.wrap(tokenB),
@@ -352,6 +370,7 @@ contract DeploySolver is Script {
             vm.serializeAddress(obj, "aquaOracle", m.aquaOracle);
             vm.serializeBytes32(obj, "aquaStrategyId", m.aquaStrategyId);
             vm.serializeAddress(obj, "uniOracle", m.uniOracle);
+            vm.serializeAddress(obj, "extruction", m.extruction);
             marketJson[i] = vm.serializeBytes32(obj, "uniStrategyId", m.uniStrategyId);
         }
 

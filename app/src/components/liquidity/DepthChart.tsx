@@ -2,24 +2,30 @@ import { memo } from "react";
 
 import { depthLayers } from "../../market/derive";
 import type { LiquiditySource } from "../../market/types";
-import { fmt } from "../../format";
+import { fmt, fmtBps, type TokenDisplay } from "../../format";
 
 /**
- * The four depth layers on one shared axis.
+ * "How much can actually be paid out?" - the product's central claim, drawn as a picture.
  *
- * This is the product's central claim drawn as a picture: each bar can only be shorter than the one
- * above it, because the chain derives each from the last. Advertised is the promise; conditional is
- * what a route may actually allocate against. Showing them stacked on a common scale is what makes
- * the gap impossible to misread as "nearly the same number".
+ * Each bar can only be shorter than the one above it, because the chain derives each from the last.
+ * Advertised is the promise; executable is what a route may allocate against. Sharing one axis is
+ * what makes the gap impossible to misread as "nearly the same number".
+ *
+ * The first and last rows are deliberately emphasised over the two in between: those two are the
+ * *claim* and the *answer*, and the middle rows are the working. A reader who takes only the top
+ * and bottom line away has taken away the right thing.
  *
  * Every value is read from `executableLiquidity` - nothing here is modelled or estimated.
  */
 export const DepthChart = memo(function DepthChart({
   source,
-  symbol,
+  token,
+  strategyBps,
 }: {
   source: LiquiditySource;
-  symbol: string;
+  token: TokenDisplay;
+  /** The strategy's live multiplier, shown as the step between deliverable and executable. */
+  strategyBps?: number;
 }) {
   const layers = depthLayers(source);
   if (!layers) return null;
@@ -33,41 +39,53 @@ export const DepthChart = memo(function DepthChart({
       v: layers.advertised,
       cls: "depth-advertised",
       note: "What this source says it will trade",
+      emphasis: true,
     },
     {
       k: "In the wallet",
       v: layers.wallet,
       cls: "depth-wallet",
       note: "What it actually holds right now",
+      emphasis: false,
     },
     {
       k: "Deliverable",
       v: layers.deliverable,
       cls: "depth-deliverable",
       note: "The smallest of advertised, held and permitted",
+      emphasis: false,
     },
     {
       k: "Executable",
       v: layers.conditional,
       cls: "depth-executable",
-      note: "After the strategy's current limit - the only depth a route may use",
+      note:
+        strategyBps === undefined
+          ? "After the strategy's current limit - the only depth a route may use"
+          : `Deliverable at the strategy's current limit of ${fmtBps(strategyBps)} - the only depth a route may use`,
+      emphasis: true,
     },
   ];
 
   return (
     <div className="depthchart">
-      {rows.map((row) => (
-        <div className="depthrow" key={row.k}>
+      {rows.map((row, i) => (
+        <div className={`depthrow${row.emphasis ? " depthrow-key" : ""}`} key={row.k}>
           <div className="depthrow-head">
             <span>{row.k}</span>
             <b className="num">
-              {fmt(row.v)} {symbol}
+              {fmt(row.v, token.decimals)} {token.symbol}
             </b>
           </div>
           <div className={`depthrow-track ${row.cls}`}>
             <i style={{ width: width(row.v) }} />
           </div>
           <span className="depthrow-note">{row.note}</span>
+          {/* The multiplier is the one step that is a strategy decision rather than an arithmetic
+              minimum, so it is labelled on the edge between the two rows it applies to. */}
+          {i === 2 && strategyBps !== undefined && strategyBps < 10_000 && (
+            <span className="depthrow-op">x {fmtBps(strategyBps)} strategy limit</span>
+          )}
         </div>
       ))}
     </div>
@@ -83,18 +101,22 @@ export const DepthChart = memo(function DepthChart({
 export const MarketDepthBar = memo(function MarketDepthBar({
   sources,
   total,
-  symbol,
+  token,
 }: {
   sources: LiquiditySource[];
   total: bigint;
-  symbol: string;
+  token: TokenDisplay;
 }) {
   const usable = sources.filter((s) => (s.executable?.conditionalLiquidity ?? 0n) > 0n);
   if (total === 0n || usable.length === 0) return null;
 
   return (
     <div className="mdepth">
-      <div className="mdepth-bar" role="img" aria-label={`Executable depth by source, total ${fmt(total)} ${symbol}`}>
+      <div
+        className="mdepth-bar"
+        role="img"
+        aria-label={`Executable depth by source, total ${fmt(total, token.decimals)} ${token.symbol}`}
+      >
         {usable.map((source, i) => {
           const share = Number((source.executable!.conditionalLiquidity * 10_000n) / total) / 100;
           return (
@@ -102,7 +124,7 @@ export const MarketDepthBar = memo(function MarketDepthBar({
               key={source.key}
               className={`mdepth-seg mdepth-seg-${i % 3}`}
               style={{ flexGrow: Math.max(share, 0.5) }}
-              title={`${source.name}: ${fmt(source.executable!.conditionalLiquidity)} ${symbol}`}
+              title={`${source.name}: ${fmt(source.executable!.conditionalLiquidity, token.decimals)} ${token.symbol}`}
             />
           );
         })}
@@ -114,7 +136,7 @@ export const MarketDepthBar = memo(function MarketDepthBar({
             <span>
               {source.name}{" "}
               <b className="num">
-                {fmt(source.executable!.conditionalLiquidity)} {symbol}
+                {fmt(source.executable!.conditionalLiquidity, token.decimals)} {token.symbol}
               </b>
             </span>
           </span>

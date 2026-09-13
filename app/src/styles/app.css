@@ -349,8 +349,13 @@ dialog.sheet::backdrop { background: rgba(3, 5, 8, 0.7); backdrop-filter: blur(2
   .page { padding: var(--s5) var(--s4) var(--s12); }
   .topbar { padding: var(--s3) var(--s4); gap: var(--s3); }
   .brand span { display: none; }
-  .nav { margin-left: 0; }
-  .nav a { padding: 0 10px; }
+  /* Four destinations plus a wallet button no longer fit a phone in one row, and the row does not
+     wrap. The nav is the part that can scroll without costing anything: the brand stays put as the
+     way home, the primary action stays reachable at the right edge, and no destination is dropped.
+     The scrollbar itself is hidden because a 2px track under four words reads as damage. */
+  .nav { margin-left: 0; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { padding: 0 10px; flex: 0 0 auto; }
   .tokenfield input, .out-amount { font-size: 1.6rem; }
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .act-row { grid-template-columns: 1fr; }
@@ -360,3 +365,13 @@ dialog.sheet::backdrop { background: rgba(3, 5, 8, 0.7); backdrop-filter: blur(2
 @media (max-width: 380px) {
   .nav a { font-size: var(--fs-xs); padding: 0 8px; }
 }
+
+/* Network identity, always visible in the header. Deliberately not a colour a reader could mistake
+   for a status indicator - it states where they are, it does not say anything is wrong. */
+.badge-net { border-color: var(--warn-line); background: var(--warn-wash); color: var(--warn); white-space: nowrap; }
+@media (max-width: 640px) { .badge-net { display: none; } }
+
+/* The network statement, repeated at the foot of every screen. The header chip is a label; this is
+   the sentence - it says what the network is AND what that means for the money. */
+.site-foot { display: flex; flex-direction: column; align-items: center; gap: var(--s2); padding: var(--s6) var(--s5) var(--s8); text-align: center; }
+.site-foot .badge-net { display: inline-flex; }

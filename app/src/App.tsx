@@ -3,8 +3,9 @@ import { Header } from "./components/layout/Header";
 import { LandingPage } from "./components/landing/LandingPage";
 import { SwapPage } from "./components/swap/SwapPage";
 import { MarketPage } from "./components/market/MarketPage";
+import { StrategyPage } from "./components/strategy/StrategyPage";
 import { ActivityPage } from "./components/activity/ActivityPage";
-import { chain } from "./config/contracts";
+import { NETWORK_TRUST_LABEL } from "./config/contracts";
 
 /**
  * Note what is NOT here: no providers.
@@ -35,10 +36,14 @@ export default function App() {
       {route === "swap" && <SwapPage />}
 
       {route === "liquidity" && <MarketPage />}
+      {route === "strategy" && <StrategyPage />}
       {route === "activity" && <ActivityPage />}
 
-      <footer style={{ padding: "var(--s5)", textAlign: "center" }}>
-        <span className="label">{chain.name} · demo only, not for real funds</span>
+      <footer className="site-foot">
+        <span className="badge badge-net">{NETWORK_TRUST_LABEL}</span>
+        <span className="label">
+          Every balance, price and transaction on this site is testnet only.
+        </span>
       </footer>
     </div>
   );
