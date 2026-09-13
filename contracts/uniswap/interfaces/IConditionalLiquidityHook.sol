@@ -20,7 +20,7 @@ interface IConditionalLiquidityHook is IStrategyTypes {
     ///         trace/simulation tooling, never as a persisted log.
     error ExceedsEffectiveLiquidity(PoolId poolId, bytes32 strategyId, uint256 requestedAmount, uint256 effectiveLiquidity);
 
-    /// @notice Emitted only when a swap causes the strategy's mode to actually change — a filtered
+    /// @notice Emitted only when a swap causes the strategy's mode to actually change - a filtered
     ///         view of {ConditionalLiquidityApplied} for indexers that only care about
     ///         NORMAL/DEFENSIVE/RECOVERY transitions, not every swap. Mirrors
     ///         `IConditionalLiquidityEngine.StateTransition` on the Aqua/SwapVM side.
@@ -46,7 +46,7 @@ interface IConditionalLiquidityHook is IStrategyTypes {
     ///         never appear as a mined, persisted log: emitting it and then reverting (as
     ///         {ExceedsEffectiveLiquidity} requires) would unwind the emission along with
     ///         everything else in that call frame. This is a fundamental EVM constraint, not an
-    ///         oversight — see `docs/uniswap-v4.md` for the full explanation.
+    ///         oversight - see `docs/uniswap-v4.md` for the full explanation.
     event ConditionalSwapRejected(
         PoolId indexed poolId,
         bytes32 indexed strategyId,

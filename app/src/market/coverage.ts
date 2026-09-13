@@ -1,6 +1,6 @@
 /**
  * Coverage presentation. Mirrors `src/analytics/coverage.ts` and
- * `contracts/libraries/ExecutableLiquidityLib.sol` — the thresholds must agree with both, because a
+ * `contracts/libraries/ExecutableLiquidityLib.sol` - the thresholds must agree with both, because a
  * UI that disagrees with the chain about a maker's health is worse than one showing nothing.
  *
  * These are display buckets. Nothing routes on a band; the solver acts on the underlying bps, and
@@ -33,7 +33,7 @@ export function coverageTone(band: CoverageBand): StatusTone {
 
 /**
  * Plain-language gloss for a band. Shown alongside the percentage so the signal is not carried by
- * colour alone — previously the band name was never rendered anywhere, only the number, which left
+ * colour alone - previously the band name was never rendered anywhere, only the number, which left
  * the whole reliability signal inaccessible to anyone who could not distinguish the dot colours.
  */
 export function coverageMeaning(band: CoverageBand): string {

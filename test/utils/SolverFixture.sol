@@ -264,7 +264,7 @@ abstract contract SolverFixture is Test {
     }
 
     /// @notice Force the Aqua maker's ERC20 approval *to the Aqua contract* to exactly `amount`.
-    /// @dev Approval to Aqua — not to the router — is the one that binds: Aqua is the contract
+    /// @dev Approval to Aqua - not to the router - is the one that binds: Aqua is the contract
     ///      that calls `transferFrom` on the maker. Passing 0 models a maker revoking mid-flight.
     function _setAquaMakerAllowance(MockERC20 token, uint256 amount) internal {
         vm.prank(aquaMaker);

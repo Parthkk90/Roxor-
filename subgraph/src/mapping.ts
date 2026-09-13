@@ -1,5 +1,5 @@
 /**
- * Conditional Liquidity Marketplace — event handlers.
+ * Conditional Liquidity Marketplace - event handlers.
  *
  * LAYER 1 OF THREE. Everything written here is discovery, history and analytics. It is never a
  * settlement input, and two things follow from that which are easy to get wrong:
@@ -10,8 +10,8 @@
  *      Consumers must treat every liquidity field here as a lower-confidence hint and re-read the
  *      chain before acting.
  *
- *   2. Reliability is computed from what actually settled. A reverted settlement emits nothing —
- *      its logs are unwound with the rest of the call frame — so `failedFills` can only ever be
+ *   2. Reliability is computed from what actually settled. A reverted settlement emits nothing -
+ *      its logs are unwound with the rest of the call frame - so `failedFills` can only ever be
  *      inferred, never observed. It is therefore left at zero by the indexer and documented as
  *      such, rather than silently reported as a number that looks measured but is not.
  */
@@ -80,7 +80,7 @@ function loadOrCreateVenue(id: Bytes, kind: string): Venue {
  * successfulFills * 10000 / attemptedFills, with no attempts reading as fully reliable.
  *
  * Ranking input only. A maker at 9910 with an empty wallet has zero executable liquidity, and the
- * solver must — and structurally does — treat them as unroutable regardless of this number.
+ * solver must - and structurally does - treat them as unroutable regardless of this number.
  */
 function recomputeReliability(maker: Maker): void {
   if (maker.attemptedFills.equals(ZERO)) {
@@ -133,7 +133,7 @@ export function handleStrategyRegistered(event: StrategyRegistered): void {
   strategy.maker = event.params.maker;
   // The pair is stored sorted and direction-agnostic on-chain (tokenA < tokenB); direction is
   // chosen by the taker at execution time. `tokenIn`/`tokenOut` here therefore mean "side A" and
-  // "side B", not a fixed trade direction — discovery queries must filter on the unordered pair.
+  // "side B", not a fixed trade direction - discovery queries must filter on the unordered pair.
   strategy.tokenIn = event.params.tokenA;
   strategy.tokenOut = event.params.tokenB;
   strategy.venue = venue.kind;
@@ -237,7 +237,7 @@ export function handleConditionalLiquidityApplied(event: ConditionalLiquidityApp
   maker.save();
 
   // The hook reports the requested amount and the ceiling it was checked against, not an output
-  // amount — pricing happens inside the pool, not in the conditional layer. `amountOut` is left
+  // amount - pricing happens inside the pool, not in the conditional layer. `amountOut` is left
   // at zero rather than being back-derived from a spread, which would be a fabricated number.
   const swap = new Swap(eventId(event));
   swap.strategy = strategy.id;
@@ -281,7 +281,7 @@ export function handleHookStateTransition(event: HookStateTransition): void {
  *
  * The legs are emitted *before* the plan-level event within that same transaction, which means
  * whichever handler runs first has to be the one that creates the entity. Both therefore
- * load-or-create against the same id and fill in only their own half — ordering-independent by
+ * load-or-create against the same id and fill in only their own half - ordering-independent by
  * construction rather than by assumption.
  */
 function loadOrCreateExecution(event: ethereum.Event): RouteExecution {
@@ -357,7 +357,7 @@ export function handleLegExecuted(event: LegExecuted): void {
   swap.save();
 
   // `executableLiquidity` is the revalidated ceiling at settlement time, so this snapshot records
-  // real solvency rather than an advertisement — the highest-confidence liquidity observation the
+  // real solvency rather than an advertisement - the highest-confidence liquidity observation the
   // index ever gets, and still not a quote.
   writeSnapshot(strategy as Strategy, event.params.executableLiquidity, event.params.executableLiquidity, event);
 }

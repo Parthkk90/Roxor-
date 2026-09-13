@@ -4,7 +4,7 @@ pragma solidity ^0.8.30;
 import { SolverFixture } from "../utils/SolverFixture.sol";
 import { ISolver } from "../../contracts/solver/interfaces/ISolver.sol";
 
-/// @notice Test 5 — Insufficient Liquidity: a request larger than every venue's live effective
+/// @notice Test 5 - Insufficient Liquidity: a request larger than every venue's live effective
 ///         liquidity combined must revert {ISolver.NoRoute}, never invent liquidity that isn't there.
 contract SolverInsufficientLiquidityTest is SolverFixture {
     function setUp() public {

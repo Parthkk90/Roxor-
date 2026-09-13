@@ -7,14 +7,14 @@ import { IExecutableLiquidity } from "../venues/interfaces/IExecutableLiquidity.
 
 /// @title LiquidityHealthLens
 /// @notice Batched, stateless read of every venue's live depth, price, regime and solvency for one
-///         token pair — the on-chain half of the Liquidity Health API.
+///         token pair - the on-chain half of the Liquidity Health API.
 ///
 /// @dev Deliberately a *lens*, not a component. It holds no storage, has no owner, no
 ///      initialiser and no privileged caller; it can only call `view` functions on venues the
 ///      caller names. Nothing in the protocol routes through it, so it cannot become a second
 ///      source of truth: deleting it would change no settlement behaviour. It exists purely so a
 ///      frontend or indexer can read what would otherwise be `2 * venues + 1` separate RPC round
-///      trips — reads that must come from the *same block* to be coherent, which separate round
+///      trips - reads that must come from the *same block* to be coherent, which separate round
 ///      trips cannot guarantee.
 ///
 /// @dev The values it returns are the same ones the Solver acts on, read the same way, which is
@@ -35,7 +35,7 @@ contract LiquidityHealthLens {
     /// @dev A venue that reverts (unknown pair, docked strategy, a backend that has gone away) is
     ///      returned zeroed rather than being allowed to revert the whole batch. A marketplace
     ///      that goes blank because one maker misbehaved is worse than one that shows that maker
-    ///      as offline — and "offline" is exactly what zero depth already means to the router.
+    ///      as offline - and "offline" is exactly what zero depth already means to the router.
     function health(ILiquidityVenue[] calldata venues, address tokenIn, address tokenOut) external view returns (VenueHealth[] memory out) {
         out = new VenueHealth[](venues.length);
 
@@ -76,7 +76,7 @@ contract LiquidityHealthLens {
     /// @notice Ask the solver for a plan without reverting, for quote-as-you-type UIs.
     /// @dev Returns `routable = false` instead of bubbling {ISolver.NoRoute}, so a frontend can
     ///      show "no route" as a state rather than having to parse a revert. The plan returned on
-    ///      success is the real one the solver would build — but it is a *quote*, not a promise:
+    ///      success is the real one the solver would build - but it is a *quote*, not a promise:
     ///      settlement re-derives and re-validates it against state at execution time.
     function tryRoute(
         ISolver solver,

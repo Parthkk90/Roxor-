@@ -13,7 +13,7 @@ import { IConditionalLiquidityRegistry } from "../core/interfaces/IConditionalLi
 /// @notice The PoolId <-> Strategy association layer. Deliberately holds no swap-execution logic
 ///         and no copy of the rule engine: every read here either returns locally-owned pool
 ///         metadata or delegates straight to the existing {IConditionalLiquidityRegistry} /
-///         {IConditionalLiquidityEngine} — the exact same contracts the Aqua/SwapVM backend uses.
+///         {IConditionalLiquidityEngine} - the exact same contracts the Aqua/SwapVM backend uses.
 ///
 /// @dev This is the "HookStrategyAdapter" box in:
 ///        StrategyRegistry -> Strategy State -> HookStrategyAdapter -> ConditionalLiquidityHook -> PoolManager
@@ -34,7 +34,7 @@ abstract contract HookStrategyAdapter is IHookStrategyAdapter {
     }
 
     /// @dev Validates everything in the strategy/registry domain and writes the association.
-    ///      Does NOT validate that the pool itself exists — that requires PoolManager, which this
+    ///      Does NOT validate that the pool itself exists - that requires PoolManager, which this
     ///      contract deliberately does not depend on. {ConditionalLiquidityHook.registerPoolStrategy}
     ///      performs that check before calling this.
     function _registerPoolStrategy(PoolKey calldata key, bytes32 strategyId, uint256 baseLiquidity0, uint256 baseLiquidity1) internal {

@@ -14,12 +14,12 @@ import { RuleEngineLib } from "../../contracts/libraries/RuleEngineLib.sol";
 /// @dev Both implementations decode the exact same compiled bytecode
 ///      (`test/compiler/golden/volatility-shield.bytecode.hex`) rather than a hand-described
 ///      version of the strategy's logic, so this catches divergence in either the bytecode decoder
-///      or the evaluation semantics — not just "the Python author agreed with the Solidity author
+///      or the evaluation semantics - not just "the Python author agreed with the Solidity author
 ///      about what the strategy should do."
 ///
 ///      Regenerate the fixture after a deliberate change to RuleEngineLib or RuleProgram with:
 ///        python sim/generate_vectors.py
-///      and review the diff before trusting it — an unreviewed regeneration would let a bug in
+///      and review the diff before trusting it - an unreviewed regeneration would let a bug in
 ///      the Python model "confirm" a matching bug in Solidity.
 contract ReferenceEngineDifferentialTest is Test {
     bytes internal program;

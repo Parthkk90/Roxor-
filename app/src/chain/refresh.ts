@@ -13,8 +13,8 @@ import { useObservedBlock } from "./ObservedBlockContext";
  *    block mints new keys, so the pre-trade entries are no longer mounted and cannot be displayed
  *    at all. This is the part that makes staleness *unrepresentable* rather than merely unlikely.
  *
- * 2. **Invalidate the affected families.** Belt and braces for anything not block-scoped — the
- *    subgraph-backed activity and reliability queries — and it forces an immediate refetch rather
+ * 2. **Invalidate the affected families.** Belt and braces for anything not block-scoped - the
+ *    subgraph-backed activity and reliability queries - and it forces an immediate refetch rather
  *    than waiting for the next poll.
  *
  * Invalidation alone would not be enough: `invalidateQueries` refetches straight away, and on a
@@ -22,7 +22,7 @@ import { useObservedBlock } from "./ObservedBlockContext";
  * would happily return pre-trade depth, and the UI would look as though the swap never happened.
  * Keying on the block is what stops that from being representable.
  *
- * These are wagmi's real generated key prefixes — `['readContract', {...}]`, `['balance', {...}]`
+ * These are wagmi's real generated key prefixes - `['readContract', {...}]`, `['balance', {...}]`
  * and so on. wagmi builds them itself and does not accept a caller-supplied `queryKey`, so matching
  * by prefix is the supported way to address them in bulk.
  */

@@ -5,7 +5,7 @@ import { chain } from "../config/contracts";
  *
  * The previous build hardcoded `sepolia.etherscan.io` while the app was configured for anvil, so
  * every "view transaction" link pointed at a Sepolia transaction that does not exist. Returning
- * `null` lets the UI omit the link entirely rather than offer a broken one — on a local chain there
+ * `null` lets the UI omit the link entirely rather than offer a broken one - on a local chain there
  * is genuinely nowhere to send the user.
  */
 export function txUrl(hash: `0x${string}` | undefined): string | null {
@@ -18,6 +18,17 @@ export function addressUrl(address: `0x${string}` | undefined): string | null {
   if (!address) return null;
   const base = chain.blockExplorers?.default?.url;
   return base ? `${base}/address/${address}` : null;
+}
+
+/**
+ * The explorer's own name, for link text.
+ *
+ * "View on Etherscan" tells a user where they are about to go; "0x1dd5...3f74" tells them only that
+ * a hash exists. `null` on a chain with no explorer, so callers omit the phrase rather than
+ * inventing a destination.
+ */
+export function explorerName(): string | null {
+  return chain.blockExplorers?.default?.name ?? null;
 }
 
 export function shortHash(hash: string): string {

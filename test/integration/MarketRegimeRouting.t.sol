@@ -9,14 +9,14 @@ import { IStrategyTypes } from "../../contracts/core/interfaces/IStrategyTypes.s
 import { LiquidityHealthLens } from "../../contracts/solver/LiquidityHealth.sol";
 import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 
-/// @notice Features 6 & 7 — market-regime routing, end to end, with real settlement.
+/// @notice Features 6 & 7 - market-regime routing, end to end, with real settlement.
 ///
 /// @dev Walks the full demo narrative in one test: all venues NORMAL, a large trade routed and
 ///      actually executed; volatility spikes, the strategy shifts to DEFENSIVE, depth collapses
 ///      and the route changes; calm returns, RECOVERY restores partial depth; and finally a maker
 ///      quietly drains their wallet while advertising the same virtual balance, and the solver
 ///      refuses the phantom depth. Every step settles real ERC20 through real Aqua/SwapVM and a
-///      real Uniswap v4 pool — no mocked venues, no simulated fills.
+///      real Uniswap v4 pool - no mocked venues, no simulated fills.
 contract MarketRegimeRoutingTest is SolverFixture {
     LiquidityHealthLens internal lens;
 
@@ -100,7 +100,7 @@ contract MarketRegimeRoutingTest is SolverFixture {
 
         // ---- 13. The solver routes again at the restored depth. ----
         // 30 no longer needs a split: restored depth means a single venue can absorb it. Which
-        // venue that is has genuinely changed, and not because of regime — the earlier fills were
+        // venue that is has genuinely changed, and not because of regime - the earlier fills were
         // real, so Aqua's constant-product reserve ratio has walked down from 1.5 to well under
         // Uniswap's deep ~1.0 pool. The solver follows the live price, so it now prefers Uniswap.
         // Asserting "Aqua wins" here would be asserting that trades leave no market impact.
@@ -158,7 +158,7 @@ contract MarketRegimeRoutingTest is SolverFixture {
     }
 
     /// @dev The batched lens must agree with the individual venue reads it replaces, in the same
-    ///      block — that equality is the only reason a UI may trust it.
+    ///      block - that equality is the only reason a UI may trust it.
     function test_LensAgreesWithIndividualVenueReads() public {
         _setSharedVolatility(6500, 4000e18);
         _setAquaMakerWalletBalance(tokenA, 18 ether);

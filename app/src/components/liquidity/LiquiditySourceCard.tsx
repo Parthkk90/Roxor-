@@ -4,7 +4,7 @@ import { ArrowDown, Diamond, Hexagon } from "lucide-react";
 import type { SourceAllocation } from "../../market/derive";
 import { coverageBand } from "../../market/coverage";
 import type { StrategyMode } from "../../market/types";
-import { fmt } from "../../format";
+import { fmt, fmtBps, type TokenDisplay } from "../../format";
 import { bandColor } from "./CoverageIndicator";
 import { CoverageIndicator } from "./CoverageIndicator";
 import { StrategyDrawer } from "./StrategyDrawer";
@@ -27,7 +27,7 @@ const MODE_COLOR: Record<StrategyMode, string> = {
  * renderings of venue state was how the old build ended up with a swap panel and a marketplace
  * panel quoting different depths for the same block.
  *
- * The two venues are visually distinguished — sigil, wording, and what the detail link is called —
+ * The two venues are visually distinguished - sigil, wording, and what the detail link is called -
  * because they really are different things. Aqua is a maker's wallet lending you its balance; a v4
  * pool already holds its own reserves. Flattening them into identical rows hides a difference the
  * trader's risk actually depends on.
@@ -37,13 +37,13 @@ const MODE_COLOR: Record<StrategyMode, string> = {
  */
 export const LiquiditySourceCard = memo(function LiquiditySourceCard({
   allocation,
-  symbolIn,
-  symbolOut,
+  tokenIn,
+  tokenOut,
   compact = false,
 }: {
   allocation: SourceAllocation;
-  symbolIn: string;
-  symbolOut: string;
+  tokenIn: TokenDisplay;
+  tokenOut: TokenDisplay;
   compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -108,18 +108,19 @@ export const LiquiditySourceCard = memo(function LiquiditySourceCard({
           </span>
         </header>
 
-        {/* Executable is the headline. Advertised is shown beneath it, struck, with an arrow — the
+        {/* Executable is the headline. Advertised is shown beneath it, struck, with an arrow - the
             gap has to read as a reduction, not as two unrelated numbers. */}
         <div className="lsc-depth">
           <span className="label">Executable liquidity</span>
           <span className="lsc-figure">
-            {fmt(executable.conditionalLiquidity)} <em>{symbolIn}</em>
+            {fmt(executable.conditionalLiquidity, tokenIn.decimals)} <em>{tokenIn.symbol}</em>
           </span>
           {hasGap && (
             <span className="lsc-gap">
-              <span className="lsc-advertised">{fmt(executable.virtualLiquidity)}</span> advertised
+              <span className="lsc-advertised">{fmt(executable.virtualLiquidity, tokenIn.decimals)}</span>{" "}
+              advertised
               <ArrowDown size={12} strokeWidth={2.5} aria-hidden="true" />
-              <b>{fmt(executable.conditionalLiquidity)}</b> can actually be paid
+              <b>{fmt(executable.conditionalLiquidity, tokenIn.decimals)}</b> can actually be paid
             </span>
           )}
         </div>
@@ -129,19 +130,19 @@ export const LiquiditySourceCard = memo(function LiquiditySourceCard({
         <div className="lsc-metrics">
           <span className="metric">
             <span className="k">Fee</span>
-            <span className="v">{(snapshot.spreadBps / 100).toFixed(2)}%</span>
+            <span className="v">{fmtBps(snapshot.spreadBps)}</span>
           </span>
           <span className="metric">
             <span className="k">Reliability</span>
-            {/* "—" when the index isn't configured, never 0% — they mean opposite things. */}
+            {/* "-" when the index isn't configured, never 0% - they mean opposite things. */}
             <span className="v">
-              {source.reliabilityBps === undefined ? "—" : `${(source.reliabilityBps / 100).toFixed(1)}%`}
+              {source.reliabilityBps === undefined ? "-" : fmtBps(source.reliabilityBps, 1)}
             </span>
           </span>
           <span className="metric">
             <span className="k">This trade</span>
             <span className="v" style={allocation.included ? { color: bandColor(band) } : undefined}>
-              {allocation.included ? `${allocation.sharePct.toFixed(0)}%` : "—"}
+              {allocation.included ? `${allocation.sharePct.toFixed(0)}%` : "-"}
             </span>
           </span>
         </div>
@@ -155,8 +156,8 @@ export const LiquiditySourceCard = memo(function LiquiditySourceCard({
         open={open}
         onClose={() => setOpen(false)}
         allocation={allocation}
-        symbolIn={symbolIn}
-        symbolOut={symbolOut}
+        tokenIn={tokenIn}
+        tokenOut={tokenOut}
       />
     </>
   );

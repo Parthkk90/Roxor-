@@ -1,73 +1,49 @@
-import { useMemo } from "react";
 import { ArrowLeftRight } from "lucide-react";
 
-import { TOKENS, type TokenInfo } from "../../trade/TradeContext";
+import { markets as marketConfig } from "../../config/markets";
+import { useMarketList } from "../../market/useMarkets";
 import { useTradeActions, useTradePair } from "../../trade/useTrade";
 import { TokenSigil } from "../swap/TokenSelect";
 
 /**
- * Pair selection.
+ * Market selection.
  *
- * Built by enumerating the tokens this deployment actually configures, so adding a token adds its
- * pairs with no code change — the marketplace is structured for many markets. What it will not do
- * is list markets that do not exist: inventing an "ETH / DAI" row to make the page look busier
- * would be phantom liquidity of a different kind, on a screen whose entire argument is that we only
- * show you what is real.
- *
- * With the current two-token deployment that means one market, shown in both directions.
+ * One button per deployed market - never a combination of tokens the frontend invented. Each
+ * market corresponds to its own real `Solver` + venue pair (see `script/DeploySolver.s.sol`); a
+ * market that has not actually been deployed simply is not in `config/markets.ts`, so it cannot
+ * appear here. Symbols come from `useMarketList` (chain metadata), never a hardcoded map.
  */
 export function MarketSelector() {
   const pair = useTradePair();
-  const { selectToken, reverse } = useTradeActions();
-
-  const markets = useMemo(() => {
-    const out: Array<{ key: string; a: TokenInfo; b: TokenInfo }> = [];
-    for (let i = 0; i < TOKENS.length; i += 1) {
-      for (let j = i + 1; j < TOKENS.length; j += 1) {
-        out.push({ key: `${TOKENS[i]!.address}-${TOKENS[j]!.address}`, a: TOKENS[i]!, b: TOKENS[j]! });
-      }
-    }
-    return out;
-  }, []);
-
-  const activeKey = useMemo(() => {
-    const found = markets.find(
-      (m) =>
-        (m.a.address === pair.tokenIn.address && m.b.address === pair.tokenOut.address) ||
-        (m.b.address === pair.tokenIn.address && m.a.address === pair.tokenOut.address)
-    );
-    return found?.key;
-  }, [markets, pair.tokenIn.address, pair.tokenOut.address]);
+  const { selectMarket, reverse } = useTradeActions();
+  const marketList = useMarketList();
 
   return (
     <section className="mselect">
       <div className="mselect-list" role="tablist" aria-label="Markets">
-        {markets.map((m) => {
-          const active = m.key === activeKey;
+        {marketList.map((m, i) => {
+          const active = i === pair.marketIndex;
           return (
             <button
-              key={m.key}
+              key={m.raw.label}
               type="button"
               role="tab"
               aria-selected={active}
               className={`mselect-item${active ? " mselect-item-on" : ""}`}
-              onClick={() => {
-                selectToken("in", m.a.address);
-                selectToken("out", m.b.address);
-              }}
+              onClick={() => selectMarket(i)}
             >
               <span className="mselect-sigils" aria-hidden="true">
-                <TokenSigil symbol={m.a.symbol} />
-                <TokenSigil symbol={m.b.symbol} />
+                <TokenSigil symbol={m.tokenInSymbol} />
+                <TokenSigil symbol={m.tokenOutSymbol} />
               </span>
               <span className="mselect-name">
-                {m.a.symbol} / {m.b.symbol}
+                {m.tokenInSymbol} / {m.tokenOutSymbol}
               </span>
             </button>
           );
         })}
 
-        {markets.length === 1 && (
+        {marketConfig.length === 1 && (
           // Say plainly that there is one market rather than padding the row with fake ones.
           <span className="mselect-note">
             This deployment lists one market. More appear here as they&apos;re deployed.

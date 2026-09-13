@@ -39,7 +39,7 @@ interface ISolver {
     /// @notice A leg would allocate more than the venue can actually settle *at settlement time*.
     /// @dev The no-phantom-liquidity invariant, enforced as a hard revert rather than a silent
     ///      truncation. Distinct from {NoRoute}: {NoRoute} means the market was never deep enough,
-    ///      this means the market changed underneath a plan that was valid when it was built —
+    ///      this means the market changed underneath a plan that was valid when it was built -
     ///      a maker's wallet drained, an approval was revoked, or the strategy shifted regime
     ///      between `route` and `settle`.
     error ExecutableLiquidityShortfall(address venue, uint256 allocated, uint256 executable);
@@ -60,7 +60,7 @@ interface ISolver {
     /// @notice One venue's slice of a settled plan, emitted per leg as it settles.
     /// @dev {PlanExecuted} alone reports only a total, which cannot be attributed back to the
     ///      venue that filled it. Reliability is a per-maker property, so the marketplace needs
-    ///      per-leg attribution to compute it — hence a leg-level log alongside the plan-level one.
+    ///      per-leg attribution to compute it - hence a leg-level log alongside the plan-level one.
     ///      `executableLiquidity` is the venue's revalidated depth at settlement time, recorded so
     ///      an indexer can show how close each fill came to the venue's real ceiling without
     ///      having to re-derive it from an archive node.

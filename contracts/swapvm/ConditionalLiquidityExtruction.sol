@@ -20,7 +20,7 @@ import { FixedPointMath } from "../libraries/FixedPointMath.sol";
 ///        XYCSwap.build()                              // curve computes amountIn/amountOut
 ///        Extruction.build(address(this), "")          // <- this contract, runs last
 ///      By running after the curve, this instruction never influences the *price* the curve
-///      quotes — it only gates *how much* of that price a given trade may use, and applies the
+///      quotes - it only gates *how much* of that price a given trade may use, and applies the
 ///      strategy's spread as a final adjustment. Quote and swap therefore always agree on price;
 ///      they can only differ on whether a given size is currently permitted.
 ///

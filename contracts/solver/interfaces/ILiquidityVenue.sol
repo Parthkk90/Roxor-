@@ -13,7 +13,7 @@ import { IExecutableLiquidity } from "../../venues/interfaces/IExecutableLiquidi
 ///      fixture ships exactly one strategy per pair). A venue holds no strategy/rule logic of its
 ///      own: every field of {VenueSnapshot} is read straight from the existing
 ///      {IConditionalLiquidityEngine}/{IConditionalLiquidityRegistry}, or, for Uniswap, the hook
-///      built on top of them — the same "holds no copy of the rule engine" invariant
+///      built on top of them - the same "holds no copy of the rule engine" invariant
 ///      {HookStrategyAdapter} already documents for the Uniswap side.
 interface ILiquidityVenue is IStrategyTypes, IExecutableLiquidity {
     /// @notice One venue's currently-executable state for a given token pair/direction.
@@ -52,7 +52,7 @@ interface ILiquidityVenue is IStrategyTypes, IExecutableLiquidity {
     /// @notice Execute a real `amountIn` of `tokenIn -> tokenOut` through this venue, sending the
     ///         output to `recipient`. Assumes `amountIn` has already been transferred to this
     ///         venue's own balance by the caller.
-    /// @dev Real settlement only — no bookkeeping shortcuts. The venue is expected never to be
+    /// @dev Real settlement only - no bookkeeping shortcuts. The venue is expected never to be
     ///      called with more than its most recent `effectiveLiquidity`; it does not re-check that
     ///      itself here (the underlying protocol enforces its own cap regardless).
     /// @return amountOut The actual amount of `tokenOut` delivered to `recipient`.

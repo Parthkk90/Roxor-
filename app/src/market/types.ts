@@ -52,7 +52,7 @@ export interface LiquiditySource {
   unavailable: boolean;
   snapshot?: VenueSnapshot;
   executable?: ExecutableLiquidity;
-  /** From the subgraph, so optional by nature. `undefined` renders as "—", never as a guess. */
+  /** From the subgraph, so optional by nature. `undefined` renders as "-", never as a guess. */
   reliabilityBps?: number;
 }
 
@@ -61,7 +61,7 @@ export function executableDepth(source: LiquiditySource): bigint {
   return source.executable?.conditionalLiquidity ?? 0n;
 }
 
-/** True when a source advertises more than it can deliver — the phantom-liquidity gap. */
+/** True when a source advertises more than it can deliver - the phantom-liquidity gap. */
 export function hasPhantomGap(source: LiquiditySource): boolean {
   const exec = source.executable;
   return exec !== undefined && exec.virtualLiquidity > exec.deliverableLiquidity;

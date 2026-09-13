@@ -3,26 +3,30 @@ import { TriangleAlert } from "lucide-react";
 
 import { useMarket } from "../../market/useMarket";
 import { allocationsFor, summarize } from "../../market/derive";
+import { useMarketList } from "../../market/useMarkets";
 import { useRouteQuote } from "../../trade/useRouteQuote";
-import { useTradePair } from "../../trade/useTrade";
-import { fmt } from "../../format";
+import { useTradeActions, useTradePair } from "../../trade/useTrade";
+import { fmt, fmtBps, NO_VALUE } from "../../format";
 import { CoverageIndicator } from "../liquidity/CoverageIndicator";
 import { MarketDepthBar } from "../liquidity/DepthChart";
 import { LiquiditySourceCard } from "../liquidity/LiquiditySourceCard";
 import { NoPhantomLiquidity } from "../liquidity/NoPhantomLiquidity";
 import { MarketSelector } from "./MarketSelector";
+import { MarketOverviewTable } from "./MarketOverviewTable";
 
 /**
  * The marketplace.
  *
  * Renders the same normalized `LiquiditySource[]` and the same `allocationsFor` output the swap
  * screen uses, from the same cached query. There is deliberately no second representation of venue
- * state anywhere in the app — that duplication is what let the old build show a route computed at
+ * state anywhere in the app - that duplication is what let the old build show a route computed at
  * one block beside depth summed at another.
  */
 export function MarketPage() {
   const pair = useTradePair();
-  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address);
+  const { selectMarket } = useTradeActions();
+  const marketList = useMarketList();
+  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address, pair.market.aquaVenue, pair.market.uniswapV4Venue);
   const quote = useRouteQuote();
 
   const summary = useMemo(() => summarize(market.sources), [market.sources]);
@@ -35,10 +39,19 @@ export function MarketPage() {
     <div className="page">
       <div className="page-head">
         <h1>Liquidity marketplace</h1>
-        <p>Discover and compare liquidity that can actually settle your trade.</p>
+        <p>
+          Discover and compare liquidity that can actually settle your trade. Every figure below is
+          <strong> executable</strong> depth - what a source can really deliver right now - not what it
+          advertises.
+        </p>
       </div>
 
       <MarketSelector />
+
+      <section className="msec">
+        <span className="label">Compare markets</span>
+        <MarketOverviewTable markets={marketList} activeIndex={pair.marketIndex} onSelect={selectMarket} />
+      </section>
 
       {market.isError && (
         <div className="notice notice-bad" style={{ marginBottom: "var(--s5)" }}>
@@ -50,41 +63,52 @@ export function MarketPage() {
         </div>
       )}
 
-      {/* ---- summary: every figure computed from what actually loaded ---- */}
-      <section className="msummary">
-        <div className="msum-stat">
-          <span className="label">Total executable</span>
-          <span className="msum-big">
-            {market.isLoading ? (
-              <span className="skeleton" style={{ width: 110, height: 30 }}>0</span>
-            ) : (
-              <>
-                {fmt(summary.totalExecutable)} <em>{pair.tokenIn.symbol}</em>
-              </>
-            )}
-          </span>
-          {!market.isLoading && summary.totalAdvertised > summary.totalExecutable && (
-            <span className="msum-sub">
-              of <span className="lsc-advertised">{fmt(summary.totalAdvertised)}</span> advertised
-            </span>
+      {/* ---- summary ----
+           Executable is the headline and is given its own full-width row: it is the only figure on
+           this page a trade can be built from. Advertised appears beneath it, struck through, as a
+           comparison - never beside it as a peer. A reader skimming the largest number on the
+           screen must land on the honest one. */}
+      <section className="mhero">
+        <span className="label">Executable liquidity</span>
+        <span className="mhero-big">
+          {market.isLoading ? (
+            <span className="skeleton" style={{ width: 180, height: 44 }}>0</span>
+          ) : (
+            <>
+              {fmt(summary.totalExecutable, pair.tokenIn.decimals)} <em>{pair.tokenIn.symbol}</em>
+            </>
           )}
-        </div>
+        </span>
+        {!market.isLoading && summary.totalAdvertised > summary.totalExecutable && (
+          <span className="mhero-sub">
+            <span className="lsc-advertised">
+              {fmt(summary.totalAdvertised, pair.tokenIn.decimals)} {pair.tokenIn.symbol}
+            </span>{" "}
+            advertised - the difference cannot be settled
+          </span>
+        )}
+      </section>
 
+      <section className="msummary">
         <div className="msum-stat">
           <span className="label">Healthy sources</span>
           <span className="msum-big">
             {market.isLoading || summary.readableSources === 0
-              ? "—"
+              ? NO_VALUE
               : `${summary.healthySources}/${summary.readableSources}`}
           </span>
-          <span className="msum-sub">covering ≥90% of what they advertise</span>
+          <span className="msum-sub">covering 90%+ of what they advertise</span>
+        </div>
+
+        <div className="msum-stat">
+          <span className="label">Liquidity capacity</span>
+          <span className="msum-big">{fmtBps(summary.liquidityCapacityBps, 0)}</span>
+          <span className="msum-sub">tightest strategy limit in force</span>
         </div>
 
         <div className="msum-stat">
           <span className="label">Best fee</span>
-          <span className="msum-big">
-            {summary.bestSpreadBps === undefined ? "—" : `${(summary.bestSpreadBps / 100).toFixed(2)}%`}
-          </span>
+          <span className="msum-big">{fmtBps(summary.bestSpreadBps)}</span>
           <span className="msum-sub">{summary.bestPricedSource?.name ?? "no source can fill right now"}</span>
         </div>
 
@@ -98,13 +122,9 @@ export function MarketPage() {
         <section className="msec">
           <header className="disco-head">
             <span className="label">Executable depth by source</span>
-            <NoPhantomLiquidity sources={market.sources} symbol={pair.tokenIn.symbol} />
+            <NoPhantomLiquidity sources={market.sources} token={pair.tokenIn} />
           </header>
-          <MarketDepthBar
-            sources={market.sources}
-            total={summary.totalExecutable}
-            symbol={pair.tokenIn.symbol}
-          />
+          <MarketDepthBar sources={market.sources} total={summary.totalExecutable} token={pair.tokenIn} />
         </section>
       )}
 
@@ -126,8 +146,8 @@ export function MarketPage() {
               <LiquiditySourceCard
                 key={a.source.key}
                 allocation={a}
-                symbolIn={pair.tokenIn.symbol}
-                symbolOut={pair.tokenOut.symbol}
+                tokenIn={pair.tokenIn}
+                tokenOut={pair.tokenOut}
               />
             ))}
           </div>

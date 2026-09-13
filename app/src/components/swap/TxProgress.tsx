@@ -1,13 +1,14 @@
 import { Check, Circle, ExternalLink, Loader2 } from "lucide-react";
 
-import { shortHash, txUrl } from "../../chain/explorer";
+import { explorerName, shortHash, txUrl } from "../../chain/explorer";
+import { chain } from "../../config/contracts";
 import type { SettleStage } from "../../trade/settleState";
 
 /**
  * Approval and settlement, as two clearly separate transactions with four clearly separate waits.
  *
  * "Waiting for your signature" and "waiting for the chain" are different events with different
- * remedies — one needs you to look at your wallet, the other needs patience — and the previous
+ * remedies - one needs you to look at your wallet, the other needs patience - and the previous
  * build collapsed both into a single "Approving…" label by awaiting the receipt inside the same
  * stage. Here each is its own step with its own icon, and both hashes are surfaced the moment they
  * exist rather than only the settlement one.
@@ -33,6 +34,7 @@ function Step({
   hash?: `0x${string}`;
 }) {
   const url = hash ? txUrl(hash) : null;
+  const explorer = explorerName();
   return (
     <div className={`txstep txstep-${state}`}>
       <span className="icon">
@@ -44,12 +46,12 @@ function Step({
       </span>
       {hash &&
         (url ? (
-          <a className="txlink" href={url} target="_blank" rel="noreferrer">
-            {shortHash(hash)}
+          <a className="txlink" href={url} target="_blank" rel="noreferrer" title={hash}>
+            {explorer ? `View on ${explorer}` : shortHash(hash)}
             <ExternalLink size={11} strokeWidth={2.5} aria-hidden="true" />
           </a>
         ) : (
-          // No explorer on this chain. The hash still matters — show it rather than a dead link.
+          // No explorer on this chain. The hash still matters - show it rather than a dead link.
           <span className="txlink">{shortHash(hash)}</span>
         ))}
     </div>
@@ -89,12 +91,16 @@ export function TxProgress({
           <Step
             state={stateFor("approval-signing")}
             title={`Approve ${symbolIn}`}
-            detail={stage === "approval-signing" ? "Confirm in your wallet" : "One-time permission"}
+            detail={
+              stage === "approval-signing" ? "Waiting for your wallet signature..." : "One-time permission"
+            }
           />
           <Step
             state={stateFor("approval-confirming")}
             title="Approval confirming"
-            detail={stage === "approval-confirming" ? "Waiting for the network" : undefined}
+            detail={
+              stage === "approval-confirming" ? `Submitted - confirming on ${chain.name}...` : undefined
+            }
             hash={approveHash}
           />
         </>
@@ -102,12 +108,12 @@ export function TxProgress({
       <Step
         state={stateFor("swap-signing")}
         title="Confirm swap"
-        detail={stage === "swap-signing" ? "Confirm in your wallet" : undefined}
+        detail={stage === "swap-signing" ? "Waiting for your wallet signature..." : undefined}
       />
       <Step
         state={stateFor("swap-confirming")}
         title="Settling on-chain"
-        detail={stage === "swap-confirming" ? "Waiting for the network" : undefined}
+        detail={stage === "swap-confirming" ? `Submitted - confirming on ${chain.name}...` : undefined}
         hash={settleHash}
       />
     </div>

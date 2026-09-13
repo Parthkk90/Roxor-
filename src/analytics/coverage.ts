@@ -2,15 +2,15 @@
  * Coverage arithmetic and presentation bands.
  *
  * This is the offchain twin of `contracts/libraries/ExecutableLiquidityLib.sol`. The two must agree
- * exactly, including the awkward cases — zero advertised depth reports 0 rather than a vacuous
- * 100%, results clamp at 10_000, and division rounds down — because a UI that disagrees with the
+ * exactly, including the awkward cases - zero advertised depth reports 0 rather than a vacuous
+ * 100%, results clamp at 10_000, and division rounds down - because a UI that disagrees with the
  * chain about a maker's health is worse than one that shows nothing at all.
  */
 import type { CoverageBand } from "../discovery/types.js";
 
 export const BPS = 10_000n;
 
-/** `min` over three bigints — the solvency chokepoint, mirroring `ExecutableLiquidityLib.min3`. */
+/** `min` over three bigints - the solvency chokepoint, mirroring `ExecutableLiquidityLib.min3`. */
 export function min3(a: bigint, b: bigint, c: bigint): bigint {
   const ab = a < b ? a : b;
   return ab < c ? ab : c;
@@ -60,7 +60,7 @@ export function deriveExecutable(
  * Presentation band for a coverage figure.
  *
  * Labels exist for humans reading a table; nothing routes on them. They are intentionally NOT
- * represented on-chain — an enum there would invite treating a display bucket as a safety control.
+ * represented on-chain - an enum there would invite treating a display bucket as a safety control.
  */
 export function coverageBand(bps: number): CoverageBand {
   if (bps >= 9000) return "HEALTHY";

@@ -14,7 +14,7 @@ import { useDebouncedValue } from "./useDebouncedValue";
 /**
  * Narrow accessors, one per context.
  *
- * Subscribe to the least you need — that choice is what decides whether a keystroke re-renders your
+ * Subscribe to the least you need - that choice is what decides whether a keystroke re-renders your
  * component. Anything that does not render the amount *as the user types it* must use
  * `useAmountIntent()`, never `useTradeDraft()`.
  */
@@ -45,7 +45,7 @@ export type AmountStatus = "idle" | "debouncing" | "invalid" | "ready";
 export interface AmountIntent {
   /** Settled, debounced decimal string. The only value a query key may be built from. */
   settled: string;
-  /** `undefined` when empty, zero, or unparseable — all of which mean "nothing to quote". */
+  /** `undefined` when empty, zero, or unparseable - all of which mean "nothing to quote". */
   amountWei: bigint | undefined;
   status: AmountStatus;
   /** True while the field is ahead of the settled value, so the UI can dim a stale quote. */
@@ -53,7 +53,7 @@ export interface AmountIntent {
 }
 
 /**
- * The amount, parsed and debounced — derived here rather than stored in context.
+ * The amount, parsed and debounced - derived here rather than stored in context.
  *
  * The debounce sits between the input and the *query parameter*, never on the input state itself:
  * `TradeDraftContext` updates on every keystroke so typing is never laggy, and only the value that

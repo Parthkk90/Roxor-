@@ -1,10 +1,10 @@
 /**
- * Liquidity Health API — Feature 9.
+ * Liquidity Health API - Feature 9.
  *
  * Produces the normalized market record the frontend renders. It is a *join* of the three layers,
  * and it keeps them labelled rather than merged: `reliabilityBps` comes from the index (layer 1),
  * everything describing depth comes from a live chain read (layer 3). Serialising bigints as
- * decimal strings is deliberate — JSON numbers cannot hold 18-decimal token amounts without
+ * decimal strings is deliberate - JSON numbers cannot hold 18-decimal token amounts without
  * silently losing precision, and a health endpoint that rounds balances is a health endpoint that
  * lies.
  */
@@ -35,7 +35,7 @@ export function toHealthRecord(verified: VerifiedCandidate): LiquidityHealthReco
 export interface MarketHealth {
   tokenIn: string;
   tokenOut: string;
-  /** Worst regime across all sources — the pair's overall posture, not any one maker's. */
+  /** Worst regime across all sources - the pair's overall posture, not any one maker's. */
   regime: "NORMAL" | "DEFENSIVE" | "RECOVERY";
   /** Sum of `effectiveLiquidity`, never of advertised depth. */
   totalExecutableLiquidity: string;

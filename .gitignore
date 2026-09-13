@@ -1,9 +1,15 @@
 node_modules/
 __pycache__/
 out/
+out-ci/
 cache/
 broadcast/
-deployments/
+
+# Deployment records are build output, with one exception: the public Sepolia manifest IS the
+# deployment record (docs/sepolia-deployment.md refers to it), contains no secrets, and has to
+# survive a fresh clone for the demo to be reproducible.
+deployments/*
+!deployments/11155111.json
 .env
 .env.local
 .env.*.local

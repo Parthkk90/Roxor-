@@ -11,7 +11,7 @@ import { executableDepth, type LiquiditySource, type StrategyMode } from "./type
  * disagreeing about the same trade.
  *
  * Nothing in this file invents a value. Where a figure cannot be derived from what the chain
- * returned, it is `undefined` and renders as "—".
+ * returned, it is `undefined` and renders as "-".
  */
 
 const BPS = 10_000n;
@@ -57,7 +57,7 @@ export function allocationsFor(
  * moves when a strategy goes defensive, which makes it the honest way to show "how much of what it
  * could deliver is it currently willing to quote" without reading the rule program.
  *
- * `undefined` when there is nothing deliverable — a multiplier on zero is meaningless, and 0%
+ * `undefined` when there is nothing deliverable - a multiplier on zero is meaningless, and 0%
  * would wrongly suggest the strategy is holding liquidity back.
  */
 export function currentLiquidityBps(source: LiquiditySource): number | undefined {
@@ -106,18 +106,30 @@ export interface MarketSummary {
   marketCoverageBps: number | undefined;
   marketBand: CoverageBand | undefined;
   healthySources: number;
-  /** Sources that returned data at all — the denominator for "healthy". */
+  /** Sources that returned data at all - the denominator for "healthy". */
   readableSources: number;
   /** Lowest spread among sources that can actually fill something. `undefined` if none can. */
   bestSpreadBps: number | undefined;
   bestPricedSource: LiquiditySource | undefined;
   regime: StrategyMode;
+  /**
+   * How much of what this market *could* deliver its strategies are currently willing to quote,
+   * in bps - the tightest limit in force across readable sources.
+   *
+   * Derived, never read: `conditional / deliverable` per source, then the minimum. The minimum
+   * rather than an average, for the same reason `regime` is the worst rather than the mean - one
+   * source pulling back to 25% is the fact a trader needs, and averaging it against a pool sitting
+   * at 100% would report 62% and hide it.
+   *
+   * `undefined` when nothing is deliverable, because a fraction of zero says nothing.
+   */
+  liquidityCapacityBps: number | undefined;
 }
 
 /**
  * Whole-market figures.
  *
- * Sums `conditionalLiquidity`, never advertised depth — a headline "total liquidity" built from
+ * Sums `conditionalLiquidity`, never advertised depth - a headline "total liquidity" built from
  * advertisements would make the interface itself a source of phantom liquidity, which is the exact
  * failure the product exists to prevent.
  */
@@ -131,6 +143,7 @@ export function summarize(sources: LiquiditySource[]): MarketSummary {
 
   const severity = { NORMAL: 0, RECOVERY: 1, DEFENSIVE: 2 } as const;
   let regime: StrategyMode = "NORMAL";
+  let liquidityCapacityBps: number | undefined;
 
   for (const source of sources) {
     if (source.unavailable || !source.executable) continue;
@@ -147,6 +160,11 @@ export function summarize(sources: LiquiditySource[]): MarketSummary {
     if (spread !== undefined && executableDepth(source) > 0n && (bestSpreadBps === undefined || spread < bestSpreadBps)) {
       bestSpreadBps = spread;
       bestPricedSource = source;
+    }
+
+    const capacity = currentLiquidityBps(source);
+    if (capacity !== undefined && (liquidityCapacityBps === undefined || capacity < liquidityCapacityBps)) {
+      liquidityCapacityBps = capacity;
     }
 
     const mode = source.snapshot?.mode;
@@ -168,5 +186,6 @@ export function summarize(sources: LiquiditySource[]): MarketSummary {
     bestSpreadBps,
     bestPricedSource,
     regime,
+    liquidityCapacityBps,
   };
 }

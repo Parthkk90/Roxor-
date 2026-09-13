@@ -7,7 +7,7 @@ import { SolverFixture } from "../utils/SolverFixture.sol";
 import { ExecutableLiquidityLib } from "../../contracts/libraries/ExecutableLiquidityLib.sol";
 import { IExecutableLiquidity } from "../../contracts/venues/interfaces/IExecutableLiquidity.sol";
 
-/// @notice Feature 3 — liquidity coverage: `deliverable / virtual`, clamped, in bps.
+/// @notice Feature 3 - liquidity coverage: `deliverable / virtual`, clamped, in bps.
 ///
 /// @dev Coverage is a *reliability* signal, never a settlement input. These tests pin both halves
 ///      of that: the arithmetic is exact and total (including the degenerate cases), and the
@@ -81,7 +81,7 @@ contract LiquidityCoverageTest is SolverFixture {
     }
 
     /// @dev Coverage tracks *solvency*, not regime. A DEFENSIVE maker who is good for every token
-    ///      they still advertise is fully covered — they are cautious, not unreliable. Conflating
+    ///      they still advertise is fully covered - they are cautious, not unreliable. Conflating
     ///      the two would double-penalise a well-behaved maker during a shock.
     function test_CoverageIsIndependentOfStrategyMode() public {
         _setUpSolver();

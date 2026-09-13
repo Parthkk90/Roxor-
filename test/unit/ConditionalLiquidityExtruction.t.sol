@@ -24,7 +24,7 @@ import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 /// @dev CALLER AUTHORIZATION
 ///      `extruction()` has no access control of its own, deliberately: it only ever calls
 ///      `ENGINE.poke`/`preview`, both of which are already safe for any caller to invoke directly
-///      (poke is explicitly permissionless — see {IConditionalLiquidityEngine.poke}). Calling this
+///      (poke is explicitly permissionless - see {IConditionalLiquidityEngine.poke}). Calling this
 ///      function outside a real SwapVM program grants no extra privilege and moves no tokens, so
 ///      there is no "unauthorized caller" case to defend against; these tests call it directly for
 ///      that exact reason, to isolate its own arithmetic from the router.
@@ -166,7 +166,7 @@ contract ConditionalLiquidityExtructionTest is OrderFixture {
     /* ------------------------------------------------------------------ fuzz */
 
     /// @notice For any balances and any requested amount, the extruction either lets the trade
-    ///         through at or under the cap, or reverts — it never silently truncates.
+    ///         through at or under the cap, or reverts - it never silently truncates.
     function testFuzz_NeverExceedsCapSilently(uint256 balanceIn, uint256 amountIn, uint256 vol) public {
         balanceIn = bound(balanceIn, 1 ether, 1_000_000 ether);
         amountIn = bound(amountIn, 0, balanceIn * 2);

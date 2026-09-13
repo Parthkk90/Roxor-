@@ -33,7 +33,7 @@ import { FixedPointMath } from "../libraries/FixedPointMath.sol";
 ///      is therefore reported as `type(uint256).max` (not applicable, never binding), and
 ///      `walletLiquidity` is the pool manager's real live balance of `tokenIn`. Coverage is still
 ///      computed the same way, which is what lets the marketplace rank a pool against a maker on
-///      one honest scale — and why a healthy pool naturally shows 100% while a drained maker
+///      one honest scale - and why a healthy pool naturally shows 100% while a drained maker
 ///      does not.
 ///
 /// @dev Holds no strategy/rule logic: `snapshot` reads mode/spread/effective-liquidity exclusively
@@ -41,7 +41,7 @@ import { FixedPointMath } from "../libraries/FixedPointMath.sol";
 ///      on the hook) and the pool's live spot price through {StateLibrary.getSlot0}. `execute`
 ///      settles for real through `PoolSwapTest.swap`, exactly the pattern
 ///      `test/utils/UniswapExecutionFixture.sol::_swapXToY` already uses, with this contract itself
-///      as `msg.sender` of the swap (so it must hold `amountIn` and approve the router first — see
+///      as `msg.sender` of the swap (so it must hold `amountIn` and approve the router first - see
 ///      {Solver.settle}'s push-then-execute custody flow).
 contract UniswapV4Venue is IUniswapV4Venue {
     using SafeERC20 for IERC20;

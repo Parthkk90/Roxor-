@@ -26,7 +26,7 @@ import { FixedPointMath } from "../libraries/FixedPointMath.sol";
 ///      `test/utils/ExecutionFixture.sol::_currentCapA`. `execute` settles for real through the
 ///      same `AquaSwapVMRouter.swap` entrypoint `test/utils/ExecutionFixture.sol::_swapAToB` uses,
 ///      with this contract itself acting as the taker (so it must hold `amountIn` and approve the
-///      router before `execute` is called — see {Solver.settle}'s push-then-execute custody flow).
+///      router before `execute` is called - see {Solver.settle}'s push-then-execute custody flow).
 ///
 /// @dev Solvency: Aqua's virtual balance is an *allowance*, not custody. `Aqua.ship` transfers no
 ///      tokens, and `Aqua.pull` settles with `safeTransferFrom(maker, to, amount)` out of the

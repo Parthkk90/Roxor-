@@ -6,7 +6,7 @@ import { ILiquidityVenue } from "../../contracts/solver/interfaces/ILiquidityVen
 import { IExecutableLiquidity } from "../../contracts/venues/interfaces/IExecutableLiquidity.sol";
 import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 
-/// @notice Feature 1 — real executable liquidity on the Aqua side.
+/// @notice Feature 1 - real executable liquidity on the Aqua side.
 ///
 /// @dev Every test here attacks the same premise: Aqua's virtual balance is an allowance, not
 ///      custody, so it is not evidence of solvency. `ship` moves no tokens and `pull` settles with

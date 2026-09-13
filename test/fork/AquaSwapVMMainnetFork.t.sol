@@ -34,7 +34,7 @@ interface ILidoStETH {
 
 /// @title AquaSwapVMMainnetForkTest
 /// @notice Real Ethereum mainnet fork test against the ACTUAL deployed 1inch Aqua and
-///         AquaSwapVMRouter contracts, using real WETH and real Lido stETH — no mock tokens, no
+///         AquaSwapVMRouter contracts, using real WETH and real Lido stETH - no mock tokens, no
 ///         mock Aqua, no mock SwapVM, no vm.store/vm.etch on any production contract.
 ///
 /// @dev WHAT IS REAL PRODUCTION INFRASTRUCTURE (unmodified, addresses verified against the
@@ -45,17 +45,17 @@ interface ILidoStETH {
 ///        - Lido stETH:        0xae7ab96520de3a18e5e111b5eaab095312d7fe84
 ///      All four are interacted with directly at their real addresses. Tokens are acquired only
 ///      through their own real, permissionless public functions (WETH.deposit(), stETH.submit())
-///      funded by `vm.deal`-supplied native ETH — standard, legitimate fork-test funding, not a
+///      funded by `vm.deal`-supplied native ETH - standard, legitimate fork-test funding, not a
 ///      balance-manufacturing cheat on any ERC-20's storage.
 ///
 /// @dev WHAT IS OUR OWN CODE (unmodified from Parts 1-4, nothing rewritten for this test):
 ///      `StrategyValidator`, `ConditionalLiquidityRegistry`, `ConditionalLiquidityEngine`,
 ///      `ConditionalLiquidityExtruction`, `MockMarketStateProvider` (our own oracle stand-in, as
-///      in every other test in this repo — never claimed to be a production oracle),
+///      in every other test in this repo - never claimed to be a production oracle),
 ///      `ConditionalLiquidityProgramLib`. `MakerTraitsLib.build` is the pinned 1inch swap-vm
 ///      package's own order encoder, used unmodified.
 ///
-/// @dev THE ONE GENUINE, DIAGNOSED LIMITATION — read before drawing conclusions from this file.
+/// @dev THE ONE GENUINE, DIAGNOSED LIMITATION - read before drawing conclusions from this file.
 ///      Ship/pull/push/safeBalances/rawBalances on the REAL Aqua contract are called directly and
 ///      are 100% real: their function selectors were checked byte-for-byte against the real
 ///      deployed Aqua bytecode and all six matched exactly (this project's 1inch aqua pin,
@@ -74,7 +74,7 @@ interface ILidoStETH {
 ///          selecting the right function would not produce compatible calldata for it.
 ///        - The router's *opcode dispatch* differs too: `v1.0.2` assigns `XYCSwap`/`Extruction`
 ///          array-index opcodes 0x12/0x21, while this project's pinned package assigns them
-///          enum-slot opcodes 0x50/0x04 — completely different numbers. A program built with
+///          enum-slot opcodes 0x50/0x04 - completely different numbers. A program built with
 ///          `ConditionalLiquidityProgramLib` (which calls the pinned package's builders) would
 ///          dispatch to the wrong instruction slot (or an out-of-bounds one) if submitted to the
 ///          live router's `swap()`.
@@ -82,9 +82,9 @@ interface ILidoStETH {
 ///      **Conclusion: this project's existing `ConditionalLiquidityExtruction` and
 ///      `ConditionalLiquidityProgramLib` cannot be driven through the live router's `swap()`
 ///      entrypoint without either (a) re-pinning 1inch swap-vm to the older, router-matching
-///      release and reshaping `SwapRegisters`/opcode encoding accordingly — which the task
-///      explicitly rules out as "rewriting Parts 1-5" — or (b) deploying a second, differently-coded
-///      router and calling it "production" — which the task's absolute rule explicitly forbids.
+///      release and reshaping `SwapRegisters`/opcode encoding accordingly - which the task
+///      explicitly rules out as "rewriting Parts 1-5" - or (b) deploying a second, differently-coded
+///      router and calling it "production" - which the task's absolute rule explicitly forbids.
 ///      Per the task's own instruction for exactly this situation, this is reported as a genuine,
 ///      diagnosed limitation rather than routed around with a substitute.**
 ///
@@ -233,7 +233,7 @@ contract AquaSwapVMMainnetForkTest is Test {
 
     /// @dev Builds the query/registers for a WETH->stETH exact-in swap. Kept separate from
     ///      {_callExtruction} so a test that wants to `vm.expectRevert` the extruction call itself
-    ///      can build these first — `vm.expectRevert` only watches the SINGLE next external call,
+    ///      can build these first - `vm.expectRevert` only watches the SINGLE next external call,
     ///      and the `safeBalances` staticcall this performs would otherwise consume that
     ///      expectation before the call under test ever runs.
     function _buildSwapCall(uint256 amountIn) private view returns (SwapQuery memory query, SwapRegisters memory registers) {
@@ -246,7 +246,7 @@ contract AquaSwapVMMainnetForkTest is Test {
 
     /// @notice Calls our real, unmodified ConditionalLiquidityExtruction directly (same pattern as
     ///         test/unit/ConditionalLiquidityExtruction.t.sol), then settles the resulting amounts
-    ///         through the real Aqua under `vm.prank(ROUTER_ADDR)` — see the contract-level NatSpec
+    ///         through the real Aqua under `vm.prank(ROUTER_ADDR)` - see the contract-level NatSpec
     ///         for exactly why, and what is and isn't a real production call in this step.
     function _executeSwap(uint256 amountIn) private returns (uint256 amountOut) {
         (SwapQuery memory query, SwapRegisters memory registers) = _buildSwapCall(amountIn);

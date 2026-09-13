@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
-import { erc20Abi, maxUint256, type Address } from "viem";
+import { erc20Abi, maxUint256 } from "viem";
 import {
   useAccount,
   useChainId,
@@ -12,7 +12,7 @@ import {
 } from "wagmi";
 
 import { solverAbi } from "../abis/index.js";
-import { addresses, chainId as targetChainId } from "../config/contracts";
+import { chainId as targetChainId } from "../config/contracts";
 import { useObservedBlock } from "../chain/ObservedBlockContext";
 import { useSettlementRefresh } from "../chain/refresh";
 import { describeSettleFailure, type SettleFailure } from "./errors";
@@ -36,7 +36,7 @@ export function useSwapFlow() {
 
   /** What the user last looked at. Drift is measured against this, not against the last block. */
   const [reviewed, setReviewed] = useState<QuoteSnapshot | null>(null);
-  /** What was actually signed — frozen at click so a poll cannot change it mid-flight. */
+  /** What was actually signed - frozen at click so a poll cannot change it mid-flight. */
   const [signed, setSigned] = useState<QuoteSnapshot | null>(null);
   const [submittedForKey, setSubmittedForKey] = useState<string | null>(null);
 
@@ -53,7 +53,7 @@ export function useSwapFlow() {
   // depend on something that is not one of its own arguments.
   //
   // Both keep previous data because a new block otherwise returns them to `undefined` for a
-  // round-trip — and `undefined` balance/allowance are exactly the values the state machine reads
+  // round-trip - and `undefined` balance/allowance are exactly the values the state machine reads
   // as "nothing blocking", so the button would flash through to "Swap" on every block.
   const { data: balance } = useReadContract({
     address: pair.tokenIn.address,
@@ -68,7 +68,7 @@ export function useSwapFlow() {
     address: pair.tokenIn.address,
     abi: erc20Abi,
     functionName: "allowance",
-    args: address ? [address, addresses.solver as Address] : undefined,
+    args: address ? [address, pair.solver] : undefined,
     scopeKey: block?.toString() ?? "pending",
     query: { enabled: Boolean(address), placeholderData: keepPreviousData, refetchInterval: false },
   });
@@ -104,7 +104,7 @@ export function useSwapFlow() {
    * or a previous amount is the one thing this must not do.
    */
   const simulate = useSimulateContract({
-    address: addresses.solver as Address,
+    address: pair.solver,
     abi: solverAbi,
     functionName: "settle",
     args:
@@ -201,22 +201,22 @@ export function useSwapFlow() {
       functionName: "approve",
       // Infinite approval is a testnet-demo convenience so a trader is not prompted per swap.
       // A production build should offer exact-amount approval as the default.
-      args: [addresses.solver as Address, maxUint256],
+      args: [pair.solver, maxUint256],
     });
-  }, [address, approveWrite, pair.tokenIn.address]);
+  }, [address, approveWrite, pair.tokenIn.address, pair.solver]);
 
   const swap = useCallback(() => {
     if (intent.amountWei === undefined || expectedOut === undefined || minOut === undefined) return;
 
     // Freeze what the user saw. Without this the click closes over a plan a background poll may
     // have replaced between paint and click, so the signed transaction would not be the one on
-    // screen. The quote is still advisory — `settle` re-derives — but `minOut` is a real promise.
+    // screen. The quote is still advisory - `settle` re-derives - but `minOut` is a real promise.
     const snapshot: QuoteSnapshot = { amountWei: intent.amountWei, expectedOut, minOut };
     setSigned(snapshot);
     setSubmittedForKey(tradeKey);
 
     settleWrite.writeContract({
-      address: addresses.solver as Address,
+      address: pair.solver,
       abi: solverAbi,
       functionName: "settle",
       args: [
@@ -229,7 +229,7 @@ export function useSwapFlow() {
         snapshot.minOut,
       ],
     });
-  }, [intent.amountWei, expectedOut, minOut, tradeKey, pair.tokenIn.address, pair.tokenOut.address, settleWrite]);
+  }, [intent.amountWei, expectedOut, minOut, tradeKey, pair.tokenIn.address, pair.tokenOut.address, pair.solver, settleWrite]);
 
   /** Re-baseline on the current figure. The user has now seen the new number. */
   const acceptUpdatedQuote = useCallback(() => {
@@ -267,8 +267,8 @@ export function useSwapFlow() {
 
   const failure: SettleFailure | null = useMemo(() => {
     if (state.stage === "swap-failed") {
-      // A reverted receipt carries no decodable error, so the simulation's error — captured from
-      // the same call path — is the better explanation when one is available.
+      // A reverted receipt carries no decodable error, so the simulation's error - captured from
+      // the same call path - is the better explanation when one is available.
       return describeSettleFailure(settleWrite.error ?? simulate.error);
     }
     if (state.stage === "settle-blocked") return describeSettleFailure(simulate.error);

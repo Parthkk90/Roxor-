@@ -45,7 +45,7 @@ createRoot(document.getElementById("root")!).render(
     >
       <QueryClientProvider client={queryClient}>
         <WagmiProvider config={wagmiConfig}>
-          {/* ObservedBlockProvider must sit inside WagmiProvider — it calls `useBlockNumber`, and it
+          {/* ObservedBlockProvider must sit inside WagmiProvider - it calls `useBlockNumber`, and it
               is the app's only poll. TradeProvider sits inside it because the trade's query keys are
               built from the block. `<App />` is passed as `children` so provider re-renders do not
               rebuild it; see the note in App.tsx. */}

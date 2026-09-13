@@ -1,13 +1,13 @@
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
 import { href } from "../../nav/useNav";
-import { chain } from "../../config/contracts";
+import { NETWORK_LABEL, NETWORK_TRUST_LABEL } from "../../config/contracts";
 
 /**
  * The landing page.
  *
  * Written for someone who has never heard of Aqua, SwapVM or a solver, and who should not have to.
- * The vocabulary is wallets, permission and market makers — every protocol term is either absent or
+ * The vocabulary is wallets, permission and market makers - every protocol term is either absent or
  * introduced in passing. If a sentence needs the reader to already understand the architecture, it
  * does not belong on this page.
  *
@@ -23,7 +23,7 @@ export function LandingPage() {
         <div className="lp-inner lp-hero-inner">
           <span className="lp-eyebrow">
             <span className="dot" />
-            Live on {chain.name}
+            Live on {NETWORK_LABEL}
           </span>
 
           <h1>
@@ -32,7 +32,7 @@ export function LandingPage() {
 
           <p className="lp-sub">
             Most venues quote you the amount they&apos;d like to trade. We quote the amount they can
-            genuinely deliver this second — checked against real balances before you ever sign.
+            genuinely deliver this second - checked against real balances before you ever sign.
           </p>
 
           <div className="lp-cta">
@@ -76,7 +76,7 @@ export function LandingPage() {
             <Step
               title="But the tokens never left their wallet"
               body="The offer is a permission to spend, not a deposit. The maker still holds the coins and
-              can move them, or withdraw that permission, whenever they want — silently, with no
+              can move them, or withdraw that permission, whenever they want - silently, with no
               announcement anyone can see."
             />
             <Step
@@ -101,13 +101,13 @@ export function LandingPage() {
             <Step
               title="Check the wallet before quoting"
               body="For every source we read what it advertises, what it actually holds, and how much it has
-              given permission to spend. Your quote is capped by the smallest of the three — so the
+              given permission to spend. Your quote is capped by the smallest of the three - so the
               depth on screen is depth that can settle."
             />
             <Step
               title="Check again before your money moves"
               body="At the moment of settlement the contract re-reads every source. If anything changed since
-              your quote, the entire trade is cancelled and returned to you — never partly filled,
+              your quote, the entire trade is cancelled and returned to you - never partly filled,
               never at a worse price than you agreed."
             />
             <Step
@@ -133,7 +133,7 @@ export function LandingPage() {
               <h3>Real depth, up front</h3>
               <p>
                 Every figure is what could be settled right now. Where a source advertises more than it
-                can deliver, we show you both — the inflated number struck through beside the real one.
+                can deliver, we show you both - the inflated number struck through beside the real one.
               </p>
             </div>
             <div className="lp-promise">
@@ -172,7 +172,7 @@ export function LandingPage() {
       </section>
 
       <footer className="lp-foot">
-        <span className="label">{chain.name} · demo only, not for real funds</span>
+        <span className="badge badge-net">{NETWORK_TRUST_LABEL}</span>
       </footer>
     </div>
   );
@@ -193,7 +193,7 @@ function Step({ title, body }: { title: string; body: string }) {
  * Advertised versus deliverable, as one picture.
  *
  * Marked as an example rather than dressed up as live data. The figures are the shape of a real
- * shortfall — a maker advertising 100 against a wallet holding 12 — which is the entire thesis in
+ * shortfall - a maker advertising 100 against a wallet holding 12 - which is the entire thesis in
  * two bars.
  */
 function GapFigure() {
@@ -231,7 +231,7 @@ function GapFigure() {
 
       <figcaption className="gapfig-note">
         The maker still shows 100 because that is what they offered. Their wallet holds 12. We quote
-        you 12 — and refuse to route the difference.
+        you 12 - and refuse to route the difference.
       </figcaption>
     </figure>
   );

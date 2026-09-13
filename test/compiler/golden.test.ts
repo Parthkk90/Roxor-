@@ -9,7 +9,7 @@ import { compile } from "../../src/compiler/index.js";
  *
  * If this fails after a deliberate compiler change, regenerate with:
  *   npm run compile examples/volatility-shield.clf --emit test/compiler/golden
- * and review the diff before committing it — an unreviewed regeneration defeats the point of a
+ * and review the diff before committing it - an unreviewed regeneration defeats the point of a
  * golden test.
  */
 describe("golden: volatility-shield.clf", () => {

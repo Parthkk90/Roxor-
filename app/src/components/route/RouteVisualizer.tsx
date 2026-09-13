@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 import type { SourceAllocation } from "../../market/derive";
-import { fmt } from "../../format";
+import { fmtToken, type TokenDisplay } from "../../format";
 
 const SEG = ["var(--accent)", "var(--info)", "var(--ok)"];
 
@@ -13,22 +13,22 @@ const SEG = ["var(--accent)", "var(--info)", "var(--ok)"];
  * the split changes, the bars animate to their new widths, so a shift from Aqua to Uniswap is
  * something you watch happen rather than something you notice by re-reading two numbers.
  *
- * Memoised, since it redraws only when the plan actually changes — never while the amount field is
+ * Memoised, since it redraws only when the plan actually changes - never while the amount field is
  * being typed into.
  */
 export const RouteVisualizer = memo(function RouteVisualizer({
   allocations,
   amountIn,
   expectedOut,
-  symbolIn,
-  symbolOut,
+  tokenIn,
+  tokenOut,
   isStale,
 }: {
   allocations: SourceAllocation[];
   amountIn: bigint | undefined;
   expectedOut: bigint | undefined;
-  symbolIn: string;
-  symbolOut: string;
+  tokenIn: TokenDisplay;
+  tokenOut: TokenDisplay;
   isStale: boolean;
 }) {
   const used = allocations.filter((a) => a.included);
@@ -38,16 +38,14 @@ export const RouteVisualizer = memo(function RouteVisualizer({
     <div className={`rviz${isStale ? " is-stale" : ""}`}>
       <div className="rviz-node rviz-in">
         <span className="label">Your order</span>
-        <strong>
-          {fmt(amountIn)} {symbolIn}
-        </strong>
+        <strong>{fmtToken(amountIn, tokenIn)}</strong>
       </div>
 
       <span className="rviz-stem" aria-hidden="true" />
 
       <div className="rviz-node rviz-solver">
         <span>Solver</span>
-        <small>splits across verified liquidity</small>
+        <small>splits across liquidity that can actually settle</small>
       </div>
 
       <span className="rviz-stem" aria-hidden="true" />
@@ -62,7 +60,7 @@ export const RouteVisualizer = memo(function RouteVisualizer({
                 {a.source.name}
               </span>
               <span className="rviz-leg-num num">
-                {fmt(a.amountIn)} {symbolIn}
+                {fmtToken(a.amountIn, tokenIn)}
                 <b>{a.sharePct.toFixed(0)}%</b>
               </span>
             </span>
@@ -78,10 +76,8 @@ export const RouteVisualizer = memo(function RouteVisualizer({
       <span className="rviz-stem" aria-hidden="true" />
 
       <div className="rviz-node rviz-out">
-        <span className="label">You receive at least</span>
-        <strong>
-          {fmt(expectedOut, 4)} {symbolOut}
-        </strong>
+        <span className="label">Expected output</span>
+        <strong>{fmtToken(expectedOut, tokenOut)}</strong>
       </div>
     </div>
   );
@@ -90,7 +86,7 @@ export const RouteVisualizer = memo(function RouteVisualizer({
 /**
  * Compact allocation bar for the swap card's summary line.
  *
- * Same data, same colours, a tenth of the height — so the summary and the full diagram can never
+ * Same data, same colours, a tenth of the height - so the summary and the full diagram can never
  * disagree about who got what.
  */
 export const RouteAllocationBar = memo(function RouteAllocationBar({

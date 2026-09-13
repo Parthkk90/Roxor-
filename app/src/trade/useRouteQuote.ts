@@ -4,7 +4,6 @@ import type { Address } from "viem";
 import { useConfig } from "wagmi";
 
 import { solverAbi } from "../abis/index.js";
-import { addresses } from "../config/contracts";
 import { useObservedBlock } from "../chain/ObservedBlockContext";
 import { findRevert } from "./errors";
 import { useAmountIntent, useTradePair } from "./useTrade";
@@ -27,7 +26,7 @@ export interface ExecutionPlan {
 /**
  * A route outcome. `no-route` is a RESULT, not an error.
  *
- * `Solver.route` reverts `NoRoute` when the market is too thin — an ordinary answer to an ordinary
+ * `Solver.route` reverts `NoRoute` when the market is too thin - an ordinary answer to an ordinary
  * question. Modelling it as a query failure cost three things: react-query retried a deterministic
  * revert with backoff on every settled keystroke; the `error` channel became ambiguous between "too
  * thin" and "the RPC is down", which is why an unreachable node rendered as a permanent spinner;
@@ -52,7 +51,7 @@ export type QuoteStatus =
  *
  * `Solver.route` computes `minAcceptableOut = amount - amount * maxSlippageBps / 10000`, denominated
  * in `tokenIn`, and compares it against `totalExpectedOut`, denominated in `tokenOut`. That
- * comparison is only meaningful when the pair trades near 1:1 — at the demo pair's ~0.667 B→A price
+ * comparison is only meaningful when the pair trades near 1:1 - at the demo pair's ~0.667 B→A price
  * any tolerance under ~33% makes a healthy market unroutable.
  *
  * Slippage is therefore enforced where it is correctly denominated: `minTotalAmountOut` on `settle`,
@@ -64,7 +63,7 @@ export interface QuoteState {
   status: QuoteStatus;
   result: RouteResult | undefined;
   plan: ExecutionPlan | undefined;
-  /** The displayed figures belong to an earlier amount — dim them, and refuse to sign them. */
+  /** The displayed figures belong to an earlier amount - dim them, and refuse to sign them. */
   isStale: boolean;
   isFetching: boolean;
   error: unknown;
@@ -82,6 +81,7 @@ export function useRouteQuote(): QuoteState {
   const query = useQuery<RouteResult>({
     queryKey: [
       "route",
+      pair.solver,
       pair.tokenIn.address,
       pair.tokenOut.address,
       intent.amountWei?.toString() ?? "none",
@@ -89,7 +89,7 @@ export function useRouteQuote(): QuoteState {
     ],
     enabled: intent.amountWei !== undefined,
     // Hold the previous answer while a new one loads so changing the amount never blanks the quote.
-    // Consumers read `isStale` and dim instead — and the transaction state machine refuses to sign
+    // Consumers read `isStale` and dim instead - and the transaction state machine refuses to sign
     // while it is true, so a held-over figure can be shown but never committed.
     placeholderData: keepPreviousData,
     staleTime: Infinity,
@@ -106,7 +106,7 @@ export function useRouteQuote(): QuoteState {
 
       try {
         const plan = (await readContract(config, {
-          address: addresses.solver as Address,
+          address: pair.solver,
           abi: solverAbi,
           functionName: "route",
           args: [request],
@@ -118,14 +118,14 @@ export function useRouteQuote(): QuoteState {
         const args = (revert?.data?.args ?? []) as readonly unknown[];
 
         if (name === "NoRoute") {
-          // The solver's own figure, from this call, at this block — rather than a client-side sum
+          // The solver's own figure, from this call, at this block - rather than a client-side sum
           // of a different query that may have landed on a different block.
           return { kind: "no-route", requested: args[2] as bigint, totalExecutable: args[3] as bigint };
         }
         if (name === "SlippageExceeded") {
           return { kind: "slippage", expectedOut: args[0] as bigint, minAcceptableOut: args[1] as bigint };
         }
-        throw error; // transport or decode failure — a real error
+        throw error; // transport or decode failure - a real error
       }
     },
   });

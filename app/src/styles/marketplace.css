@@ -85,6 +85,10 @@
 .depth-deliverable i { background: var(--info); }
 .depth-executable i { background: var(--ok); }
 .depthrow-note { font-size: var(--fs-micro); color: var(--text-faint); }
+.depthrow-key .depthrow-head { font-size: var(--fs-md); font-weight: 600; }
+.depthrow-key .depthrow-track { height: 11px; }
+.depthrow-op { align-self: flex-end; font-size: var(--fs-micro); font-family: var(--font-mono); color: var(--warn); padding: 2px 7px; border: 1px solid var(--warn-line); border-radius: var(--r-full); background: var(--warn-wash); }
+.dsec-title { font-size: var(--fs-md); font-weight: 600; letter-spacing: -0.01em; }
 
 .mdepth { display: flex; flex-direction: column; gap: var(--s3); }
 .mdepth-bar { display: flex; height: 12px; gap: 2px; border-radius: var(--r-full); overflow: hidden; background: var(--surface-2); }
@@ -138,7 +142,10 @@
 .mcond { display: flex; flex-direction: column; gap: var(--s4); padding: var(--s4); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); transition: border-color var(--med) var(--ease); }
 .mcond-stressed { border-color: var(--warn-line); background: linear-gradient(180deg, var(--warn-wash), var(--surface) 60%); }
 .mcond-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
-.mcond-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+.mcond-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: var(--s4); }
+/* The caption under each figure is a sentence, not a key: uppercase mono at micro size turned a
+   six-word gloss into three cramped lines of shouting. Same size, normal case, normal tracking. */
+.metric .mcond-sub { display: block; text-transform: none; letter-spacing: 0; font-family: inherit; line-height: 1.4; }
 .mcond-big { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .mcond-big em { font-style: normal; font-size: 0.8rem; color: var(--text-dim); }
 .mcond-note { font-size: var(--fs-xs); color: var(--text-dim); line-height: 1.55; }
@@ -146,7 +153,12 @@
 /* Route-change announcement. Visible, brief, not a klaxon. */
 .rupd { display: flex; flex-direction: column; gap: var(--s2); padding: var(--s3); border-radius: var(--r-md); background: var(--bg-elev); border: 1px solid var(--accent-line); animation: rupd-in 380ms var(--ease) both; }
 @keyframes rupd-in { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+.rupd summary { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); cursor: pointer; list-style: none; }
+.rupd summary::-webkit-details-marker { display: none; }
 .rupd-head { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-micro); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+.rupd-more { font-size: var(--fs-xs); color: var(--text-dim); text-decoration: underline; text-underline-offset: 2px; }
+.rupd[open] .rupd-more { color: var(--text-faint); }
+.rupd-why { font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.55; padding-top: var(--s2); border-top: 1px solid var(--line-soft); }
 .rupd-list { display: flex; flex-direction: column; gap: 4px; }
 .rupd-list li { display: flex; justify-content: space-between; gap: var(--s3); font-size: var(--fs-sm); }
 .rupd-nums { display: inline-flex; align-items: center; gap: 5px; }
@@ -202,6 +214,11 @@ dialog.drawer::backdrop { background: rgba(3, 5, 8, 0.72); backdrop-filter: blur
 .machine-arrow { align-self: center; padding: 6px 0; font-size: var(--fs-micro); color: var(--text-faint); font-family: var(--font-mono); }
 
 /* ---------- marketplace summary ---------- */
+.mhero { display: flex; flex-direction: column; gap: 4px; padding: var(--s5); border: 1px solid var(--line); border-radius: var(--r-lg); background: linear-gradient(180deg, var(--surface-2), var(--surface) 70%); margin-bottom: var(--s4); }
+.mhero-big { font-family: var(--font-display); font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 650; letter-spacing: -0.04em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.mhero-big em { font-style: normal; font-size: 0.42em; color: var(--text-dim); letter-spacing: 0; }
+.mhero-sub { font-size: var(--fs-sm); color: var(--text-dim); }
+
 .msummary { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--s5); padding: var(--s5); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); margin-bottom: var(--s6); }
 .msum-stat { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .msum-big { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.1; }
@@ -220,6 +237,17 @@ dialog.drawer::backdrop { background: rgba(3, 5, 8, 0.72); backdrop-filter: blur
 .mselect-note { font-size: var(--fs-xs); color: var(--text-faint); }
 .mselect-dir { display: flex; align-items: center; gap: var(--s2); }
 
+/* ---------- market overview table ---------- */
+.mtable-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.mtable { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.mtable th, .mtable td { padding: 10px var(--s4); text-align: left; white-space: nowrap; }
+.mtable th { font-size: var(--fs-xs); color: var(--text-faint); font-weight: 500; border-bottom: 1px solid var(--line); }
+.mtable td.num, .mtable th:nth-child(2), .mtable th:nth-child(3) { text-align: right; font-variant-numeric: tabular-nums; }
+.mtable tbody tr:not(:last-child) td { border-bottom: 1px solid var(--line); }
+.mtable tr.mrow-active { background: var(--surface-2); }
+.mtable td.mrow-lead { font-weight: 600; }
+.mrow-pick { min-height: 0; padding: 4px 8px; }
+
 /* ---------- responsive ---------- */
 @media (min-width: 640px) {
   dialog.drawer { margin: 0 0 0 auto; max-width: 460px; height: 100%; max-height: 100%; }
@@ -229,6 +257,21 @@ dialog.drawer::backdrop { background: rgba(3, 5, 8, 0.72); backdrop-filter: blur
   .trade-grid { grid-template-columns: minmax(0, 1fr); }
   .trade-left { position: static; max-width: var(--swap-w); width: 100%; margin: 0 auto; }
 }
+@media (max-width: 860px) {
+  /* Six columns stop fitting long before the viewport is phone-sized, and a horizontally
+     scrolling table hides exactly the columns that matter. Same DOM, re-laid out as cards: each
+     cell keeps its heading via `data-th`, so nothing is lost and there is no second markup path. */
+  .mtable, .mtable tbody, .mtable tr, .mtable td { display: block; width: 100%; }
+  .mtable thead { display: none; }
+  .mtable-wrap { overflow: visible; border: 0; background: none; }
+  .mtable tr { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: var(--s3) var(--s4); margin-bottom: var(--s3); }
+  .mtable tr.mrow-active { border-color: var(--accent-line); }
+  .mtable tbody tr:not(:last-child) td { border-bottom: 0; }
+  .mtable td { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); padding: 5px 0; white-space: normal; }
+  .mtable td::before { content: attr(data-th); font-size: var(--fs-xs); color: var(--text-faint); }
+  .mtable td.num, .mtable td.mrow-lead { text-align: right; }
+  .mrow-pick { padding: 0; font-size: var(--fs-md); font-weight: 600; }
+}
 @media (max-width: 720px) {
   .mcond-grid { grid-template-columns: repeat(2, 1fr); }
   .disco-sources { grid-template-columns: minmax(0, 1fr); }
@@ -236,3 +279,93 @@ dialog.drawer::backdrop { background: rgba(3, 5, 8, 0.72); backdrop-filter: blur
   .msummary { gap: var(--s4); padding: var(--s4); }
   .msum-big { font-size: 1.35rem; }
 }
+
+/* ---------- conditional strategy screen ---------- */
+/* Four figures, not the three `.mcond-grid` assumes, and each one wraps its own label. */
+.strat-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.strat-cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+/* The registered rule program, one rule per row, in the order the engine evaluates them. */
+.rules { display: flex; flex-direction: column; gap: var(--s2); counter-reset: rule; }
+.rule {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: var(--s3) var(--s4); padding-left: var(--s6);
+  border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg-elev);
+  position: relative;
+}
+.rule::before {
+  counter-increment: rule; content: counter(rule);
+  position: absolute; left: var(--s3); top: var(--s3);
+  font-family: var(--font-mono); font-size: var(--fs-micro); color: var(--text-faint);
+}
+.rule-when { font-size: var(--fs-sm); }
+.rule-then { font-size: var(--fs-xs); color: var(--text-dim); font-family: var(--font-mono); }
+
+/* Builder: parameter rows that stay readable at one column on a phone. */
+.sbuild { display: flex; flex-direction: column; gap: var(--s4); }
+.sbuild-row { display: grid; grid-template-columns: 1fr 110px; gap: var(--s3); align-items: center; }
+.sbuild-row label { font-size: var(--fs-sm); }
+.sbuild-row .hint { display: block; font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.5; }
+.sbuild-row input { width: 100%; text-align: right; font-family: var(--font-mono); }
+.sbuild-errors { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-xs); color: var(--bad); }
+.sbuild-preview { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-dim); word-break: break-all; }
+@media (max-width: 520px) { .sbuild-row { grid-template-columns: 1fr; } .sbuild-row input { text-align: left; } }
+
+/* ---------- the strategy, surfaced on the trade screen ---------- */
+/* Conditional liquidity is the mechanism this product exists for, so it gets a card on the main
+   screen rather than living only behind a drawer. Sized to read as a status strip, not a panel -
+   it should be absorbed in a glance and then scrolled past. */
+.strsum {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s4);
+  padding: var(--s4); border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--surface); transition: border-color var(--med) var(--ease), background var(--med) var(--ease);
+}
+.strsum-stressed { border-color: var(--warn-line); background: linear-gradient(180deg, var(--warn-wash), var(--surface) 65%); }
+.strsum-main { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.strsum-state { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.strsum-pct { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.strsum-say { font-size: var(--fs-sm); color: var(--text-dim); line-height: 1.5; max-width: 48ch; }
+.strsum-num { font-size: var(--fs-xs); color: var(--text-faint); }
+.strsum-link { flex-shrink: 0; gap: 5px; }
+
+/* ---------- discovery column ---------- */
+.disco-head-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+/* The one-line definition of the column's central term, where a reader meets it. */
+.disco-lede { font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.5; max-width: 46ch; }
+
+/* "Why this route?" leads with prose, because that is the sentence a reader needs; the decomposed
+   factors sit underneath for anyone who wants the reasoning rather than the conclusion. */
+.why-story { display: flex; flex-direction: column; gap: var(--s2); padding-bottom: var(--s3); border-bottom: 1px solid var(--line-soft); }
+.why-story p { font-size: var(--fs-sm); line-height: 1.6; color: var(--text-dim); }
+.why-story b { color: var(--text); font-weight: 600; }
+.why-story-conclusion { color: var(--text-faint); font-size: var(--fs-xs); }
+
+/* ---------- strategy preview (builder) ---------- */
+/* A vertical run of states with the transition condition written on each edge. Vertical on every
+   width on purpose: the reading order IS the state order, and a horizontal version loses that the
+   moment it wraps. */
+.spreview { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.spreview-step {
+  display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label value" "note note";
+  gap: 2px var(--s3); padding: var(--s3) var(--s4);
+  border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg-elev);
+}
+.spreview-label { grid-area: label; font-weight: 600; font-size: var(--fs-sm); }
+.spreview-value { grid-area: value; font-family: var(--font-display); font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.spreview-note-inline { grid-area: note; font-size: var(--fs-xs); color: var(--text-faint); }
+.spreview-normal { border-color: var(--ok-line); }
+.spreview-normal .spreview-label, .spreview-normal .spreview-value { color: var(--ok); }
+.spreview-defensive { border-color: var(--bad-line); }
+.spreview-defensive .spreview-label, .spreview-defensive .spreview-value { color: var(--bad); }
+.spreview-recovery { border-color: var(--warn-line); }
+.spreview-recovery .spreview-label, .spreview-recovery .spreview-value { color: var(--warn); }
+.spreview-edge { display: flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s4); color: var(--text-faint); font-size: var(--fs-xs); line-height: 1.45; }
+.spreview-note { font-size: var(--fs-xs); color: var(--text-faint); line-height: 1.55; padding-top: var(--s3); }
+
+@media (max-width: 520px) {
+  .strsum { flex-direction: column; }
+  .strsum-link { align-self: flex-start; }
+  .mcond-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.rupd-x { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: var(--r-full); border: 1px solid var(--line); background: transparent; color: var(--text-faint); cursor: pointer; }
+.rupd-x:hover { color: var(--text); border-color: var(--line-strong, var(--line)); }

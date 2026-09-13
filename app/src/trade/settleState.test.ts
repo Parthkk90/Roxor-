@@ -35,7 +35,7 @@ function inputs(overrides: Partial<SettleInputs> = {}): SettleInputs {
 
 const derive = (o: Partial<SettleInputs> = {}) => deriveSettleState(inputs(o), "DTA");
 
-describe("deriveSettleState — the revert bug", () => {
+describe("deriveSettleState - the revert bug", () => {
   /**
    * The defect this whole state machine exists to make impossible. The previous implementation
    * awaited the receipt and set "success" without inspecting `receipt.status`; viem resolves
@@ -58,7 +58,7 @@ describe("deriveSettleState — the revert bug", () => {
   });
 });
 
-describe("deriveSettleState — stale success is unrepresentable", () => {
+describe("deriveSettleState - stale success is unrepresentable", () => {
   /**
    * Editing the amount changes `tradeKey`, so a success belonging to the previous trade can no
    * longer match. This is why no reset effect is needed: the guard resolves in the same render.
@@ -74,7 +74,7 @@ describe("deriveSettleState — stale success is unrepresentable", () => {
   });
 });
 
-describe("deriveSettleState — signing vs confirming are distinct", () => {
+describe("deriveSettleState - signing vs confirming are distinct", () => {
   it("distinguishes waiting for the wallet from waiting for the block", () => {
     expect(derive({ settleIsSigning: true }).stage).toBe("swap-signing");
     expect(derive({ settleIsConfirming: true }).stage).toBe("swap-confirming");
@@ -96,7 +96,7 @@ describe("deriveSettleState — signing vs confirming are distinct", () => {
   });
 });
 
-describe("deriveSettleState — preconditions", () => {
+describe("deriveSettleState - preconditions", () => {
   it("asks for an amount before anything else", () => {
     expect(derive({ amountWei: undefined }).stage).toBe("idle");
   });
@@ -135,7 +135,7 @@ describe("deriveSettleState — preconditions", () => {
   });
 });
 
-describe("deriveSettleState — browsing without a wallet", () => {
+describe("deriveSettleState - browsing without a wallet", () => {
   /**
    * A visitor should be able to see depth and get a quote before connecting; the wallet gate comes
    * after the quote so the product is legible to someone who has not connected yet.
@@ -155,7 +155,7 @@ describe("deriveSettleState — browsing without a wallet", () => {
   });
 });
 
-describe("deriveSettleState — pre-flight simulation", () => {
+describe("deriveSettleState - pre-flight simulation", () => {
   it("blocks submission when the simulation reverts", () => {
     // Catches a maker that went insolvent between quote and click, before the user signs.
     const state = derive({ simulateError: new Error("ExecutableLiquidityShortfall") });
@@ -168,7 +168,7 @@ describe("deriveSettleState — pre-flight simulation", () => {
   });
 });
 
-describe("deriveSettleState — a stale quote is not signable", () => {
+describe("deriveSettleState - a stale quote is not signable", () => {
   /**
    * `useSwapFlow` freezes the quote at click so a background poll cannot change what gets signed.
    * That is necessary but not sufficient: if the figure on screen is a `keepPreviousData`
@@ -196,7 +196,7 @@ describe("deriveSettleState — a stale quote is not signable", () => {
   });
 });
 
-describe("deriveSettleState — the quote is never presented as locked", () => {
+describe("deriveSettleState - the quote is never presented as locked", () => {
   /**
    * `Solver.settle` re-derives the route on-chain, so the displayed figure is advisory. Freezing it
    * at click is necessary but not sufficient: if the number on screen drifted materially since the
@@ -214,12 +214,12 @@ describe("deriveSettleState — the quote is never presented as locked", () => {
     expect(derive({ quoteDrifted: false }).stage).toBe("ready");
   });
 
-  it("puts approval ahead of a drift prompt — you cannot swap without it anyway", () => {
+  it("puts approval ahead of a drift prompt - you cannot swap without it anyway", () => {
     expect(derive({ quoteDrifted: true, allowance: 0n }).stage).toBe("needs-approval");
   });
 });
 
-describe("deriveSettleState — typing never looks like a failure", () => {
+describe("deriveSettleState - typing never looks like a failure", () => {
   it("reports debouncing as its own state, distinct from quoting", () => {
     const state = derive({ isDebouncing: true });
 

@@ -10,7 +10,7 @@ import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 
 /// @title MarketShockTest
 /// @notice End-to-end demonstration of the protocol's thesis, executed against the real 1inch
-///         Aqua + SwapVM contracts with actual ERC-20 balance movement — no mocked settlement.
+///         Aqua + SwapVM contracts with actual ERC-20 balance movement - no mocked settlement.
 ///
 ///   Maker ships 100 ETH-equivalent of liquidity to Aqua
 ///          |

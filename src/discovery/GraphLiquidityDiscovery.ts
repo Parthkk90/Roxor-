@@ -1,9 +1,9 @@
 /**
- * Graph-backed liquidity discovery — LAYER 1 of the three layers of truth.
+ * Graph-backed liquidity discovery - LAYER 1 of the three layers of truth.
  *
  * This client answers exactly one question: *which* liquidity sources are worth asking about. It
  * deliberately cannot answer "how much can they fill", and the type system is arranged so that a
- * caller cannot accidentally use it that way — `discover()` returns `LiquidityCandidate`s whose
+ * caller cannot accidentally use it that way - `discover()` returns `LiquidityCandidate`s whose
  * depth fields are all named `reported*`, and only `verify()` (which performs live chain reads)
  * produces the `conditionalLiquidity` a route may allocate against.
  *
@@ -68,7 +68,7 @@ function asMode(value: string): StrategyModeName {
   return value === "DEFENSIVE" || value === "RECOVERY" ? value : "NORMAL";
 }
 
-/** Sorted, lowercased pair — matches how the registry stores `tokenA`/`tokenB`. */
+/** Sorted, lowercased pair - matches how the registry stores `tokenA`/`tokenB`. */
 export function sortPair(a: string, b: string): [string, string] {
   const lowerA = a.toLowerCase();
   const lowerB = b.toLowerCase();

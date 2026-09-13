@@ -7,8 +7,8 @@ import { coverageTone } from "../../market/coverage";
 import { useSwapFlow } from "../../trade/useSwapFlow";
 import { useTradeActions, useTradePair } from "../../trade/useTrade";
 import { isTransacting, shouldShowRoute } from "../../trade/settleState";
-import { shortHash, txUrl } from "../../chain/explorer";
-import { fmt } from "../../format";
+import { explorerName, shortHash, txUrl } from "../../chain/explorer";
+import { fmt, fmtBps, fmtRate, fmtToken } from "../../format";
 import { AmountField } from "./AmountField";
 import { RouteAllocationBar } from "../route/RouteVisualizer";
 import { SlippageControl } from "./SlippageControl";
@@ -19,16 +19,16 @@ const TONE_CLASS = { success: "badge-ok", warning: "badge-warn", danger: "badge-
 
 export function SwapCard() {
   const pair = useTradePair();
-  const { reverse, selectToken } = useTradeActions();
+  const { reverse } = useTradeActions();
   const flow = useSwapFlow();
-  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address);
+  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address, pair.market.aquaVenue, pair.market.uniswapV4Venue);
   const { login } = usePrivy();
 
   const { state, quote } = flow;
   const stage = state.stage;
 
   // `minOut` is the only figure the contract enforces, so it is the one shown large. `expectedOut`
-  // is advisory by construction — `settle` re-derives the route — and is shown as secondary.
+  // is advisory by construction - `settle` re-derives the route - and is shown as secondary.
   const guaranteed = flow.signed?.minOut ?? flow.minOut;
 
   if (stage === "success") return <SuccessPanel flow={flow} />;
@@ -39,7 +39,7 @@ export function SwapCard() {
         <div className="card">
           <div className="card-head">
             <h2 style={{ fontSize: "var(--fs-md)" }}>
-              Swapping {fmt(flow.signed?.amountWei)} {pair.tokenIn.symbol}
+              Swapping {fmtToken(flow.signed?.amountWei, pair.tokenIn)}
             </h2>
           </div>
           <TxProgress
@@ -79,22 +79,22 @@ export function SwapCard() {
           </button>
         </div>
 
-        {/* "You receive" is an output, never an input — the solver decides it. */}
+        {/* "You receive" is an output, never an input - the solver decides it. */}
         <div className="tokenfield">
           <div className="tokenfield-row">
             <span className={`out-amount${guaranteed === undefined ? " muted" : ""}`}>
               {quote.status === "quoting" && guaranteed === undefined ? (
                 <span className="skeleton" style={{ width: 140, height: 30 }}>0</span>
               ) : (
-                fmt(guaranteed, 4)
+                fmt(guaranteed, pair.tokenOut.decimals)
               )}
             </span>
-            <TokenSelect side="out" selected={pair.tokenOut} counterpart={pair.tokenIn} onSelect={selectToken} />
+            <TokenSelect side="out" selected={pair.tokenOut} counterpart={pair.tokenIn} onSwapSides={reverse} />
           </div>
           <div className="tokenfield-meta">
             <span>You receive at least</span>
             {flow.expectedOut !== undefined && (
-              <span className="num">Expected {fmt(flow.expectedOut, 4)}</span>
+              <span className="num">Expected {fmt(flow.expectedOut, pair.tokenOut.decimals)}</span>
             )}
           </div>
         </div>
@@ -106,17 +106,13 @@ export function SwapCard() {
               <span>Rate</span>
               <span>
                 1 {pair.tokenIn.symbol} ={" "}
-                {flow.expectedOut !== undefined && quote.amountWei
-                  ? (
-                      Number(flow.expectedOut) / Number(quote.amountWei)
-                    ).toFixed(5)
-                  : "—"}{" "}
+                {fmtRate(quote.amountWei, flow.expectedOut, pair.tokenIn, pair.tokenOut)}{" "}
                 {pair.tokenOut.symbol}
               </span>
             </div>
             <div className={`qrow${quote.isStale ? " is-stale" : ""}`}>
               <span>Max slippage</span>
-              <span>{(pair.slippageBps / 100).toFixed(2)}%</span>
+              <span>{fmtBps(pair.slippageBps)}</span>
             </div>
 
             {/* Compact split here; the full diagram lives in the discovery column beside this
@@ -133,9 +129,7 @@ export function SwapCard() {
           <div className="qrow">
             <span>Liquidity that can settle</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-              <span className="num">
-                {fmt(market.totalExecutable)} {pair.tokenIn.symbol}
-              </span>
+              <span className="num">{fmtToken(market.totalExecutable, pair.tokenIn)}</span>
               <span className={`badge ${TONE_CLASS[coverageTone(healthBand)]}`}>
                 <span className="dot" />
                 {healthBand.toLowerCase()}
@@ -193,8 +187,8 @@ function StatusArea({ flow }: { flow: ReturnType<typeof useSwapFlow> }) {
           <p>
             {result?.kind === "no-route" ? (
               <>
-                Only {fmt(result.totalExecutable)} {pair.tokenIn.symbol} can actually be settled right now,
-                less than this trade needs. Try a smaller amount.
+                Only {fmtToken(result.totalExecutable, pair.tokenIn)} can actually be settled right
+                now, less than this trade needs. Try a smaller amount.
               </>
             ) : (
               <>There isn&apos;t enough liquidity that can settle this size. Try a smaller amount.</>
@@ -212,7 +206,7 @@ function StatusArea({ flow }: { flow: ReturnType<typeof useSwapFlow> }) {
         <div>
           <strong>The quote changed</strong>
           <p>
-            You&apos;d now receive about {(drift.dropBps / 100).toFixed(2)}% less than when you started.
+            You&apos;d now receive about {fmtBps(drift.dropBps)} less than when you started.
             Review the new amount before swapping.
           </p>
         </div>
@@ -263,12 +257,12 @@ function SuccessPanel({ flow }: { flow: ReturnType<typeof useSwapFlow> }) {
           <div className="amounts">
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <TokenSigil symbol={pair.tokenIn.symbol} />
-              {fmt(flow.signed?.amountWei, 4)} {pair.tokenIn.symbol}
+              {fmtToken(flow.signed?.amountWei, pair.tokenIn)}
             </span>
             <ArrowDown size={16} style={{ transform: "rotate(-90deg)" }} aria-hidden="true" />
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <TokenSigil symbol={pair.tokenOut.symbol} />
-              {fmt(flow.signed?.minOut, 4)} {pair.tokenOut.symbol}
+              {fmtToken(flow.signed?.minOut, pair.tokenOut)}
             </span>
           </div>
 
@@ -278,8 +272,8 @@ function SuccessPanel({ flow }: { flow: ReturnType<typeof useSwapFlow> }) {
 
           {flow.settleHash &&
             (url ? (
-              <a className="txlink" href={url} target="_blank" rel="noreferrer">
-                {shortHash(flow.settleHash)}
+              <a className="txlink" href={url} target="_blank" rel="noreferrer" title={flow.settleHash}>
+                {explorerName() ? `View on ${explorerName()}` : shortHash(flow.settleHash)}
                 <ExternalLink size={11} strokeWidth={2.5} aria-hidden="true" />
               </a>
             ) : (

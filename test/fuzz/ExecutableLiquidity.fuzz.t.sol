@@ -13,9 +13,9 @@ import { ISolver } from "../../contracts/solver/interfaces/ISolver.sol";
 ///         liquidityBps, amount), the solver never allocates more than executable liquidity.
 ///
 /// @dev Split in two deliberately. The pure half fuzzes the arithmetic over its entire domain
-///      (including values no fixture could reach); the integration half fuzzes the *real* stack —
+///      (including values no fixture could reach); the integration half fuzzes the *real* stack -
 ///      real Aqua balances, real maker wallet, real ERC20 approvals, the real rule engine driving
-///      the multiplier — because an invariant that only holds in a library is not an invariant.
+///      the multiplier - because an invariant that only holds in a library is not an invariant.
 contract ExecutableLiquidityFuzzTest is SolverFixture {
     function setUp() public {
         _setUpSolver();

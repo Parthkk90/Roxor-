@@ -42,7 +42,7 @@ import { UniswapV4Venue } from "../contracts/venues/UniswapV4Venue.sol";
 /// @notice Deploys the full Part 6 marketplace stack on a live network: THREE independent demo
 ///         markets (DWA/DUSDC, DWA/DDAI, DUSDC/DDAI), each with its own Aqua/SwapVM strategy and
 ///         Uniswap-v4-pool strategy, wrapped in {AquaVenue}/{UniswapV4Venue}, behind its own
-///         {Solver} — a {Solver} snapshots every venue it holds unconditionally, so one venue set
+///         {Solver} - a {Solver} snapshots every venue it holds unconditionally, so one venue set
 ///         per market is required, not a per-pair filter inside a shared Solver.
 ///
 ///         Mirrors `test/utils/SolverFixture.sol`'s per-market wiring, repeated three times, as a
@@ -70,7 +70,7 @@ contract DeploySolver is Script {
     /// @dev Volatility shock used to genuinely walk a market's strategy into DEFENSIVE via the
     ///      real rule program (`StrategyFixtures.volatilityShield`), not by writing state
     ///      directly. RECOVERY additionally needs `CALM_PERIOD` (10 minutes) of chain time to
-    ///      elapse after this, which a single broadcast cannot do — see `script/SeedRecovery.s.sol`.
+    ///      elapse after this, which a single broadcast cannot do - see `script/SeedRecovery.s.sol`.
     uint256 internal constant DEFENSIVE_SHOCK_BPS = 6500;
     uint256 internal constant CALM_VOLATILITY_BPS = 2000;
     uint256 internal constant REFERENCE_PRICE = 4000e18;
@@ -86,6 +86,9 @@ contract DeploySolver is Script {
         bytes32 aquaStrategyId;
         address uniOracle;
         bytes32 uniStrategyId;
+        /// @dev Recorded so the frontend's strategy builder can rebuild the SwapVM program a new
+        ///      strategy on this market would run - it is otherwise unrecoverable from chain.
+        address extruction;
     }
 
     /// @dev Shared Uniswap-v4 infrastructure. One `PoolManager` and one mined hook host all three
@@ -119,14 +122,14 @@ contract DeploySolver is Script {
         lpRouter = new PoolModifyLiquidityTest(manager);
         hook = _deployHook(owner);
 
-        // Market 1: DWA/DUSDC — left at NORMAL, exactly as the original single-market deployment.
+        // Market 1: DWA/DUSDC - left at NORMAL, exactly as the original single-market deployment.
         markets[0] = _deployMarket("DWA/DUSDC", owner, maker, dwa, dusdc);
 
-        // Market 2: DWA/DDAI — shocked into DEFENSIVE via the real rule program.
+        // Market 2: DWA/DDAI - shocked into DEFENSIVE via the real rule program.
         markets[1] = _deployMarket("DWA/DDAI", owner, maker, dwa, ddai);
         _shock(markets[1], DEFENSIVE_SHOCK_BPS);
 
-        // Market 3: DUSDC/DDAI — left at NORMAL here; `script/SeedRecovery.s.sol` walks it through
+        // Market 3: DUSDC/DDAI - left at NORMAL here; `script/SeedRecovery.s.sol` walks it through
         // DEFENSIVE -> RECOVERY afterwards, once chain time can actually advance (anvil) or has
         // actually elapsed (a live testnet).
         markets[2] = _deployMarket("DUSDC/DDAI", owner, maker, dusdc, ddai);
@@ -147,7 +150,7 @@ contract DeploySolver is Script {
 
     function _deployHook(address owner) private returns (ConditionalLiquidityHook deployedHook) {
         // The hook is bound to one registry+engine pair at construction, but `registerPoolStrategy`
-        // takes the strategy id per pool — so a single hook instance can host independently-staffed
+        // takes the strategy id per pool - so a single hook instance can host independently-staffed
         // strategies for all three pools as long as each pool's strategy lives in the same
         // registry. We give the shared hook its own registry/engine (separate from every market's
         // Aqua-side registry), used only for the Uniswap leg of all three markets.
@@ -168,7 +171,7 @@ contract DeploySolver is Script {
         _uniOracle = oracle;
     }
 
-    // Set once by `_deployHook`, read by every `_deployMarket` call — the shared Uniswap-side
+    // Set once by `_deployHook`, read by every `_deployMarket` call - the shared Uniswap-side
     // registry/engine/oracle backing all three pools' strategies.
     ConditionalLiquidityRegistry private _uniRegistry;
     ConditionalLiquidityEngine private _uniEngine;
@@ -180,11 +183,20 @@ contract DeploySolver is Script {
         address maker,
         MockERC20 tokenX,
         MockERC20 tokenY
-    ) private returns (Market memory market) {
+    )
+        private
+        returns (Market memory market)
+    {
         (address tokenA, address tokenB) = StrategyLib.sortTokens(address(tokenX), address(tokenY));
 
-        (bytes32 aStrategyId, ConditionalLiquidityEngine aquaEngine, ConditionalLiquidityRegistry aquaRegistry, address aquaOracle, ISwapVM.Order memory aquaOrder) =
-            _deployAquaStrategy(owner, maker, tokenA, tokenB);
+        (
+            bytes32 aStrategyId,
+            ConditionalLiquidityEngine aquaEngine,
+            ConditionalLiquidityRegistry aquaRegistry,
+            address aquaOracle,
+            ISwapVM.Order memory aquaOrder,
+            address aquaExtruction
+        ) = _deployAquaStrategy(owner, maker, tokenA, tokenB);
 
         (bytes32 uStrategyId, PoolKey memory poolKey) = _deployUniswapStrategy(maker, tokenA, tokenB);
 
@@ -206,7 +218,8 @@ contract DeploySolver is Script {
             aquaOracle: aquaOracle,
             aquaStrategyId: aStrategyId,
             uniOracle: address(_uniOracle),
-            uniStrategyId: uStrategyId
+            uniStrategyId: uStrategyId,
+            extruction: aquaExtruction
         });
     }
 
@@ -222,7 +235,8 @@ contract DeploySolver is Script {
             ConditionalLiquidityEngine engine,
             ConditionalLiquidityRegistry registry,
             address oracleAddr,
-            ISwapVM.Order memory order
+            ISwapVM.Order memory order,
+            address extructionAddr
         )
     {
         registry = new ConditionalLiquidityRegistry(new StrategyValidator(), owner);
@@ -231,6 +245,7 @@ contract DeploySolver is Script {
         ConditionalLiquidityExtruction extruction = new ConditionalLiquidityExtruction(engine, registry);
         registry.setStateAuthority(address(engine));
         oracleAddr = address(oracle);
+        extructionAddr = address(extruction);
 
         MakerTraitsLib.Args memory args;
         args.maker = maker;
@@ -264,7 +279,10 @@ contract DeploySolver is Script {
         address maker,
         address tokenA,
         address tokenB
-    ) private returns (bytes32 strategyId, PoolKey memory poolKey) {
+    )
+        private
+        returns (bytes32 strategyId, PoolKey memory poolKey)
+    {
         poolKey = PoolKey({
             currency0: Currency.wrap(tokenA),
             currency1: Currency.wrap(tokenB),
@@ -320,7 +338,7 @@ contract DeploySolver is Script {
         _uniEngine.poke(market.uniStrategyId);
     }
 
-    function _log(Market memory market) private view {
+    function _log(Market memory market) private pure {
         console.log("--- Market:", market.label);
         console.log("Token in:      ", market.tokenIn);
         console.log("Token out:     ", market.tokenOut);
@@ -352,6 +370,7 @@ contract DeploySolver is Script {
             vm.serializeAddress(obj, "aquaOracle", m.aquaOracle);
             vm.serializeBytes32(obj, "aquaStrategyId", m.aquaStrategyId);
             vm.serializeAddress(obj, "uniOracle", m.uniOracle);
+            vm.serializeAddress(obj, "extruction", m.extruction);
             marketJson[i] = vm.serializeBytes32(obj, "uniStrategyId", m.uniStrategyId);
         }
 

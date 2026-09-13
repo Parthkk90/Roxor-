@@ -1,5 +1,6 @@
 import { formatUnits } from "viem";
 
+import { fmt } from "../../format";
 import { useTradeActions, useTradeDraft } from "../../trade/useTrade";
 import type { TokenInfo } from "../../trade/TradeContext";
 import { TokenSelect } from "./TokenSelect";
@@ -11,7 +12,7 @@ import { TokenSelect } from "./TokenSelect";
  * subscribing to it re-renders per character. Keeping the subscription confined here is what lets
  * the liquidity table share the same amount without paying for it.
  *
- * The input is never debounced — only the value that feeds a network read is, in `useAmountIntent`.
+ * The input is never debounced - only the value that feeds a network read is, in `useAmountIntent`.
  * Typing stays immediate no matter how slow the chain is.
  */
 export function AmountField({
@@ -26,16 +27,20 @@ export function AmountField({
   disabled?: boolean;
 }) {
   const { amount } = useTradeDraft();
-  const { setAmount, selectToken } = useTradeActions();
+  const { setAmount, reverse } = useTradeActions();
 
-  const formatted = balance === undefined ? undefined : formatUnits(balance, token.decimals);
+  // Two different strings on purpose: `exact` is what the Max button types into the field, because
+  // rounding a balance before spending it leaves dust or overdraws. `readable` is what a person
+  // sees - a mock token minted at type(uint128).max is otherwise a 21-digit wall.
+  const exact = balance === undefined ? undefined : formatUnits(balance, token.decimals);
+  const readable = balance === undefined ? undefined : fmt(balance, token.decimals);
 
   return (
     <div className="tokenfield">
       <div className="tokenfield-row">
         <input
           id="swap-amount"
-          // Not `type="number"` — it hands back an empty string for input the user can plainly see,
+          // Not `type="number"` - it hands back an empty string for input the user can plainly see,
           // and its spinners are meaningless at token precision. `setAmount` validates instead.
           type="text"
           inputMode="decimal"
@@ -47,17 +52,17 @@ export function AmountField({
           disabled={disabled}
           onChange={(event) => setAmount(event.target.value)}
         />
-        <TokenSelect side="in" selected={token} counterpart={counterpart} onSelect={selectToken} />
+        <TokenSelect side="in" selected={token} counterpart={counterpart} onSwapSides={reverse} />
       </div>
 
       <div className="tokenfield-meta">
         <span>You pay</span>
-        {formatted !== undefined && (
+        {exact !== undefined && (
           <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-            <span className="num">
-              Balance {Number(formatted).toFixed(4)}
+            <span className="num" title={`${exact} ${token.symbol}`}>
+              Balance {readable}
             </span>
-            <button type="button" onClick={() => setAmount(formatted)} disabled={balance === 0n}>
+            <button type="button" onClick={() => setAmount(exact)} disabled={balance === 0n}>
               Max
             </button>
           </span>

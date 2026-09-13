@@ -3,7 +3,7 @@
 This decodes the *same binary rule-program format* that RuleProgram.sol decodes (see that file's
 NatSpec for the layout) and evaluates it with the same semantics as RuleEngineLib.evaluate. It is
 deliberately a second, independent implementation in a different language, reading the exact same
-artifact the Solidity contracts consume in production — not a redescription of the strategy's logic
+artifact the Solidity contracts consume in production - not a redescription of the strategy's logic
 in Python. A bug in either the Solidity decoder or the Solidity evaluator that this model doesn't
 share will show up as a mismatch in test/differential/ReferenceEngine.t.sol.
 

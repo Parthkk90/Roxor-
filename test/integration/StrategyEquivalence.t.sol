@@ -40,12 +40,12 @@ import { StrategyFixtures } from "../utils/StrategyFixtures.sol";
 ///         backends (Aqua/SwapVM's `ConditionalLiquidityExtruction` vs Uniswap v4's
 ///         `ConditionalLiquidityHook`), lands on identical mode/liquidity/spread at every step.
 ///
-/// @dev Deliberately does NOT share a registry, engine, or oracle between the two stacks — that
+/// @dev Deliberately does NOT share a registry, engine, or oracle between the two stacks - that
 ///      would make agreement trivial (same storage slot). Two fully separate deployments are
 ///      driven by two separate `MockMarketStateProvider`s kept in lockstep, and every step is
 ///      forced through a REAL swap on each backend's own router (not a bare `engine.poke()` call),
-///      so a bug in either integration's plumbing — a wrong timestamp read, a stale strategyId, a
-///      miscomputed cap — would show up as a divergence here, not just "the math agrees with
+///      so a bug in either integration's plumbing - a wrong timestamp read, a stale strategyId, a
+///      miscomputed cap - would show up as a divergence here, not just "the math agrees with
 ///      itself." Neither backend implements its own copy of `RuleEngineLib`; both call
 ///      `ConditionalLiquidityEngine.poke`, which is the only place `RuleEngineLib.evaluate` is
 ///      ever invoked in the whole protocol.

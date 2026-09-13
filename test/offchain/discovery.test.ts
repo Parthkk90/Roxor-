@@ -1,5 +1,5 @@
 /**
- * Feature 5 & 8 — Graph discovery against fully mocked subgraph responses.
+ * Feature 5 & 8 - Graph discovery against fully mocked subgraph responses.
  *
  * The contract tests must never depend on a running Graph node, and neither must these. Every
  * response here is a fixture, which also lets us test the cases a live index would rarely produce
@@ -192,7 +192,7 @@ describe("reliability", () => {
     expect(smoothedReliabilityBps({ attemptedFills: 100, successfulFills: 99 }, 20)).toBe(9900);
   });
 
-  it("never lets reliability raise executable depth — the Feature 8 boundary", () => {
+  it("never lets reliability raise executable depth - the Feature 8 boundary", () => {
     // The spec's case: 99% historical reliability, zero current wallet balance.
     expect(allocatableDepth(0n, 9900)).toBe(0n);
     expect(allocatableDepth(5n, 10_000)).toBe(5n);

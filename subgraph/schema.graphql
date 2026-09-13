@@ -1,4 +1,4 @@
-# Conditional Liquidity Marketplace — indexed discovery schema.
+# Conditional Liquidity Marketplace - indexed discovery schema.
 #
 # LAYER 1 OF THREE. Everything here is discovery, history and analytics. None of it is admissible
 # as a settlement input: an indexed balance is a statement about a block that has already passed,

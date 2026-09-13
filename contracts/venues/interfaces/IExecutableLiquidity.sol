@@ -17,7 +17,7 @@ interface IExecutableLiquidity {
     /// @param allowance Amount the settling party has actually approved to the contract that will
     ///        pull from them (Aqua for a maker; not applicable to a pool that holds its own
     ///        reserves, which reports `type(uint256).max`).
-    /// @param deliverableLiquidity `min(virtual, wallet, allowance)` — the solvency bound, before
+    /// @param deliverableLiquidity `min(virtual, wallet, allowance)` - the solvency bound, before
     ///        any strategy logic is applied.
     /// @param conditionalLiquidity `deliverableLiquidity` after the strategy's live liquidity
     ///        multiplier. This is the only field a router may allocate against.
@@ -34,7 +34,7 @@ interface IExecutableLiquidity {
 
     /// @notice Live solvency breakdown for `tokenIn -> tokenOut` at the current block.
     /// @dev Must be derived entirely from reads performed inside this call. Implementations may
-    ///      not cache, and callers may not carry a result across a state-changing boundary — a
+    ///      not cache, and callers may not carry a result across a state-changing boundary - a
     ///      maker can drain their wallet or revoke their approval in the block in between.
     function executableLiquidity(address tokenIn, address tokenOut) external view returns (ExecutableLiquidity memory);
 }

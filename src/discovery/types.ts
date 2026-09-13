@@ -1,5 +1,5 @@
 /**
- * Types for the discovery layer — LAYER 1 of the three layers of truth.
+ * Types for the discovery layer - LAYER 1 of the three layers of truth.
  *
  * The naming here is deliberate and load-bearing. Every field sourced from the index is prefixed
  * `reported*`, because it describes what a maker advertised at some past block, not what they can
@@ -47,7 +47,7 @@ export interface LiquidityCandidate {
 }
 
 /**
- * A candidate after it has been re-read on-chain — LAYER 3 evidence attached to a LAYER 1 hint.
+ * A candidate after it has been re-read on-chain - LAYER 3 evidence attached to a LAYER 1 hint.
  *
  * The separation is the point: `candidate` is what the index claimed, `executable` is what the
  * chain says right now. Keeping both lets the UI explain *why* a route changed, and makes a
