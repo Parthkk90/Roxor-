@@ -1,5 +1,6 @@
 import { formatUnits } from "viem";
 
+import { fmt } from "../../format";
 import { useTradeActions, useTradeDraft } from "../../trade/useTrade";
 import type { TokenInfo } from "../../trade/TradeContext";
 import { TokenSelect } from "./TokenSelect";
@@ -28,7 +29,11 @@ export function AmountField({
   const { amount } = useTradeDraft();
   const { setAmount, reverse } = useTradeActions();
 
-  const formatted = balance === undefined ? undefined : formatUnits(balance, token.decimals);
+  // Two different strings on purpose: `exact` is what the Max button types into the field, because
+  // rounding a balance before spending it leaves dust or overdraws. `readable` is what a person
+  // sees - a mock token minted at type(uint128).max is otherwise a 21-digit wall.
+  const exact = balance === undefined ? undefined : formatUnits(balance, token.decimals);
+  const readable = balance === undefined ? undefined : fmt(balance, token.decimals);
 
   return (
     <div className="tokenfield">
@@ -52,12 +57,12 @@ export function AmountField({
 
       <div className="tokenfield-meta">
         <span>You pay</span>
-        {formatted !== undefined && (
+        {exact !== undefined && (
           <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
-            <span className="num">
-              Balance {Number(formatted).toFixed(4)}
+            <span className="num" title={`${exact} ${token.symbol}`}>
+              Balance {readable}
             </span>
-            <button type="button" onClick={() => setAmount(formatted)} disabled={balance === 0n}>
+            <button type="button" onClick={() => setAmount(exact)} disabled={balance === 0n}>
               Max
             </button>
           </span>

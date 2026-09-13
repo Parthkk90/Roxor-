@@ -103,4 +103,11 @@ distrust, and it costs traders nothing because solvency is enforced independentl
 
 ## Running the demo
 
-See the "Demo procedure" section of the top-level `README.md`.
+**Live on Ethereum Sepolia.** Addresses, the audit that produced them, the liquidity breakdown and
+every transaction hash: [`sepolia-deployment.md`](sepolia-deployment.md). The figures in
+*Executable liquidity* above are not hypothetical there - the Aqua maker advertises ~104 DTB and can
+deliver 8, and a real settlement split 5 DTB across both venues in
+`0xb55c0a7d792fecc4ef264620022574737448f5621237ad78b282abec67272009`.
+
+Locally, see **Local demo procedure (anvil)** in the top-level `README.md`, which deploys three
+markets parked in three different regimes.

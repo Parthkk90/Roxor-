@@ -1,10 +1,10 @@
-import { ExternalLink, History, TriangleAlert } from "lucide-react";
+import { CheckCircle2, ExternalLink, History, TriangleAlert } from "lucide-react";
 
 import { useActivity, type ActivityRecord } from "../../activity/useActivity";
 import { useMarket } from "../../market/useMarket";
 import { useTradePair } from "../../trade/useTrade";
 import { shortHash, txUrl } from "../../chain/explorer";
-import { fmt } from "../../format";
+import { fmt, fmtToken, type TokenDisplay } from "../../format";
 
 /**
  * Settled trades, with the split that actually executed.
@@ -73,13 +73,13 @@ export function ActivityPage() {
           <span className="glyph">
             <History size={20} strokeWidth={2} aria-hidden="true" />
           </span>
-          <h3>No settlements yet</h3>
+          <h3>No completed swaps yet</h3>
           <p>Completed swaps will appear here with the route each one actually took.</p>
         </div>
       ) : (
         <div className="activity">
           {activity.records.map((record) => (
-            <Row key={record.id} record={record} venueName={venueName} symbolIn={pair.tokenIn.symbol} symbolOut={pair.tokenOut.symbol} />
+            <Row key={record.id} record={record} venueName={venueName} tokenIn={pair.tokenIn} tokenOut={pair.tokenOut} />
           ))}
         </div>
       )}
@@ -90,13 +90,13 @@ export function ActivityPage() {
 function Row({
   record,
   venueName,
-  symbolIn,
-  symbolOut,
+  tokenIn,
+  tokenOut,
 }: {
   record: ActivityRecord;
   venueName: (address: string) => string;
-  symbolIn: string;
-  symbolOut: string;
+  tokenIn: TokenDisplay;
+  tokenOut: TokenDisplay;
 }) {
   const url = txUrl(record.txHash);
   const total = record.legs.reduce((sum, leg) => sum + leg.amountIn, 0n);
@@ -105,9 +105,9 @@ function Row({
     <div className="act-row">
       <div className="act-main">
         <span className="act-pair">
-          {fmt(record.totalAmountIn, 4)} {symbolIn}
-          <span className="faint" aria-hidden="true">→</span>
-          {fmt(record.totalAmountOut, 4)} {symbolOut}
+          {fmtToken(record.totalAmountIn, tokenIn)}
+          <span className="faint" aria-hidden="true">-&gt;</span>
+          {fmtToken(record.totalAmountOut, tokenOut)}
         </span>
 
         <span style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -115,7 +115,8 @@ function Row({
             <span className="route-key" key={leg.id}>
               <i style={{ background: ["var(--accent)", "var(--info)", "var(--ok)"][i % 3] }} />
               <span style={{ fontSize: "var(--fs-xs)", color: "var(--text-dim)" }}>
-                {venueName(leg.venue)} {total === 0n ? 0 : Number((leg.amountIn * 100n) / total)}%
+                {venueName(leg.venue)} {fmt(leg.amountIn, tokenIn.decimals)}
+                {total > 0n && ` (${Number((leg.amountIn * 100n) / total)}%)`}
               </span>
             </span>
           ))}
@@ -123,6 +124,14 @@ function Row({
       </div>
 
       <div className="act-side">
+        {/* Every record here comes from a `PlanExecuted` log, which only exists on a transaction
+            that succeeded. There is no pending or failed state to distinguish - a reverted swap
+            emits nothing - so this reports the one status these records can have, rather than
+            implying a lifecycle the index cannot see. */}
+        <span className="badge badge-ok">
+          <CheckCircle2 size={11} strokeWidth={2.5} aria-hidden="true" />
+          Confirmed
+        </span>
         <span className="faint" style={{ fontSize: "var(--fs-xs)" }}>
           {new Date(record.timestamp * 1000).toLocaleString()}
         </span>

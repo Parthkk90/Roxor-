@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
-import { erc20Abi, maxUint256, type Address } from "viem";
+import { erc20Abi, maxUint256 } from "viem";
 import {
   useAccount,
   useChainId,

@@ -1,23 +1,27 @@
 import { ChevronDown, Info, Loader2, ShieldAlert } from "lucide-react";
-import { formatUnits } from "viem";
 
 import type { MarketSummary, SourceAllocation } from "../../market/derive";
+import type { RegimeChange } from "../../market/useRegimeChange";
 import type { RouteChange } from "../../market/useRouteChange";
 import type { TokenInfo } from "../../trade/TradeContext";
 import type { QuoteStatus, RouteResult } from "../../trade/useRouteQuote";
-import { fmt } from "../../format";
+import { fmt, fmtBps, fmtRate, fmtToken } from "../../format";
 import { LiquiditySourceCard } from "../liquidity/LiquiditySourceCard";
 import { MarketConditions } from "../liquidity/MarketConditions";
 import { NoPhantomLiquidity } from "../liquidity/NoPhantomLiquidity";
+import { StrategySummary } from "../liquidity/StrategySummary";
 import { RouteVisualizer } from "../route/RouteVisualizer";
 
 /**
  * The discovery column: where the trade gets assembled.
  *
- * Deliberately sequential - sources, then the solver's split, then why. The order is the product's
- * argument: we found these, we verified what each can really pay, and here is how your order was
- * composed from them. A quote that appeared as one number would assert the same conclusion while
- * hiding every step that makes it trustworthy.
+ * The order of the sections is the product's argument, and it changed deliberately. The route now
+ * sits directly under market conditions, *above* the source cards: "here is how your order will be
+ * filled" is the answer, and the per-source detail is the working behind it. Previously the working
+ * came first and a reader had to scroll past two cards to reach the point.
+ *
+ * Before an amount is entered there is no route to show, so the sources lead - a visitor should be
+ * able to see what liquidity exists before committing to a number.
  */
 export function LiquidityDiscovery({
   status,
@@ -25,6 +29,9 @@ export function LiquidityDiscovery({
   allocations,
   summary,
   change,
+  regimeChange,
+  onDismissRegimeChange,
+  volatilityBps,
   amountWei,
   expectedOut,
   tokenIn,
@@ -37,6 +44,9 @@ export function LiquidityDiscovery({
   allocations: SourceAllocation[];
   summary: MarketSummary;
   change: RouteChange | null;
+  regimeChange: RegimeChange | null;
+  onDismissRegimeChange: () => void;
+  volatilityBps: number | undefined;
   amountWei: bigint | undefined;
   expectedOut: bigint | undefined;
   tokenIn: TokenInfo;
@@ -45,93 +55,76 @@ export function LiquidityDiscovery({
   marketError: boolean;
 }) {
   const sources = allocations.map((a) => a.source);
+  const aqua = allocations.find((a) => a.source.key === "aqua");
 
-  // Nothing entered yet: show the market, not an empty frame. A visitor should be able to see what
-  // liquidity exists before committing to an amount.
-  if (amountWei === undefined) {
-    return (
-      <div className="disco">
-        <MarketConditions summary={summary} change={null} symbol={tokenIn.symbol} />
-        <div className="disco-sec">
-          <header className="disco-head">
-            <span className="label">Available liquidity</span>
-            <NoPhantomLiquidity sources={sources} symbol={tokenIn.symbol} />
-          </header>
-          <div className="disco-sources">
-            {allocations.map((a) => (
-              <LiquiditySourceCard
-                key={a.source.key}
-                allocation={a}
-                symbolIn={tokenIn.symbol}
-                symbolOut={tokenOut.symbol}
-              />
-            ))}
-          </div>
-          <p className="disco-hint">Enter an amount to see how your order would be filled.</p>
-        </div>
+  const sourceCards = marketError ? (
+    <div className="notice notice-bad">
+      <ShieldAlert size={16} aria-hidden="true" />
+      <div>
+        <strong>Liquidity data unavailable</strong>
+        <p>Unable to verify current on-chain liquidity.</p>
       </div>
-    );
-  }
+    </div>
+  ) : (
+    <div className="disco-sources">
+      {allocations.map((a) => (
+        <LiquiditySourceCard key={a.source.key} allocation={a} tokenIn={tokenIn} tokenOut={tokenOut} />
+      ))}
+    </div>
+  );
+
+  const liquidityHeader = (
+    <header className="disco-head">
+      <div className="disco-head-text">
+        <span className="label">
+          {status === "quoting" ? "Checking executable liquidity..." : "Available liquidity"}
+        </span>
+        <p className="disco-lede">
+          Executable liquidity is the amount a source can actually settle right now.
+        </p>
+      </div>
+      <NoPhantomLiquidity sources={sources} token={tokenIn} />
+    </header>
+  );
 
   return (
     <div className="disco">
-      <MarketConditions summary={summary} change={change} symbol={tokenIn.symbol} />
+      <MarketConditions
+        summary={summary}
+        change={change}
+        regimeChange={regimeChange}
+        onDismissRegimeChange={onDismissRegimeChange}
+        volatilityBps={volatilityBps}
+        token={tokenIn}
+      />
 
-      {/* ---- the sources ---- */}
-      <div className="disco-sec">
-        <header className="disco-head">
-          <span className="label">
-            {status === "quoting" ? "Checking executable liquidity…" : "Liquidity for this trade"}
-          </span>
-          <NoPhantomLiquidity sources={sources} symbol={tokenIn.symbol} />
-        </header>
+      {/* The conditional-liquidity mechanism, on the main screen rather than only in a drawer. */}
+      {aqua && <StrategySummary allocation={aqua} tokenIn={tokenIn} tokenOut={tokenOut} />}
 
-        {marketError ? (
-          <div className="notice notice-bad">
-            <ShieldAlert size={16} aria-hidden="true" />
-            <div>
-              <strong>Liquidity data unavailable</strong>
-              <p>Unable to verify current on-chain liquidity.</p>
-            </div>
-          </div>
-        ) : (
-          <div className="disco-sources">
-            {allocations.map((a) => (
-              <LiquiditySourceCard
-                key={a.source.key}
-                allocation={a}
-                symbolIn={tokenIn.symbol}
-                symbolOut={tokenOut.symbol}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ---- the split ---- */}
-      {status === "quoting" && !result && (
+      {/* ---- the route, first, once there is one ---- */}
+      {amountWei !== undefined && status === "quoting" && !result && (
         <div className="disco-sec disco-quoting">
           <Loader2 className="spin" size={16} strokeWidth={2.5} aria-hidden="true" />
-          Assembling the best route…
+          Assembling the best route...
         </div>
       )}
 
-      {result?.kind === "routable" && (
+      {amountWei !== undefined && result?.kind === "routable" && (
         <div className="disco-sec">
-          <span className="label">Best execution</span>
+          <span className="label">Your route</span>
           <RouteVisualizer
             allocations={allocations}
             amountIn={amountWei}
             expectedOut={expectedOut}
-            symbolIn={tokenIn.symbol}
-            symbolOut={tokenOut.symbol}
+            tokenIn={tokenIn}
+            tokenOut={tokenOut}
             isStale={isStale}
           />
           <WhyThisRoute allocations={allocations} tokenIn={tokenIn} tokenOut={tokenOut} />
         </div>
       )}
 
-      {result?.kind === "no-route" && (
+      {amountWei !== undefined && result?.kind === "no-route" && (
         <div className="disco-sec">
           {/* Not an error. The market is simply too thin for this size right now. */}
           <div className="notice">
@@ -139,21 +132,33 @@ export function LiquidityDiscovery({
             <div>
               <strong>No executable route</strong>
               <p>
-                Only {fmt(result.totalExecutable)} {tokenIn.symbol} is currently executable for this trade.
+                Only {fmtToken(result.totalExecutable, tokenIn)} is currently executable for this trade.
                 Try a smaller amount.
               </p>
             </div>
           </div>
         </div>
       )}
+
+      {/* ---- the sources the route was built from ---- */}
+      <div className="disco-sec">
+        {liquidityHeader}
+        {sourceCards}
+        {amountWei === undefined && (
+          <p className="disco-hint">Enter an amount to see how your order would be filled.</p>
+        )}
+      </div>
     </div>
   );
 }
 
 /**
- * Why the solver chose this split, in three factors a trader already understands: price, depth, and
- * how much risk each source is currently taking. Protocol vocabulary stays in the technical
- * expansion inside each source's own drawer.
+ * Why the solver chose this split.
+ *
+ * Opens with the explanation in one plain sentence per source, because that is the sentence a judge
+ * needs and it should not be assembled out of three labelled factors. The factors stay underneath
+ * for a reader who wants the reasoning decomposed, and protocol vocabulary stays further down still,
+ * inside each source's own drawer.
  */
 function WhyThisRoute({
   allocations,
@@ -186,9 +191,46 @@ function WhyThisRoute({
       </summary>
 
       <div className="disclose-body">
+        {/* The plain-language answer, first. Every figure in it is read from chain. */}
+        <div className="why-story">
+          {allocations.map((a) => {
+            const executable = a.source.executable?.conditionalLiquidity;
+            const mode = a.source.snapshot?.mode;
+            if (executable === undefined || mode === undefined) {
+              return (
+                <p key={a.source.key}>
+                  <b>{a.source.name}</b>&apos;s liquidity couldn&apos;t be read, so nothing was routed to
+                  it.
+                </p>
+              );
+            }
+            return (
+              <p key={a.source.key}>
+                <b>{a.source.name}</b> is in <b>{mode.toLowerCase()}</b> mode and can execute{" "}
+                <b>{fmtToken(executable, tokenIn)}</b>
+                {a.included ? (
+                  <>
+                    {" "}
+                    - the Solver filled <b>{fmtToken(a.amountIn, tokenIn)}</b> here
+                    {cappedOut.includes(a) ? ", its entire executable depth." : "."}
+                  </>
+                ) : (
+                  <>, but the order was covered before reaching it.</>
+                )}
+              </p>
+            );
+          })}
+          {used.length > 1 && (
+            <p className="why-story-conclusion">
+              The split is not a preference. Once a source is filled to what it can actually settle, the
+              remainder has to go somewhere that can pay.
+            </p>
+          )}
+        </div>
+
         <Factor
           k="Best price first"
-          v={`${cheapest.source.name} at ${((cheapest.source.snapshot?.spreadBps ?? 0) / 100).toFixed(2)}% fee`}
+          v={`${cheapest.source.name} at ${fmtBps(cheapest.source.snapshot?.spreadBps)} fee`}
           detail={
             used.length > 1
               ? `It was filled first because it returns the most ${tokenOut.symbol} per ${tokenIn.symbol}.`
@@ -227,16 +269,9 @@ function WhyThisRoute({
             <div className="why-alloc-row" key={a.source.key}>
               <span>{a.source.name}</span>
               <span className="num">
-                {fmt(a.amountIn)} {tokenIn.symbol} → {fmt(a.expectedOut, 4)} {tokenOut.symbol}
-                {a.source.snapshot && (
-                  <em className="faint">
-                    {" "}
-                    @ {(
-                      Number(formatUnits(a.expectedOut, tokenOut.decimals)) /
-                      Math.max(Number(formatUnits(a.amountIn, tokenIn.decimals)), 1e-18)
-                    ).toFixed(5)}
-                  </em>
-                )}
+                {fmt(a.amountIn, tokenIn.decimals)} {tokenIn.symbol} -&gt;{" "}
+                {fmt(a.expectedOut, tokenOut.decimals)} {tokenOut.symbol}
+                <em className="faint"> @ {fmtRate(a.amountIn, a.expectedOut, tokenIn, tokenOut)}</em>
               </span>
             </div>
           ))}

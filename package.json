@@ -33,11 +33,16 @@
     "test:compiler": "vitest run",
     "test:all": "forge test && vitest run",
     "test:fork": "forge test --match-path \"test/fork/*\" -vv",
+    "test:fork:sepolia": "forge test --match-path \"test/fork/SepoliaMarketplaceFork.t.sol\" -vv",
     "test:fork:aqua": "forge test --match-path \"test/fork/AquaSwapVMMainnetFork.t.sol\" -vv",
     "compile": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit",
     "fmt": "forge fmt",
     "fmt:check": "forge fmt --check",
-    "snapshot": "forge snapshot"
+    "snapshot": "forge snapshot",
+    "sepolia:audit": "node scripts/audit/bytecode.mjs && node scripts/audit/bytecode-ci.mjs && node scripts/audit/official.mjs",
+    "sepolia:verify": "node scripts/audit/verify-live.mjs",
+    "sepolia:manifest": "node scripts/audit/manifest.mjs",
+    "sepolia:txs": "node scripts/audit/tx-table.mjs"
   }
 }

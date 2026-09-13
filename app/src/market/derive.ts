@@ -112,6 +112,18 @@ export interface MarketSummary {
   bestSpreadBps: number | undefined;
   bestPricedSource: LiquiditySource | undefined;
   regime: StrategyMode;
+  /**
+   * How much of what this market *could* deliver its strategies are currently willing to quote,
+   * in bps - the tightest limit in force across readable sources.
+   *
+   * Derived, never read: `conditional / deliverable` per source, then the minimum. The minimum
+   * rather than an average, for the same reason `regime` is the worst rather than the mean - one
+   * source pulling back to 25% is the fact a trader needs, and averaging it against a pool sitting
+   * at 100% would report 62% and hide it.
+   *
+   * `undefined` when nothing is deliverable, because a fraction of zero says nothing.
+   */
+  liquidityCapacityBps: number | undefined;
 }
 
 /**
@@ -131,6 +143,7 @@ export function summarize(sources: LiquiditySource[]): MarketSummary {
 
   const severity = { NORMAL: 0, RECOVERY: 1, DEFENSIVE: 2 } as const;
   let regime: StrategyMode = "NORMAL";
+  let liquidityCapacityBps: number | undefined;
 
   for (const source of sources) {
     if (source.unavailable || !source.executable) continue;
@@ -147,6 +160,11 @@ export function summarize(sources: LiquiditySource[]): MarketSummary {
     if (spread !== undefined && executableDepth(source) > 0n && (bestSpreadBps === undefined || spread < bestSpreadBps)) {
       bestSpreadBps = spread;
       bestPricedSource = source;
+    }
+
+    const capacity = currentLiquidityBps(source);
+    if (capacity !== undefined && (liquidityCapacityBps === undefined || capacity < liquidityCapacityBps)) {
+      liquidityCapacityBps = capacity;
     }
 
     const mode = source.snapshot?.mode;
@@ -168,5 +186,6 @@ export function summarize(sources: LiquiditySource[]): MarketSummary {
     bestSpreadBps,
     bestPricedSource,
     regime,
+    liquidityCapacityBps,
   };
 }

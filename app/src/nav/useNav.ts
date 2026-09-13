@@ -3,19 +3,19 @@ import { useCallback, useSyncExternalStore } from "react";
 /**
  * Hash-based navigation, without a router.
  *
- * Four destinations and no nested or parameterised routes, so a routing library would carry far
+ * Five destinations and no nested or parameterised routes, so a routing library would carry far
  * more than this needs. `useSyncExternalStore` over `hashchange` gives real URLs, a working back
  * button and shareable links - which a `useState` tab switcher would not - in about twenty lines.
  */
 
-export const ROUTES = ["home", "swap", "liquidity", "activity"] as const;
+export const ROUTES = ["home", "swap", "liquidity", "strategy", "activity"] as const;
 export type Route = (typeof ROUTES)[number];
 
 /** The landing page is the entry point: an unexplained swap form is not a product. */
 const DEFAULT: Route = "home";
 
 /** The routes that make up the application proper, i.e. what the header nav shows. */
-export const APP_ROUTES = ["swap", "liquidity", "activity"] as const satisfies readonly Route[];
+export const APP_ROUTES = ["swap", "liquidity", "strategy", "activity"] as const satisfies readonly Route[];
 
 function parse(hash: string): Route {
   const name = hash.replace(/^#\/?/, "").split("?")[0];
@@ -58,5 +58,6 @@ export const ROUTE_LABELS: Record<Route, string> = {
   home: "Home",
   swap: "Swap",
   liquidity: "Liquidity",
+  strategy: "Strategy",
   activity: "Activity",
 };

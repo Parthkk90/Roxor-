@@ -38,3 +38,6 @@ line_length                  = 140
 
 [rpc_endpoints]
 mainnet = "${RPC_URL}"
+# A free public endpoint, so a fresh clone can run the Sepolia fork test with no configuration.
+# Pass `--fork-url`/`--rpc-url` to use a private endpoint if this one rate-limits.
+sepolia = "https://ethereum-sepolia-rpc.publicnode.com"

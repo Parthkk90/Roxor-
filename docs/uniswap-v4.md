@@ -63,7 +63,7 @@ sequence.
   dependency would begin (see §3).
 - `contracts/uniswap/interfaces/IConditionalLiquidityHook.sol` / `ConditionalLiquidityHook.sol` -
   the actual `BaseHook` subclass. Implements exactly one callback, `beforeSwap`.
-- `contracts/uniswap/ConditionalLiquidityProgramLib.sol` - unrelated to the hook; this is the
+- `contracts/swapvm/ConditionalLiquidityProgramLib.sol` - unrelated to the hook; this is the
   SwapVM-side program builder from Part 4, referenced here only because the Aqua backend's fixtures
   use it in the cross-backend equivalence tests.
 
@@ -201,11 +201,33 @@ require(address(hook) == predicted);
 `deployer` differs by context (per `HookMiner`'s own NatSpec): `address(this)` (the test contract)
 in `forge test`; the canonical CREATE2 deployer proxy `0x4e59b44847b379578588920cA78FbF26c0B4956C`
 in `forge script --broadcast`, because Foundry's script broadcaster routes salted `new X{salt}(...)`
-deployments through that proxy. `script/DeployUniswapHook.s.sol` uses the latter and was verified
-end-to-end against local Anvil - the deployed hook's low 14 bits decode to exactly
-`BEFORE_SWAP_FLAG` and nothing else.
+deployments through that proxy. `script/DeployUniswapHook.s.sol` and `script/DeploySepolia.s.sol`
+both use the latter; `test/fork/SepoliaMarketplaceFork.t.sol` mines against `address(this)` for the
+same reason `forge test` always does. Getting this wrong does not fail loudly - the mined salt simply
+produces an address the hook never lands at, and construction reverts `HookAddressNotValid`.
 
-## 10. Local test architecture
+Verified end-to-end twice: against local Anvil, and on Ethereum Sepolia, where the live hook
+`0xa05d48D7b56759aeBdb73A3bB6ffF179bd74c080` decodes to exactly `BEFORE_SWAP_FLAG` (`0x...4080`) and
+nothing else.
+
+## 10. Which PoolManager - tests versus the live deployment
+
+Worth separating, because the two are deliberately different.
+
+**Tests and the local demo deploy their own `PoolManager`.** A local chain has no Uniswap on it, so
+there is nothing to reuse; `vm.deployCode` puts one there.
+
+**The Sepolia deployment uses Uniswap's own** (`0xE03A1074c86CFeDd5C142C4F04F1a1536e203543`, owner
+Uniswap's, not this project's). An earlier Sepolia run had deployed a *private* PoolManager - a
+duplicate of protocol infrastructure that genuinely exists on that network - which made the "runs on
+Uniswap v4" claim weaker than it needed to be. A v4 hook binds to its manager at construction, so
+moving to the real one meant a freshly mined hook; the strategy behind the pool is the one that was
+already registered. `docs/sepolia-deployment.md` §2 records the decision and the evidence, and
+`test/fork/SepoliaMarketplaceFork.t.sol` proved Uniswap's Sepolia `PoolManager`, `PoolSwapTest` and
+`PoolModifyLiquidityTest` are ABI-compatible with the v4-core version this repository compiles
+against *before* anything was broadcast.
+
+### Local test architecture
 
 `PoolManager.sol` exact-pins `pragma solidity 0.8.26`, which cannot share a compiler invocation with
 this project's `^0.8.30` files (1inch's aqua/swap-vm exact-pin `0.8.30` the same way). Rather than

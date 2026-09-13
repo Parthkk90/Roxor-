@@ -3,7 +3,7 @@ import { ShieldCheck } from "lucide-react";
 
 import { depthLayers } from "../../market/derive";
 import type { LiquiditySource } from "../../market/types";
-import { fmt } from "../../format";
+import { fmtToken, type TokenDisplay } from "../../format";
 import { Drawer } from "../ui/Drawer";
 
 /**
@@ -16,10 +16,10 @@ import { Drawer } from "../ui/Drawer";
  */
 export function NoPhantomLiquidity({
   sources,
-  symbol,
+  token,
 }: {
   sources: LiquiditySource[];
-  symbol: string;
+  token: TokenDisplay;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -44,12 +44,13 @@ export function NoPhantomLiquidity({
         subtitle="Every quote, before you see it"
       >
         <p className="dim" style={{ fontSize: "var(--fs-sm)", lineHeight: 1.65 }}>
-          A source can advertise more than it can pay. We check what it can really settle, and route only
+          <strong>Executable liquidity is the amount a source can actually settle right now.</strong> A
+          source can advertise more than it can pay; we check what it can really deliver, and route only
           that. Each step below can only reduce the number - never raise it.
         </p>
 
         {example?.executable ? (
-          <Steps source={example} symbol={symbol} />
+          <Steps source={example} token={token} />
         ) : (
           <p className="dim" style={{ fontSize: "var(--fs-sm)" }}>
             Live figures aren&apos;t available right now, so we can&apos;t walk through a real example.
@@ -71,7 +72,7 @@ export function NoPhantomLiquidity({
   );
 }
 
-function Steps({ source, symbol }: { source: LiquiditySource; symbol: string }) {
+function Steps({ source, token }: { source: LiquiditySource; token: TokenDisplay }) {
   const layers = depthLayers(source)!;
   const scale = layers.scale === 0n ? 1n : layers.scale;
   const w = (v: bigint) => `${Math.min(100, Number((v * 10_000n) / scale) / 100)}%`;
@@ -113,9 +114,7 @@ function Steps({ source, symbol }: { source: LiquiditySource; symbol: string }) 
           <div className="nopl-body">
             <span className="nopl-k">
               {step.k}
-              <b className="num">
-                {fmt(step.v)} {symbol}
-              </b>
+              <b className="num">{fmtToken(step.v, token)}</b>
             </span>
             <span className={`nopl-track${i === steps.length - 1 ? " nopl-track-final" : ""}`}>
               <i style={{ width: w(step.v) }} />

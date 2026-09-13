@@ -1,0 +1,331 @@
+{
+  "chainId": 11155111,
+  "network": "sepolia",
+  "label": "Ethereum Sepolia · TESTNET",
+  "deployer": "0x025e4Cd04a671C309572fA3E6dEc9A8C79b847F4",
+  "deploymentBlock": 11695582,
+  "documentation": "docs/sepolia-deployment.md",
+  "contracts": {
+    "solver": {
+      "address": "0x5c8f7f0556a4935d6f0DbA4FB6e44F19e89Af354",
+      "status": "NEW"
+    },
+    "aquaVenue": {
+      "address": "0x6334836551C4088f66127762a9968747266D0d3e",
+      "status": "NEW"
+    },
+    "uniswapV4Venue": {
+      "address": "0x065CfB8B2241bEd17FC6d6a16c0432b8D0641Ca7",
+      "status": "NEW"
+    },
+    "conditionalLiquidityHook": {
+      "address": "0xa05d48D7b56759aeBdb73A3bB6ffF179bd74c080",
+      "status": "NEW"
+    },
+    "aqua": {
+      "address": "0xB9e780c07B3d36Af0090B011bd0233Ca8b212844",
+      "status": "REUSED"
+    },
+    "aquaSwapVMRouter": {
+      "address": "0x8FCF7D68df61a9FCf2009e606ff632E97BdDEAEC",
+      "status": "REUSED"
+    },
+    "aquaRegistry": {
+      "address": "0x9888e8C6CffBEbF792C6B0B3d1085B7B11Da61a7",
+      "status": "REUSED"
+    },
+    "aquaEngine": {
+      "address": "0x1ee607310423099D47F3B35d59F8BB66690EC952",
+      "status": "REUSED"
+    },
+    "aquaExtruction": {
+      "address": "0xb21Bf6e48FbcFDf83a7685924A244510Db08bC75",
+      "status": "REUSED"
+    },
+    "aquaMarketStateProvider": {
+      "address": "0x40b30ECEF85Ea5E850373544ba3A6D02bd7b49a2",
+      "status": "REUSED"
+    },
+    "uniRegistry": {
+      "address": "0x738b102E559EEBE23F5a67cC61798CBcB14284dB",
+      "status": "REUSED"
+    },
+    "uniEngine": {
+      "address": "0x4670CC0Ab2322F5aFcaa9ec91ee3fbE0d35A2D55",
+      "status": "REUSED"
+    },
+    "uniMarketStateProvider": {
+      "address": "0xD0b139BF9c0576A96b48C3b9c3C5b0ed336cabF4",
+      "status": "REUSED"
+    },
+    "mockWETH": {
+      "address": "0x8D302A3123b6C710f9ee5D858e3B06AB0b6f478D",
+      "status": "REUSED"
+    },
+    "uniswapV4PoolManager": {
+      "address": "0xE03A1074c86CFeDd5C142C4F04F1a1536e203543",
+      "status": "REUSED_OFFICIAL"
+    },
+    "uniswapV4PoolSwapTest": {
+      "address": "0x9B6b46e2c869aa39918Db7f52f5557FE577B6eEe",
+      "status": "REUSED_OFFICIAL"
+    },
+    "uniswapV4PoolModifyLiquidityTest": {
+      "address": "0x0C478023803a644c94c4CE1C1e7b9A087e411B0A",
+      "status": "REUSED_OFFICIAL"
+    }
+  },
+  "tokens": {
+    "tokenIn": {
+      "address": "0x246b76e37825a473Ae784Ce14A2Bb42733A8f922",
+      "name": "Demo Token B",
+      "symbol": "DTB",
+      "decimals": 18,
+      "provenance": "project test token, deployed on Ethereum Sepolia"
+    },
+    "tokenOut": {
+      "address": "0xFE14a75D92e1A028ebb497dAc4D25bF2e08B3Af3",
+      "name": "Demo Token A",
+      "symbol": "DTA",
+      "decimals": 18,
+      "provenance": "project test token, deployed on Ethereum Sepolia"
+    }
+  },
+  "markets": [
+    {
+      "label": "DTB/DTA",
+      "tokenIn": "0x246b76e37825a473Ae784Ce14A2Bb42733A8f922",
+      "tokenOut": "0xFE14a75D92e1A028ebb497dAc4D25bF2e08B3Af3",
+      "solver": "0x5c8f7f0556a4935d6f0DbA4FB6e44F19e89Af354",
+      "aquaVenue": "0x6334836551C4088f66127762a9968747266D0d3e",
+      "uniswapV4Venue": "0x065CfB8B2241bEd17FC6d6a16c0432b8D0641Ca7",
+      "aquaOracle": "0x40b30ECEF85Ea5E850373544ba3A6D02bd7b49a2",
+      "uniOracle": "0xD0b139BF9c0576A96b48C3b9c3C5b0ed336cabF4",
+      "extruction": "0xb21Bf6e48FbcFDf83a7685924A244510Db08bC75",
+      "hook": "0xa05d48D7b56759aeBdb73A3bB6ffF179bd74c080",
+      "poolId": "0xb2917d9aa516adc6ffa78f862ba4282aa025b43cb746562da0c7e8f926d96ad9",
+      "aquaStrategyId": "0xd4e296704cf420357c0d20976f594a2e301e01b4da3734f2b37d5184d852a2df",
+      "uniStrategyId": "0xacdbaa77ce0882057769fb71336eb3deff305c7a15a2bb821b62ffc55d77d911",
+      "liquidity": {
+        "aqua": {
+          "tokenIn": "0x246b76e37825a473Ae784Ce14A2Bb42733A8f922",
+          "advertised": "104.0002",
+          "wallet": "8",
+          "allowance": "unbounded",
+          "deliverable": "8",
+          "executable": "8",
+          "coverageBps": 769
+        },
+        "uniswapV4": {
+          "tokenIn": "0x246b76e37825a473Ae784Ce14A2Bb42733A8f922",
+          "advertised": "10",
+          "wallet": "20.999999999999999999",
+          "allowance": "unbounded",
+          "deliverable": "10",
+          "executable": "10",
+          "coverageBps": 10000
+        }
+      }
+    }
+  ],
+  "strategies": {
+    "aqua": {
+      "id": "0xd4e296704cf420357c0d20976f594a2e301e01b4da3734f2b37d5184d852a2df",
+      "venue": "aqua",
+      "registry": "0x9888e8C6CffBEbF792C6B0B3d1085B7B11Da61a7",
+      "maker": "0x025e4Cd04a671C309572fA3E6dEc9A8C79b847F4",
+      "baseLiquidityBps": 10000,
+      "baseSpreadBps": 20,
+      "programHash": "0x2171b08b356efc3af93e2471563e8d78f418ee7d0ea88462f8cf30dc43768859",
+      "active": true,
+      "currentMode": "NORMAL",
+      "currentLiquidityBps": 10000,
+      "currentSpreadBps": 20,
+      "transitionCount": 3
+    },
+    "uniswapV4": {
+      "id": "0xacdbaa77ce0882057769fb71336eb3deff305c7a15a2bb821b62ffc55d77d911",
+      "venue": "uniswap-v4",
+      "registry": "0x738b102E559EEBE23F5a67cC61798CBcB14284dB",
+      "maker": "0x025e4Cd04a671C309572fA3E6dEc9A8C79b847F4",
+      "baseLiquidityBps": 10000,
+      "baseSpreadBps": 20,
+      "programHash": "0x2171b08b356efc3af93e2471563e8d78f418ee7d0ea88462f8cf30dc43768859",
+      "active": true,
+      "currentMode": "NORMAL",
+      "currentLiquidityBps": 10000,
+      "currentSpreadBps": 20,
+      "transitionCount": 0
+    }
+  },
+  "transactions": {
+    "0x6dfdcebb3c7d207ef4a2d7465e215bd95ec2ccf64ecceec511a9222df21e52c5": {
+      "purpose": "Deploy AquaVenue",
+      "block": 11695586,
+      "gasUsed": 1929638,
+      "status": "success"
+    },
+    "0x586e8f84d75baaef4f350e008332bc889bb344fbcf087309acefd02c04356f66": {
+      "purpose": "Deploy ConditionalLiquidityHook (CREATE2, mined)",
+      "block": 11695588,
+      "gasUsed": 2040339,
+      "status": "success"
+    },
+    "0x192bfae1197318e90acc6214aefc7f6b0b87d3259ff0baeab7007f61d3e80bef": {
+      "purpose": "PoolManager.initialize (Uniswap's own Sepolia manager)",
+      "block": 11695589,
+      "gasUsed": 51699,
+      "status": "success"
+    },
+    "0x6a6b2e211a30333684aded100593817e9a3fa1ff15e9f37787c9edf77024485e": {
+      "purpose": "Hook.registerPoolStrategy (binds the existing strategy to the new pool)",
+      "block": 11695590,
+      "gasUsed": 115758,
+      "status": "success"
+    },
+    "0x7eeaa19aab6b1c58d21a7d3dbfd10f2f71cac04f871023301e93b06360f74c5e": {
+      "purpose": "Mint 25 DTB to fund the pool position",
+      "block": 11695592,
+      "gasUsed": 33882,
+      "status": "success"
+    },
+    "0xf3f4ff56939ddd7a805478c7de648a766262db1a7cd922180a4764c09a4a8f67": {
+      "purpose": "Mint 25 DTA to fund the pool position",
+      "block": 11695593,
+      "gasUsed": 33882,
+      "status": "success"
+    },
+    "0xbc056129adad57374e2a2ddd3e137f37c65b3aedb08188bf9586223092dc9601": {
+      "purpose": "Approve DTB to the v4 liquidity router",
+      "block": 11695594,
+      "gasUsed": 45942,
+      "status": "success"
+    },
+    "0xab75e94a2441278615615e808d8a91ab6f9e20017b2faddf74db677af6644c56": {
+      "purpose": "Approve DTA to the v4 liquidity router",
+      "block": 11695595,
+      "gasUsed": 45942,
+      "status": "success"
+    },
+    "0xe6f8b2db62f3acf617546d589d9dc861ccbd2bafa26579e542fa313eee734086": {
+      "purpose": "Add full-range liquidity (20e18)",
+      "block": 11695596,
+      "gasUsed": 299810,
+      "status": "success"
+    },
+    "0xb04ef42493c4d4b31782630d386c828437e78f4d17f1299ffcf6791c4b811c89": {
+      "purpose": "Deploy UniswapV4Venue",
+      "block": 11695597,
+      "gasUsed": 1195366,
+      "status": "success"
+    },
+    "0x27e638535920b8ff69ee5d749cfee2f63edde3b09ab3c939296da0d49a90e1f7": {
+      "purpose": "Deploy Solver",
+      "block": 11695598,
+      "gasUsed": 1175803,
+      "status": "success"
+    },
+    "0xeaef5a62424c8c255c43970e39baefa50d608e3f9fd570334965f653f055a0e0": {
+      "purpose": "Fund the trader account with 0.01 ETH",
+      "block": 11695608,
+      "gasUsed": 21000,
+      "status": "success"
+    },
+    "0x960c2a208790c77a45f92b24dfe33d74ec0a03f119930f876f39fb5c2bd514b3": {
+      "purpose": "Trim the maker's DTB wallet to 4 (makes the solvency bound bind)",
+      "block": 11695609,
+      "gasUsed": 51127,
+      "status": "success"
+    },
+    "0x9ce8bf3694cb50e263646ea6a7e9ff2e8b442a9226f00c115602dff3e2a2f61a": {
+      "purpose": "Trim the maker's DTA wallet to 200",
+      "block": 11695610,
+      "gasUsed": 51127,
+      "status": "success"
+    },
+    "0xfd32d294dec12b77df0c49340dfd1e0d377362e9ae03ff48e0a21445219187dd": {
+      "purpose": "Mint 6 DTB to the trader",
+      "block": 11695612,
+      "gasUsed": 50970,
+      "status": "success"
+    },
+    "0x37ddbc19db4e7e4fa5db5146fc901e29aaf784abe218f564725d6373d6b04468": {
+      "purpose": "Trader approves the Solver for 5 DTB",
+      "block": 11695618,
+      "gasUsed": 45930,
+      "status": "success"
+    },
+    "0xb55c0a7d792fecc4ef264620022574737448f5621237ad78b282abec67272009": {
+      "purpose": "REAL SWAP: Solver.settle, 5 DTB -> 6.708 DTA across both venues",
+      "block": 11695622,
+      "gasUsed": 1161142,
+      "status": "success"
+    },
+    "0x061caccfec374cd59230e48be87f679751f121486cb345d1eb345347d36a9346": {
+      "purpose": "Oracle: volatility 65% (shock)",
+      "block": 11695628,
+      "gasUsed": 36580,
+      "status": "success"
+    },
+    "0xd64095a11d83f9a36e29838c5c31ce9973adc08e8b0929c3e7048a6caf8a81d7": {
+      "purpose": "Engine.poke -> NORMAL to DEFENSIVE",
+      "block": 11695629,
+      "gasUsed": 197823,
+      "status": "success"
+    },
+    "0x55ee3690865caef0b8481aa3524d05e49f81d2d2a4e472bca9c49df36157e988": {
+      "purpose": "Oracle: volatility 24% (calm)",
+      "block": 11695634,
+      "gasUsed": 36580,
+      "status": "success"
+    },
+    "0x9c9123189ac67a4c8bbb70147f17e00d1c7210e6c02e611caffb4dcea5975b74": {
+      "purpose": "Engine.poke -> arms the 10-minute calm gate",
+      "block": 11695635,
+      "gasUsed": 134911,
+      "status": "success"
+    },
+    "0x8ba966ad034d13db0895ad482c63537054e551749d34c27b85277bc98fca28ec": {
+      "purpose": "Engine.poke -> DEFENSIVE to RECOVERY (after 10 minutes of calm)",
+      "block": 11695689,
+      "gasUsed": 146837,
+      "status": "success"
+    },
+    "0xaabc3f66e4427e0f88624f29adfa11c0f7141c4bc4c1d8802ae74f271a8b6bba": {
+      "purpose": "Engine.poke -> RECOVERY to NORMAL (after 10 more minutes)",
+      "block": 11695737,
+      "gasUsed": 148808,
+      "status": "success"
+    },
+    "0x244d24d0462b2dabb88599cf95fb53aebd16686852fcd43bc257bedcab4b665d": {
+      "purpose": "Strategy registered from the frontend's builder path (a second maker, their own thresholds)",
+      "block": 11695893,
+      "gasUsed": 716536,
+      "status": "success"
+    },
+    "0x1dd556a0e91434722b8c031ff6604e9b27f1e0f99d240c9e9fdc9bd033c13f74": {
+      "purpose": "UI check: volatility 65% (shock)",
+      "block": 11696036,
+      "gasUsed": 36580,
+      "status": "success"
+    },
+    "0xcbf45dc412b92bce4785a65cd5c368a9c8c77234b498f25d4a71c5721aa04f4a": {
+      "purpose": "UI check: volatility 24%",
+      "block": 11696052,
+      "gasUsed": 36580,
+      "status": "success"
+    },
+    "0x707f29137d8d98891d9e40583ba12026daf36b14b493ba439a31506f716ede0b": {
+      "purpose": "UI check: volatility 65% (shock)",
+      "block": 11696056,
+      "gasUsed": 36580,
+      "status": "success"
+    },
+    "0x1abc061cef80f54ea20ddad9ee9170c2622bf6a3f5a178e1b2486ff71ff9491c": {
+      "purpose": "UI check: volatility 20% (restored to calm)",
+      "block": 11696093,
+      "gasUsed": 36580,
+      "status": "success"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { clfResolver } from './src/vite-clf-resolver.js'
 
 /**
  * Tunnelling the dev server is opt-in via `TUNNEL=1`, never the default.
@@ -17,11 +18,14 @@ const tunnelling = process.env.TUNNEL === '1'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), clfResolver()],
   server: tunnelling
     ? {
         host: true, // bind 0.0.0.0 so the tunnel client can reach it
         allowedHosts: true, // accept the tunnel's generated hostname, whatever it turns out to be
+        // The CLF compiler is imported from `../src`, outside the Vite root, so the dev server
+        // must be allowed to serve from the parent directory.
+        fs: { allow: ['..'] },
       }
-    : undefined,
+    : { fs: { allow: ['..'] } },
 })

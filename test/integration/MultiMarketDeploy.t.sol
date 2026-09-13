@@ -53,9 +53,13 @@ contract MultiMarketDeployTest is Test {
         for (uint256 i = 0; i < 6; ++i) {
             bool seen = false;
             for (uint256 j = 0; j < i; ++j) {
-                if (allTokens[i] == allTokens[j]) seen = true;
+                if (allTokens[i] == allTokens[j]) {
+                    seen = true;
+                }
             }
-            if (!seen) distinct++;
+            if (!seen) {
+                distinct++;
+            }
         }
         assertEq(distinct, 3, "expected exactly 3 distinct demo tokens across all markets");
 
@@ -65,7 +69,9 @@ contract MultiMarketDeployTest is Test {
             assertEq(token.decimals(), 18, "every demo token must stay 18 decimals (Solver unit assumption)");
             bool matched = false;
             for (uint256 j = 0; j < 3; ++j) {
-                if (keccak256(bytes(token.symbol())) == keccak256(bytes(expectedSymbols[j]))) matched = true;
+                if (keccak256(bytes(token.symbol())) == keccak256(bytes(expectedSymbols[j]))) {
+                    matched = true;
+                }
             }
             assertTrue(matched, "token symbol must be one of the demo-labelled mocks");
         }
