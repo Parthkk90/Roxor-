@@ -220,6 +220,15 @@ dialog.drawer::backdrop { background: rgba(3, 5, 8, 0.72); backdrop-filter: blur
 .mselect-note { font-size: var(--fs-xs); color: var(--text-faint); }
 .mselect-dir { display: flex; align-items: center; gap: var(--s2); }
 
+/* ---------- market overview table ---------- */
+.mtable-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.mtable { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.mtable th, .mtable td { padding: 10px var(--s4); text-align: left; white-space: nowrap; }
+.mtable th { font-size: var(--fs-xs); color: var(--text-faint); font-weight: 500; border-bottom: 1px solid var(--line); }
+.mtable td.num, .mtable th:nth-child(2), .mtable th:nth-child(3) { text-align: right; font-variant-numeric: tabular-nums; }
+.mtable tbody tr:not(:last-child) td { border-bottom: 1px solid var(--line); }
+.mtable tr.mrow-active { background: var(--surface-2); }
+
 /* ---------- responsive ---------- */
 @media (min-width: 640px) {
   dialog.drawer { margin: 0 0 0 auto; max-width: 460px; height: 100%; max-height: 100%; }

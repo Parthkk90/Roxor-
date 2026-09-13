@@ -16,7 +16,7 @@ import { fmt } from "../../format";
 export function ActivityPage() {
   const pair = useTradePair();
   const activity = useActivity();
-  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address);
+  const market = useMarket(pair.tokenIn.address, pair.tokenOut.address, pair.market.aquaVenue, pair.market.uniswapV4Venue);
 
   const venueName = (address: string) =>
     market.sources.find((s) => s.address.toLowerCase() === address.toLowerCase())?.name ??
